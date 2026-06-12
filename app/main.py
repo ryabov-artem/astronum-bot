@@ -87,8 +87,10 @@ class AstrologyStates(StatesGroup):
 
 def markdown_bold_to_html(text):
     text = text.replace("<br>", "\n").replace("<br/>", "\n").replace("<br />", "\n")
+    text = text.replace("<b>", "___B_OPEN___").replace("</b>", "___B_CLOSE___")
     text = html.escape(text, quote=False)
     text = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", text)
+    text = text.replace("___B_OPEN___", "<b>").replace("___B_CLOSE___", "</b>")
     return text
 
 def get_main_keyboard(user_id):
