@@ -21,6 +21,14 @@ PLANETS = {
     "Сатурн": swe.SATURN,
 }
 
+ASPECTS = [
+    ("соединение", 0, 8),
+    ("секстиль", 60, 5),
+    ("квадрат", 90, 6),
+    ("трин", 120, 6),
+    ("оппозиция", 180, 8),
+]
+
 
 def sign_name(degree: float) -> str:
     return SIGNS[int(degree // 30) % 12]
@@ -28,6 +36,36 @@ def sign_name(degree: float) -> str:
 
 def degree_in_sign(degree: float) -> float:
     return degree % 30
+
+
+def angular_distance(a: float, b: float) -> float:
+    diff = abs(a - b) % 360
+    return min(diff, 360 - diff)
+
+
+def calculate_aspects(planets: list[dict]) -> list[dict]:
+    result = []
+
+    for i in range(len(planets)):
+        for j in range(i + 1, len(planets)):
+            p1 = planets[i]
+            p2 = planets[j]
+            distance = angular_distance(p1["longitude"], p2["longitude"])
+
+            for aspect_name, exact_angle, orb in ASPECTS:
+                delta = abs(distance - exact_angle)
+
+                if delta <= orb:
+                    result.append({
+                        "planet1": p1["name"],
+                        "planet2": p2["name"],
+                        "aspect": aspect_name,
+                        "orb": round(delta, 2),
+                    })
+                    break
+
+    result.sort(key=lambda x: x["orb"])
+    return result[:8]
 
 
 def geocode_city(city: str):
@@ -89,6 +127,7 @@ def calculate_real_chart(date_text: str, time_text: str, city: str) -> dict:
         "longitude": round(lon, 4),
         "timezone": tz_name,
         "planets": planets,
+        "aspects": calculate_aspects(planets),
         "ascendant": {
             "longitude": round(asc, 2),
             "sign": sign_name(asc),
@@ -120,6 +159,11 @@ def format_chart_for_prompt(chart: dict) -> str:
         "",
         f"ASC: {chart['ascendant']['degree']}° {chart['ascendant']['sign']}",
         f"MC: {chart['mc']['degree']}° {chart['mc']['sign']}",
+        "",
+        "Аспекты:",
     ]
+
+    for a in chart.get("aspects", []):
+        lines.append(f"- {a['planet1']} {a['aspect']} {a['planet2']} орб {a['orb']}°")
 
     return "\n".join(lines)
