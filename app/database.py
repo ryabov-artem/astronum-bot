@@ -23,6 +23,16 @@ async def init_db():
         """)
 
         await db.execute("""
+        CREATE TABLE IF NOT EXISTS birth_profiles (
+            user_id INTEGER PRIMARY KEY,
+            birth_date TEXT NOT NULL,
+            birth_time TEXT NOT NULL,
+            birth_place TEXT NOT NULL,
+            created_at TEXT
+        )
+        """)
+
+        await db.execute("""
         CREATE TABLE IF NOT EXISTS user_balance (
             user_id INTEGER PRIMARY KEY,
             spreads INTEGER DEFAULT 0
@@ -478,3 +488,37 @@ async def get_payments_stats():
         "today_amount": today_amount,
         "today_spreads": today_spreads,
     }
+
+
+async def save_birth_profile(user_id: int, birth_date: str, birth_time: str, birth_place: str):
+    async with get_connection() as db:
+        db.row_factory = aiosqlite.Row
+        await db.execute("""
+        INSERT INTO birth_profiles (user_id, birth_date, birth_time, birth_place, created_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(user_id) DO UPDATE SET
+            birth_date=excluded.birth_date,
+            birth_time=excluded.birth_time,
+            birth_place=excluded.birth_place,
+            created_at=excluded.created_at
+        """, (user_id, birth_date, birth_time, birth_place, datetime.now().isoformat()))
+        await db.commit()
+
+
+async def get_birth_profile(user_id: int):
+    async with get_connection() as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute("""
+        SELECT birth_date, birth_time, birth_place, created_at
+        FROM birth_profiles
+        WHERE user_id = ?
+        """, (user_id,))
+        row = await cursor.fetchone()
+        return row
+
+
+async def delete_birth_profile(user_id: int):
+    async with get_connection() as db:
+        db.row_factory = aiosqlite.Row
+        await db.execute("DELETE FROM birth_profiles WHERE user_id = ?", (user_id,))
+        await db.commit()
