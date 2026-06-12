@@ -1,113 +1,139 @@
 import os
 from dotenv import load_dotenv
+import httpx
 from openai import AsyncOpenAI
 
 load_dotenv("/opt/bots/astrology_bot/.env")
 
+PROXY_URL = os.getenv("PROXY_URL")
+http_client = httpx.AsyncClient(proxy=PROXY_URL) if PROXY_URL else None
+
 client = AsyncOpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
-    base_url=os.getenv("OPENAI_BASE_URL")
+    base_url=os.getenv("OPENAI_BASE_URL"),
+    http_client=http_client
 )
 
 MODEL = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
 
+SYSTEM_PROMPT = (
+    "Ты — эксперт по западной астрологии и психологическим интерпретациям. "
+    "Пиши на русском языке, тепло, уверенно и кратко. "
+    "Используй HTML-разметку Telegram: <b>жирный текст</b>. "
+    "Не используй Markdown и символы **. "
+    "Не давай медицинские, юридические или финансовые гарантии. "
+    "Не предлагай пользователю функции, которых нет в меню бота. "
+    "Доступные разделы: Натальная карта, Солнечный знак, Лунный знак, Асцендент, Совместимость, Карьера и деньги, Прогноз на месяц. "
+    "Не пиши финальные фразы вроде «если хотите, я могу...». "
+    "Соблюдай лимит: натальная карта до 1800 символов, остальные разделы до 1200 символов."
+)
 
-async def ask_gpt(prompt: str) -> str:
+
+def trim_answer(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+
+    cut = text[:limit]
+    last = max(cut.rfind("."), cut.rfind("!"), cut.rfind("?"))
+
+    if last > int(limit * 0.6):
+        return cut[:last + 1].rstrip()
+
+    return cut.rstrip()
+
+
+async def ask_gpt(prompt: str, limit: int = 1200) -> str:
     response = await client.chat.completions.create(
         model=MODEL,
         messages=[
-            {
-                "role": "system",
-                "content": (
-                    "Ты — эксперт по западной астрологии и психологическим интерпретациям. "
-                    "Пиши на русском языке, тепло, понятно и структурно. "
-                    "Используй HTML-разметку Telegram: <b>жирный текст</b>. "
-                    "Не используй Markdown. Не пиши слишком длинно. "
-                    "Астрология — это развлекательный и рефлексивный формат, не медицинский и не юридический совет."
-                )
-            },
+            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.8
+        temperature=0.5
     )
-    return response.choices[0].message.content
+    return trim_answer(response.choices[0].message.content, limit)
 
 
 async def interpret_natal_chart(data: dict) -> str:
     prompt = (
-        "Сделай краткий разбор натальной карты в стиле западной астрологии.\n\n"
+        "Раздел: ⭐ Натальная карта. Это главный премиальный раздел. Ответ 1800–2200 символов, не больше.\n\n"
         f"Дата рождения: {data.get('birth_date')}\n"
         f"Время рождения: {data.get('birth_time')}\n"
         f"Место рождения: {data.get('birth_place')}\n\n"
-        "Структура ответа:\n"
-        "1. Общий психологический портрет\n"
-        "2. Сильные стороны\n"
-        "3. Уязвимые места\n"
-        "4. Отношения\n"
-        "5. Карьера и деньги\n"
-        "6. Рекомендация\n"
+        "Структура:\n"
+        "<b>Главная энергия личности</b>\n"
+        "<b>Сильные стороны</b>\n"
+        "<b>Внутренние противоречия</b>\n"
+        "<b>Отношения</b>\n"
+        "<b>Реализация</b>\n"
+        "<b>Совет</b>\n\n"
+        "Пиши персонально, без длинных вступлений."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=2300)
 
 
 async def interpret_sun_sign(data: dict) -> str:
     prompt = (
-        "Сделай разбор солнечного знака в западной астрологии.\n\n"
+        "Раздел: ☀️ Солнечный знак. Ответ 700–1000 символов, не больше 1200.\n\n"
         f"Дата рождения: {data.get('birth_date')}\n"
         f"Солнечный знак: {data.get('sign')}\n\n"
-        "Раскрой характер, сильные стороны, слабые стороны, отношения и карьерный потенциал."
+        "Раскрой: суть знака, как человек проявляется, сильные качества, теневая сторона, короткий совет. "
+        "Не повторяй формат натальной карты."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=1200)
 
 
 async def interpret_moon_sign(data: dict) -> str:
     prompt = (
-        "Сделай психологический разбор лунного знака в западной астрологии.\n\n"
+        "Раздел: 🌙 Лунный знак. Ответ 700–1000 символов, не больше 1200.\n\n"
         f"Дата рождения: {data.get('birth_date')}\n"
         f"Время рождения: {data.get('birth_time')}\n\n"
-        "Для MVP точный лунный знак не рассчитывается. Сделай мягкий эмоциональный разбор по дате и времени рождения: "
-        "эмоции, близость, стресс, потребности в отношениях."
+        "Раскрой: эмоциональная природа, ощущение безопасности, реакция на стресс, близость, восстановление. "
+        "Не уходи в карьеру и деньги."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=1200)
 
 
 async def interpret_ascendant(data: dict) -> str:
     prompt = (
-        "Сделай разбор асцендента в западной астрологии.\n\n"
+        "Раздел: ⬆️ Асцендент. Ответ 700–1000 символов, не больше 1200.\n\n"
         f"Дата рождения: {data.get('birth_date')}\n"
         f"Время рождения: {data.get('birth_time')}\n"
         f"Место рождения: {data.get('birth_place')}\n\n"
-        "Для MVP точный асцендент не рассчитывается. Сделай интерпретацию внешнего проявления личности: "
-        "первое впечатление, стиль поведения, как человека видят окружающие."
+        "Раскрой: первое впечатление, стиль поведения, социальная маска, сильная сторона образа, риск и совет. "
+        "Это раздел про внешний стиль и контакт с миром."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=1200)
 
 
 async def interpret_compatibility(data: dict) -> str:
     prompt = (
-        "Сделай разбор совместимости в западной астрологии.\n\n"
+        "Раздел: ❤️ Совместимость. Ответ 900–1200 символов, не больше 1200.\n\n"
         f"Первый человек: {data.get('person_1')}\n"
         f"Второй человек: {data.get('person_2')}\n\n"
-        "Структура: эмоциональная совместимость, романтика, быт, конфликты, сильные стороны пары, рекомендация."
+        "Раскрой: общая динамика пары, что притягивает, эмоциональная совместимость, быт, зоны риска, как укрепить связь. "
+        "Не обещай брак, расставание или гарантию будущего."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=1200)
 
 
 async def interpret_career_money(data: dict) -> str:
     prompt = (
-        "Сделай астрологический разбор карьеры и денег.\n\n"
+        "Раздел: 💼 Карьера и деньги. Ответ 800–1000 символов, не больше 1200.\n\n"
         f"Дата рождения: {data.get('birth_date')}\n"
         f"Солнечный знак: {data.get('sign')}\n\n"
-        "Раскрой: сильные рабочие качества, подходящие сферы, стиль заработка, риски в деньгах, рекомендация."
+        "Раскрой: рабочий стиль, сильные профессиональные качества, 2–3 подходящие сферы, денежное поведение, риски, один практичный шаг. "
+        "Не давай инвестиционных советов и финансовых гарантий."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=1200)
 
 
 async def interpret_month_forecast(data: dict) -> str:
     prompt = (
-        "Сделай астрологический прогноз на месяц.\n\n"
+        "Раздел: 🔮 Прогноз на месяц. Ответ 700–1000 символов, не больше 1200.\n\n"
         f"Дата рождения: {data.get('birth_date')}\n"
         f"Солнечный знак: {data.get('sign')}\n\n"
-        "Структура: общий фон месяца, отношения, работа, деньги, энергия, совет месяца."
+        "Раскрой: главная тема месяца, отношения, работа, деньги, энергия, совет месяца. "
+        "Пиши как прогноз, а не как описание характера."
     )
-    return await ask_gpt(prompt)
+    return await ask_gpt(prompt, limit=1200)
