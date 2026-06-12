@@ -33,14 +33,17 @@ from database import (
     mark_free_spread_used,
     get_balance,
     spend_balance,
-    add_balance
+    add_balance,
+    save_birth_profile,
+    get_birth_profile,
+    delete_birth_profile
 )
 
 from astrology.calculator import zodiac_sign
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.session.aiohttp import AiohttpSession
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
@@ -81,6 +84,7 @@ class AstrologyStates(StatesGroup):
     awaiting_compatibility_data = State()
     awaiting_career_money_date = State()
     awaiting_month_forecast_date = State()
+    awaiting_my_birth_profile = State()
 
 
 
@@ -99,6 +103,7 @@ def get_main_keyboard(user_id):
         [KeyboardButton(text="🌙 Лунный знак"), KeyboardButton(text="⬆️ Асцендент")],
         [KeyboardButton(text="❤️ Совместимость"), KeyboardButton(text="💼 Карьера и деньги")],
         [KeyboardButton(text="🔮 Прогноз на месяц")],
+        [KeyboardButton(text="🗂 Моя карта")],
         [KeyboardButton(text="💎 Баланс"), KeyboardButton(text="📜 История")],
         [KeyboardButton(text="ℹ️ О боте")]
     ]
@@ -256,6 +261,69 @@ async def admin_give_balance(message: Message):
         )
     except Exception:
         pass
+
+
+
+@dp.message(F.text == "🗂 Моя карта")
+async def my_birth_profile(message: Message, state: FSMContext):
+    await save_user(message.from_user)
+
+    profile = await get_birth_profile(message.from_user.id)
+
+    if not profile:
+        await state.set_state(AstrologyStates.awaiting_my_birth_profile)
+        await message.answer(
+            "🗂 <b>Моя карта</b>\n\n"
+            "Сохранённой карты пока нет.\n\n"
+            "Введите данные в формате:\n\n"
+            "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
+            parse_mode="HTML"
+        )
+        return
+
+    await message.answer(
+        "🗂 <b>Моя карта</b>\n\n"
+        f"📅 Дата: <b>{profile['birth_date']}</b>\n"
+        f"🕒 Время: <b>{profile['birth_time']}</b>\n"
+        f"📍 Место: <b>{profile['birth_place']}</b>\n\n"
+        "Чтобы обновить данные, просто снова нажмите «🗂 Моя карта» после удаления старой записи.\n\n"
+        "Команда для удаления:\n"
+        "<b>/delete_my_chart</b>",
+        parse_mode="HTML"
+    )
+
+
+@dp.message(Command("delete_my_chart"))
+async def delete_my_chart(message: Message):
+    await delete_birth_profile(message.from_user.id)
+    await message.answer("🗑 Сохранённая карта удалена.")
+
+
+@dp.message(AstrologyStates.awaiting_my_birth_profile)
+async def process_my_birth_profile(message: Message, state: FSMContext):
+    parts = [x.strip() for x in message.text.split(",", 2)]
+
+    if len(parts) != 3:
+        await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ, город")
+        return
+
+    await save_birth_profile(
+        user_id=message.from_user.id,
+        birth_date=parts[0],
+        birth_time=parts[1],
+        birth_place=parts[2]
+    )
+
+    await state.clear()
+
+    await message.answer(
+        "✅ <b>Карта сохранена</b>\n\n"
+        f"📅 Дата: <b>{parts[0]}</b>\n"
+        f"🕒 Время: <b>{parts[1]}</b>\n"
+        f"📍 Место: <b>{parts[2]}</b>\n\n"
+        "Теперь в следующих разделах мы сможем использовать эти данные.",
+        parse_mode="HTML"
+    )
 
 
 @dp.message(F.text == "💎 Баланс")
@@ -428,9 +496,7 @@ async def astrology_natal_chart(message: Message, state: FSMContext):
     await message.answer(
         "⭐ <b>Натальная карта</b>\n\n"
         "Введите данные в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>\n\n"
-        "Пример:\n"
-        "<b>29.05.1995, 14:30, Выборг</b>",
+        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
         parse_mode="HTML"
     )
 
@@ -466,9 +532,7 @@ async def astrology_moon_sign(message: Message, state: FSMContext):
     await message.answer(
         "🌙 <b>Лунный знак</b>\n\n"
         "Введите данные в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ</b>\n\n"
-        "Пример:\n"
-        "<b>29.05.1995, 14:30</b>",
+        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ</b>",
         parse_mode="HTML"
     )
 
@@ -486,9 +550,7 @@ async def astrology_ascendant(message: Message, state: FSMContext):
     await message.answer(
         "⬆️ <b>Асцендент</b>\n\n"
         "Введите данные в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>\n\n"
-        "Пример:\n"
-        "<b>29.05.1995, 14:30, Выборг</b>",
+        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
         parse_mode="HTML"
     )
 
@@ -506,9 +568,7 @@ async def astrology_compatibility(message: Message, state: FSMContext):
     await message.answer(
         "❤️ <b>Совместимость</b>\n\n"
         "Введите данные двух людей в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, город / ДД.ММ.ГГГГ, город</b>\n\n"
-        "Пример:\n"
-        "<b>29.05.1995, Выборг / 15.08.1997, Санкт-Петербург</b>",
+        "<b>ДД.ММ.ГГГГ, город / ДД.ММ.ГГГГ, город</b>",
         parse_mode="HTML"
     )
 
