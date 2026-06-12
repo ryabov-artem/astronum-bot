@@ -77,6 +77,8 @@ class AdminStates(StatesGroup):
 
 
 class AstrologyStates(StatesGroup):
+    awaiting_natal_chart_owner = State()
+    awaiting_natal_chart_saved_choice = State()
     awaiting_natal_chart_data = State()
     awaiting_sun_sign_date = State()
     awaiting_moon_sign_data = State()
@@ -155,6 +157,25 @@ promo_keyboard = ReplyKeyboardMarkup(
         [KeyboardButton(text="🎁 Акция: 5 разборов")],
         [KeyboardButton(text="✨ Напомнить про лунный знак")],
         [KeyboardButton(text="❤️ Напомнить про совместимость")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
+natal_owner_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="👤 Для меня")],
+        [KeyboardButton(text="👥 Для другого человека")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
+
+natal_saved_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="✅ Использовать сохранённую карту")],
+        [KeyboardButton(text="✏️ Изменить данные")],
         [KeyboardButton(text="⬅️ Назад")]
     ],
     resize_keyboard=True
@@ -483,6 +504,46 @@ async def buy_twenty_spreads(message: Message):
 
 
 
+
+async def send_natal_chart_result(message: Message, state: FSMContext, data: dict, input_text: str, save_profile: bool = False):
+    user_id = message.from_user.id
+
+    if save_profile:
+        await save_birth_profile(
+            user_id=user_id,
+            birth_date=data["birth_date"],
+            birth_time=data["birth_time"],
+            birth_place=data["birth_place"]
+        )
+
+    await message.answer("⭐ Готовлю натальную карту...", reply_markup=get_main_keyboard(user_id))
+
+    try:
+        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+        interpretation = await interpret_natal_chart(data)
+    except Exception as e:
+        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        return
+
+    await save_spread(user_id, "Натальная карта", input_text, input_text, interpretation)
+    await charge_user_for_spread(user_id)
+
+    saved_text = "✅ Данные сохранены в «🗂 Моя карта».\n\n" if save_profile else ""
+
+    await message.answer(
+        f"⭐ <b>Натальная карта</b>\n\n"
+        f"{saved_text}"
+        f"📅 Дата: <b>{data['birth_date']}</b>\n"
+        f"🕒 Время: <b>{data['birth_time']}</b>\n"
+        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+        f"{markdown_bold_to_html(interpretation)}",
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(user_id)
+    )
+
+    await state.clear()
+
+
 @dp.message(F.text == "⭐ Натальная карта")
 async def astrology_natal_chart(message: Message, state: FSMContext):
     await save_user(message.from_user)
@@ -491,16 +552,94 @@ async def astrology_natal_chart(message: Message, state: FSMContext):
         await no_access_message(message)
         return
 
-    await state.set_state(AstrologyStates.awaiting_natal_chart_data)
+    await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
 
     await message.answer(
         "⭐ <b>Натальная карта</b>\n\n"
+        "Для кого построить карту?",
+        parse_mode="HTML",
+        reply_markup=natal_owner_keyboard
+    )
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_owner, F.text == "👤 Для меня")
+async def natal_chart_for_me(message: Message, state: FSMContext):
+    profile = await get_birth_profile(message.from_user.id)
+
+    if profile:
+        await state.set_state(AstrologyStates.awaiting_natal_chart_saved_choice)
+        await message.answer(
+            "🗂 <b>Найдена сохранённая карта</b>\n\n"
+            f"📅 Дата: <b>{profile['birth_date']}</b>\n"
+            f"🕒 Время: <b>{profile['birth_time']}</b>\n"
+            f"📍 Место: <b>{profile['birth_place']}</b>\n\n"
+            "Использовать эти данные?",
+            parse_mode="HTML",
+            reply_markup=natal_saved_keyboard
+        )
+        return
+
+    await state.update_data(natal_save_profile=True)
+    await state.set_state(AstrologyStates.awaiting_natal_chart_data)
+
+    await message.answer(
+        "👤 <b>Натальная карта для меня</b>\n\n"
         "Введите данные в формате:\n\n"
         "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
         parse_mode="HTML"
     )
 
 
+@dp.message(AstrologyStates.awaiting_natal_chart_owner, F.text == "👥 Для другого человека")
+async def natal_chart_for_other(message: Message, state: FSMContext):
+    await state.update_data(natal_save_profile=False)
+    await state.set_state(AstrologyStates.awaiting_natal_chart_data)
+
+    await message.answer(
+        "👥 <b>Натальная карта для другого человека</b>\n\n"
+        "Введите данные в формате:\n\n"
+        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
+        parse_mode="HTML"
+    )
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_saved_choice, F.text == "✅ Использовать сохранённую карту")
+async def natal_chart_use_saved(message: Message, state: FSMContext):
+    profile = await get_birth_profile(message.from_user.id)
+
+    if not profile:
+        await message.answer("⚠️ Сохранённая карта не найдена. Введите данные заново.")
+        await state.update_data(natal_save_profile=True)
+        await state.set_state(AstrologyStates.awaiting_natal_chart_data)
+        return
+
+    data = {
+        "birth_date": profile["birth_date"],
+        "birth_time": profile["birth_time"],
+        "birth_place": profile["birth_place"],
+    }
+
+    input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
+    await send_natal_chart_result(message, state, data, input_text, save_profile=False)
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_saved_choice, F.text == "✏️ Изменить данные")
+async def natal_chart_change_saved(message: Message, state: FSMContext):
+    await state.update_data(natal_save_profile=True)
+    await state.set_state(AstrologyStates.awaiting_natal_chart_data)
+
+    await message.answer(
+        "✏️ <b>Новые данные для моей карты</b>\n\n"
+        "Введите данные в формате:\n\n"
+        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
+        parse_mode="HTML"
+    )
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_owner)
+@dp.message(AstrologyStates.awaiting_natal_chart_saved_choice)
+async def natal_chart_choice_fallback(message: Message):
+    await message.answer("Выберите вариант кнопкой ниже.")
 
 @dp.message(F.text == "☀️ Солнечный знак")
 async def astrology_sun_sign(message: Message, state: FSMContext):
@@ -1352,11 +1491,11 @@ async def cancel_broadcast(message: Message, state: FSMContext):
 
 
 
+
 @dp.message(AstrologyStates.awaiting_natal_chart_data)
 async def process_natal_chart_data(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-
     parts = [x.strip() for x in message.text.split(",", 2)]
+
     if len(parts) != 3:
         await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ, город")
         return
@@ -1367,27 +1506,16 @@ async def process_natal_chart_data(message: Message, state: FSMContext):
         "birth_place": parts[2],
     }
 
-    await message.answer("⭐ Готовлю натальную карту...")
+    state_data = await state.get_data()
+    save_profile = bool(state_data.get("natal_save_profile", False))
 
-    try:
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        interpretation = await interpret_natal_chart(data)
-    except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
-        return
-
-    await save_spread(user_id, "Натальная карта", message.text, message.text, interpretation)
-    await charge_user_for_spread(user_id)
-
-    await message.answer(
-        f"⭐ <b>Натальная карта</b>\n\n"
-        f"📅 Дата: <b>{data['birth_date']}</b>\n"
-        f"🕒 Время: <b>{data['birth_time']}</b>\n"
-        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+    await send_natal_chart_result(
+        message=message,
+        state=state,
+        data=data,
+        input_text=message.text,
+        save_profile=save_profile
     )
-    await state.clear()
 
 
 @dp.message(AstrologyStates.awaiting_sun_sign_date)
