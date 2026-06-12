@@ -80,6 +80,7 @@ class AstrologyStates(StatesGroup):
     awaiting_natal_chart_owner = State()
     awaiting_natal_chart_saved_choice = State()
     awaiting_natal_chart_data = State()
+    awaiting_natal_chart_decode_choice = State()
     awaiting_sun_sign_date = State()
     awaiting_moon_sign_data = State()
     awaiting_ascendant_data = State()
@@ -176,6 +177,14 @@ natal_saved_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="✅ Использовать сохранённую карту")],
         [KeyboardButton(text="✏️ Изменить данные")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
+natal_decode_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="🔓 Расшифровать карту (3)")],
         [KeyboardButton(text="⬅️ Назад")]
     ],
     resize_keyboard=True
@@ -529,47 +538,49 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
             await progress_msg.delete()
         except Exception:
             pass
-        data["chart"] = chart
 
-        planets = {p["name"]: p for p in chart["planets"]}
+        planets = {pl["name"]: pl for pl in chart["planets"]}
         sun = planets.get("Солнце")
         moon = planets.get("Луна")
         asc = chart["ascendant"]
         mc = chart["mc"]
 
+        planet_lines = ""
+        for pl in chart["planets"]:
+            planet_lines += f"• {pl['name']}: <b>{pl['degree']}° {pl['sign']}</b>\n"
+
+        aspects_count = len(chart.get("aspects", []))
+
+        await state.update_data(
+            natal_decode_data=data,
+            natal_decode_chart=chart,
+            natal_decode_input=input_text
+        )
+        await state.set_state(AstrologyStates.awaiting_natal_chart_decode_choice)
+
+        saved_text = "✅ Данные сохранены в «🗂 Моя карта».\n\n" if save_profile else ""
+
         await message.answer(
-            "✅ <b>Карта рассчитана</b>\n\n"
-            f"☉ Солнце: <b>{sun['degree']}° {sun['sign']}</b>\n"
-            f"☽ Луна: <b>{moon['degree']}° {moon['sign']}</b>\n"
+            "⭐ <b>Натальная карта построена</b>\n\n"
+            f"{saved_text}"
+            f"📅 Дата: <b>{data['birth_date']}</b>\n"
+            f"🕒 Время: <b>{data['birth_time']}</b>\n"
+            f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+            f"{planet_lines}\n"
             f"⬆ ASC: <b>{asc['degree']}° {asc['sign']}</b>\n"
             f"MC: <b>{mc['degree']}° {mc['sign']}</b>\n\n"
-            "Готовлю расшифровку...",
-            parse_mode="HTML"
+            f"🔥 Найдено значимых аспектов: <b>{aspects_count}</b>\n"
+            "🏠 Дома натальной карты будут использованы в полной версии.\n\n"
+            "🔓 <b>Полная расшифровка карты — 3 анализа</b>\n\n"
+            "В неё входят личность, отношения, карьера, сильные стороны, внутренние конфликты, аспекты и рекомендации.",
+            parse_mode="HTML",
+            reply_markup=natal_decode_keyboard
         )
 
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        interpretation = await interpret_natal_chart(data)
     except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        await message.answer(f"Не удалось построить карту. Ошибка: {e}", reply_markup=get_main_keyboard(user_id))
+        await state.clear()
         return
-
-    await save_spread(user_id, "Натальная карта", input_text, input_text, interpretation)
-    await charge_user_for_spread(user_id)
-
-    saved_text = "✅ Данные сохранены в «🗂 Моя карта».\n\n" if save_profile else ""
-
-    await message.answer(
-        f"⭐ <b>Натальная карта</b>\n\n"
-        f"{saved_text}"
-        f"📅 Дата: <b>{data['birth_date']}</b>\n"
-        f"🕒 Время: <b>{data['birth_time']}</b>\n"
-        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML",
-        reply_markup=get_main_keyboard(user_id)
-    )
-
-    await state.clear()
 
 
 @dp.message(F.text == "⭐ Натальная карта")
@@ -1518,6 +1529,67 @@ async def cancel_broadcast(message: Message, state: FSMContext):
 
 
 
+
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "🔓 Расшифровать карту (3)")
+async def natal_chart_paid_decode(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+
+    if user_id != ADMIN_ID:
+        balance = await get_balance(user_id)
+        if balance < 3:
+            await message.answer(
+                "💎 Для полной расшифровки натальной карты нужно <b>3 анализа</b>.\n\n"
+                f"Ваш баланс: <b>{balance}</b>\n\n"
+                "Пополните баланс и возвращайтесь к расшифровке.",
+                parse_mode="HTML",
+                reply_markup=shop_keyboard
+            )
+            return
+
+        for _ in range(3):
+            await spend_balance(user_id)
+
+    state_data = await state.get_data()
+    data = state_data.get("natal_decode_data")
+    chart = state_data.get("natal_decode_chart")
+    input_text = state_data.get("natal_decode_input", "")
+
+    if not data or not chart:
+        await message.answer("⚠️ Данные карты не найдены. Постройте натальную карту заново.")
+        await state.clear()
+        return
+
+    data["chart"] = chart
+
+    await message.answer("🔓 Готовлю полную расшифровку натальной карты...")
+
+    try:
+        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+        interpretation = await interpret_natal_chart(data)
+    except Exception as e:
+        await message.answer(f"Не удалось подготовить расшифровку. Ошибка: {e}")
+        return
+
+    await save_spread(user_id, "Полная натальная карта", input_text, input_text, interpretation)
+
+    await message.answer(
+        f"⭐ <b>Полная расшифровка натальной карты</b>\n\n"
+        f"📅 Дата: <b>{data['birth_date']}</b>\n"
+        f"🕒 Время: <b>{data['birth_time']}</b>\n"
+        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+        f"{markdown_bold_to_html(interpretation)}",
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(user_id)
+    )
+
+    await state.clear()
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice)
+async def natal_chart_decode_choice_fallback(message: Message):
+    await message.answer("Выберите действие кнопкой ниже.", reply_markup=natal_decode_keyboard)
 
 
 @dp.message(AstrologyStates.awaiting_natal_chart_data)
