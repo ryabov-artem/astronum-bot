@@ -516,9 +516,37 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
             birth_place=data["birth_place"]
         )
 
-    await message.answer("⭐ Готовлю натальную карту...", reply_markup=get_main_keyboard(user_id))
+    progress_msg = await message.answer(
+        "⭐ Рассчитываю реальные положения планет...",
+        reply_markup=get_main_keyboard(user_id)
+    )
 
     try:
+        from astrology.real_chart import calculate_real_chart
+        chart = calculate_real_chart(data["birth_date"], data["birth_time"], data["birth_place"])
+
+        try:
+            await progress_msg.delete()
+        except Exception:
+            pass
+        data["chart"] = chart
+
+        planets = {p["name"]: p for p in chart["planets"]}
+        sun = planets.get("Солнце")
+        moon = planets.get("Луна")
+        asc = chart["ascendant"]
+        mc = chart["mc"]
+
+        await message.answer(
+            "✅ <b>Карта рассчитана</b>\n\n"
+            f"☉ Солнце: <b>{sun['degree']}° {sun['sign']}</b>\n"
+            f"☽ Луна: <b>{moon['degree']}° {moon['sign']}</b>\n"
+            f"⬆ ASC: <b>{asc['degree']}° {asc['sign']}</b>\n"
+            f"MC: <b>{mc['degree']}° {mc['sign']}</b>\n\n"
+            "Готовлю расшифровку...",
+            parse_mode="HTML"
+        )
+
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         interpretation = await interpret_natal_chart(data)
     except Exception as e:
