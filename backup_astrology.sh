@@ -1,23 +1,17 @@
 #!/bin/bash
-set -e
-
-SRC="/opt/bots/astrology_bot"
-DST="/opt/backups/astrology"
-REMOTE="gdrive:TG_Bots/Astronum"
 
 DATE=$(date +%F_%H-%M-%S)
+BACKUP_DIR="/opt/backups/astronum"
 
-mkdir -p "$DST"
+mkdir -p $BACKUP_DIR
 
-DB_BACKUP="$DST/astrology_database_$DATE.db"
-ENV_BACKUP="$DST/astrology_env_$DATE.bak"
+sqlite3 /opt/bots/astrology_bot/data/database.db "PRAGMA wal_checkpoint(FULL);"
 
-sqlite3 "$SRC/data/database.db" ".backup '$DB_BACKUP'"
-cp "$SRC/.env" "$ENV_BACKUP"
+cp /opt/bots/astrology_bot/data/database.db $BACKUP_DIR/database_$DATE.db
+cp /opt/bots/astrology_bot/.env $BACKUP_DIR/env_$DATE.bak
 
-rclone copy "$DB_BACKUP" "$REMOTE/database" --create-empty-src-dirs
-rclone copy "$ENV_BACKUP" "$REMOTE/env" --create-empty-src-dirs
+find $BACKUP_DIR -type f -mtime +30 -delete
 
-find "$DST" -type f -mtime +30 -delete
+rclone copy $BACKUP_DIR gdrive:TG_Bots/Astronum --create-empty-src-dirs
 
-echo "Astronum backup created and uploaded to Google Drive: $DATE"
+echo "$(date) backup completed"
