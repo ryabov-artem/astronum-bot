@@ -23,7 +23,7 @@ body {
 .card {
   width: 1536px;
   height: 1024px;
-  padding: 40px 60px 30px 60px;
+  padding: 55px 70px 45px 70px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -32,11 +32,11 @@ body {
 
 .card-frame {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  border: 1px solid rgba(185, 122, 43, 0.18);
+  top: 25px;
+  left: 25px;
+  right: 25px;
+  bottom: 25px;
+  border: 1px solid rgba(185, 122, 43, 0.2);
   pointer-events: none;
   z-index: 1;
 }
@@ -47,8 +47,8 @@ body {
   justify-content: space-between;
   align-items: flex-end;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
-  padding-bottom: 15px;
-  height: 60px;
+  padding-bottom: 20px;
+  height: 70px;
 }
 .main-title-group {
   display: flex;
@@ -56,7 +56,7 @@ body {
 }
 .main-title {
   font-family: 'Cinzel', serif;
-  font-size: 38px;
+  font-size: 44px;
   letter-spacing: 8px;
   font-weight: 500;
   color: #111622;
@@ -64,84 +64,74 @@ body {
 }
 .main-subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 4px;
+  letter-spacing: 5px;
   color: #b97a2b;
   text-transform: uppercase;
-  margin-top: 5px;
+  margin-top: 6px;
 }
 
 .top-meta {
   display: flex;
-  gap: 40px;
+  gap: 50px;
 }
 .meta-box {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 .meta-label {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   color: #8c96a3;
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
 .meta-value {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #111622;
 }
 
-/* ГЛАВНЫЙ МАКЕТ */
+/* ГЛАВНЫЙ МАКЕТ — ОПТИМИЗИРОВАНА ВЫСОТА И ОТСТУПЫ */
 .workspace {
   display: grid;
-  grid-template-columns: 320px 1fr 390px;
-  gap: 30px;
-  height: 790px;
-  margin-top: 20px;
+  grid-template-columns: 320px 1fr 410px;
+  gap: 40px;
+  height: 660px; /* Уменьшили высоту рабочей зоны, убирая пустоту сверху и снизу колеса */
+  margin-top: auto;
+  margin-bottom: auto;
   align-items: stretch; 
 }
 
-/* КОЛОНКИ С КАРТОЧКАМИ (УБРАЛИ СВЕРХУ ТОЛСТЫЕ ОБЩИЕ БЕЛЫЕ СТЕНЫ) */
-.column-scaffold {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  justify-content:间;
-}
-
-.premium-widget {
+/* МОНОЛИТНАЯ ЛЕВАЯ ПАНЕЛЬ */
+.left-sidebar-panel {
   background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.13);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(185, 122, 43, 0.01);
-}
-.premium-widget.grow {
-  flex-grow: 1;
+  border: 1px solid rgba(185, 122, 43, 0.15);
+  border-radius: 14px;
+  padding: 26px 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 4px 25px rgba(185, 122, 43, 0.01);
 }
 
 .widget-title {
   font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 2px;
   color: #b97a2b;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(185, 122, 43, 0.12);
-  padding-bottom: 5px;
-  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(185, 122, 43, 0.15);
+  padding-bottom: 6px;
+  margin-bottom: 14px;
 }
 
-/* ИНФОГРАФИКА */
 .astro-bar-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 .astro-bar-item {
   display: flex;
@@ -159,7 +149,7 @@ body {
 .bar-track {
   width: 100%;
   height: 4px;
-  background: rgba(185, 122, 43, 0.06);
+  background: rgba(185, 122, 43, 0.08);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -168,18 +158,18 @@ body {
 .mini-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
 }
 .mini-card {
   background: #FDFBF7; 
-  border: 1px solid rgba(185, 122, 43, 0.08);
-  padding: 10px 6px;
+  border: 1px solid rgba(185, 122, 43, 0.1);
+  padding: 10px;
   border-radius: 8px;
   text-align: center;
 }
 .mini-card.wide { grid-column: span 2; }
-.mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-.mini-card-val { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 500; color: #111622; }
+.mini-card-lbl { font-size: 9px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.mini-card-val { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 500; color: #111622; }
 
 /* ЦЕНТРАЛЬНАЯ ЧАСТЬ */
 .center-area {
@@ -188,7 +178,6 @@ body {
   align-items: center;
   justify-content: space-between; 
   height: 100%;
-  padding: 0 10px;
 }
 .natal-wheel-frame {
   width: 100%;
@@ -198,48 +187,28 @@ body {
   justify-content: center;
 }
 .natal-wheel-frame img {
-  max-width: 460px; /* Слегка уменьшили колесо, убрав избыточную пустоту */
-  max-height: 460px;
+  max-width: 470px;
+  max-height: 470px;
   object-fit: contain;
 }
-
-/* НОВЫЙ БЛОК: СЕТКА ДОМОВ ДЛЯ КОМПАКТНОСТИ */
-.houses-strip {
-  width: 100%;
-  background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.13);
-  border-radius: 10px;
-  padding: 10px 15px;
-  margin-bottom: 15px;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  box-shadow: 0 4px 20px rgba(185, 122, 43, 0.01);
-}
-.house-cell {
-  text-align: center;
-  border-right: 1px solid rgba(185, 122, 43, 0.1);
-}
-.house-cell:nth-child(6), .house-cell:last-child { border-right: none; }
-.house-num { font-size: 9px; font-weight: 600; color: #8c96a3; }
-.house-sign { font-family: 'Playfair Display', serif; font-size: 12px; color: #111622; margin-top: 2px; }
 
 /* БОЛЬШАЯ ТРОЙКА */
 .premium-three {
   width: 100%;
   background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.18);
+  border: 1px solid rgba(185, 122, 43, 0.2);
   border-radius: 12px;
-  padding: 18px 20px;
+  padding: 22px 25px;
   box-shadow: 0 4px 20px rgba(185, 122, 43, 0.02);
+  margin-top: auto; 
 }
 .premium-three-title {
   text-align: center;
   font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 3px;
+  font-size: 11px;
+  letter-spacing: 4px;
   color: #b97a2b;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .premium-three-grid {
   display: grid;
@@ -250,35 +219,46 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 .three-column:not(:last-child) {
-  border-right: 1px solid rgba(185, 122, 43, 0.12);
+  border-right: 1px solid rgba(185, 122, 43, 0.15);
 }
 .three-title-lbl {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   color: #8c96a3;
   letter-spacing: 1px;
 }
 .three-value-text {
   font-family: 'Playfair Display', serif;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 500;
   color: #111622;
   display: flex;
   align-items: baseline;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
 }
 .three-value-text span.degree-mark {
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   color: #b97a2b;
   font-weight: 500;
 }
 
-/* ТАБЛИЦЫ */
+/* МОНОЛИТНАЯ ПРАВАЯ ПАНЕЛЬ С ИНТЕГРИРОВАННЫМИ ДОМАМИ */
+.right-sidebar-panel {
+  background: #ffffff;
+  border: 1px solid rgba(185, 122, 43, 0.15);
+  border-radius: 14px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 25px rgba(185, 122, 43, 0.01);
+}
+
 .premium-table {
   width: 100%;
   border-collapse: collapse;
@@ -297,6 +277,23 @@ body {
 .cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 70px; }
 .cell-sign { color: #576375; text-align: right; }
 
+/* Двухколоночный вывод сетки всех 12 домов */
+.houses-grid-dense {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: x 20px;
+}
+.house-row-mini {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #FAF6EE;
+  font-size: 12px;
+}
+.house-row-mini:nth-last-child(1), .house-row-mini:nth-last-child(2) { border-bottom: none; }
+.house-lbl { color: #8c96a3; font-weight: 500; }
+.house-val { color: #111622; font-weight: 500; font-family: 'Playfair Display', serif; }
+
 .premium-aspect-item {
   display: flex;
   justify-content: space-between;
@@ -309,32 +306,32 @@ body {
 .aspect-orb-badge {
   font-size: 10px;
   color: #b97a2b;
-  background: rgba(185, 122, 43, 0.06);
-  padding: 1px 5px;
+  background: rgba(185, 122, 43, 0.07);
+  padding: 1px 6px;
   border-radius: 4px;
   font-weight: 500;
 }
 
-/* ФУТЕР */
+/* СТУДИЙНЫЙ ФУТЕР */
 .footer-block {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid rgba(185, 122, 43, 0.15);
-  padding-top: 10px;
-  font-size: 9px;
+  padding-top: 15px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 2px;
   color: #8c96a3;
   text-transform: uppercase;
-  height: 25px;
+  height: 30px;
 }
 .footer-quote {
   font-family: 'Playfair Display', serif;
   font-style: normal;
   text-transform: none;
   color: #b97a2b;
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.5px;
 }
 </style>
@@ -367,8 +364,8 @@ body {
 
   <main class="workspace">
     
-    <div class="column-scaffold">
-      <section class="premium-widget">
+    <section class="left-sidebar-panel">
+      <div>
         <h2 class="widget-title">Баланс Стихий</h2>
         <div class="astro-bar-list">
           <div class="astro-bar-item">
@@ -388,9 +385,9 @@ body {
             <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.elements.water }}%;"></div></div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section class="premium-widget">
+      <div>
         <h2 class="widget-title">Кресты качеств</h2>
         <div class="astro-bar-list">
           <div class="astro-bar-item">
@@ -406,9 +403,9 @@ body {
             <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.modality.mutable }}%;"></div></div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section class="premium-widget">
+      <div>
         <h2 class="widget-title">Сила карты</h2>
         <div class="mini-cards-grid">
           <div class="mini-card">
@@ -421,26 +418,17 @@ body {
           </div>
           <div class="mini-card wide">
             <div class="mini-card-lbl">Кармические Узлы</div>
-            <div class="mini-card-val" style="font-size: 11px; font-family: 'Inter', sans-serif; font-weight: 400;">
+            <div class="mini-card-val" style="font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 400;">
               ☊ {{ chart.north_node.sign }} — ☋ {{ chart.south_node.sign }}
             </div>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
 
     <section class="center-area">
       <div class="natal-wheel-frame">
         <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
-      </div>
-
-      <div class="houses-strip">
-        {% for h in chart.houses[:6] %}
-          <div class="house-cell">
-            <div class="house-num">||| {{ h.house }} дом</div>
-            <div class="house-sign">{{ h.sign }}</div>
-          </div>
-        {% endfor %}
       </div>
 
       <div class="premium-three">
@@ -462,36 +450,42 @@ body {
       </div>
     </section>
 
-    <div class="column-scaffold">
-      <section class="premium-widget grow">
-        <div>
-          <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
-          <table class="premium-table">
-            {% for p in chart.planets %}
-              <tr>
-                <td class="cell-planet">{% if p.retrograde %}ℛ {% endif %}{{ p.name }}</td>
-                <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
-                <td class="cell-sign">{{ p.sign }}</td>
-              </tr>
-            {% endfor %}
-          </table>
-        </div>
-      </section>
+    <section class="right-sidebar-panel">
+      <div>
+        <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
+        <table class="premium-table">
+          {% for p in chart.planets[:8] %} <tr>
+              <td class="cell-planet">{% if p.retrograde %}ℛ {% endif %}{{ p.name }}</td>
+              <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
+              <td class="cell-sign">{{ p.sign }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
 
-      <section class="premium-widget">
-        <div>
-          <h2 class="widget-title" style="margin-bottom: 6px;">Ключевые аспекты</h2>
-          <div class="premium-aspects-list">
-            {% for a in chart.aspects[:5] %}
-              <div class="premium-aspect-item">
-                <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
-                <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
-              </div>
-            {% endfor %}
-          </div>
+      <div>
+        <h2 class="widget-title" style="margin-bottom: 6px;">Система Домов</h2>
+        <div class="houses-grid-dense">
+          {% for h in chart.houses %}
+            <div class="house-row-mini">
+              <span class="house-lbl">{{ h.house }} дом</span>
+              <span class="house-val">{{ h.sign }}</span>
+            </div>
+          {% endfor %}
         </div>
-      </section>
-    </div>
+      </div>
+
+      <div>
+        <h2 class="widget-title" style="margin-bottom: 6px;">Ключевые аспекты</h2>
+        <div class="premium-aspects-list">
+          {% for a in chart.aspects[:3] %} <div class="premium-aspect-item">
+              <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
+              <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
 
   </main>
 
