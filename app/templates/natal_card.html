@@ -79,7 +79,7 @@ body {
   text-transform: uppercase;
 }
 .topbar .value {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   color: #1a2638;
   margin-top: 6px;
@@ -118,7 +118,7 @@ body {
 }
 .row {
   display: grid;
-  grid-template-columns: 135px 75px 1fr;
+  grid-template-columns: 125px 75px 1fr;
   font-size: 14px;
   padding: 5px 0;
   border-bottom: 1px solid #f8f4ed;
@@ -168,7 +168,7 @@ body {
   white-space: nowrap;
 }
 
-/* Натальное колесо */
+/* Блок натального колеса */
 .wheel {
   position: absolute;
   left: 70px;
@@ -183,16 +183,15 @@ body {
   width: 530px;
   height: 530px;
   object-fit: contain;
-  filter: drop-shadow(0 10px 40px rgba(26, 38, 56, 0.05));
 }
 
-/* Большая тройка (Исправлено наложение текста) */
+/* Большая тройка */
 .big-three {
   position: absolute;
   left: 70px;
   top: 860px;
   width: 1396px;
-  height: 130px; /* Увеличена высота, чтобы дать воздуху */
+  height: 130px;
   padding: 15px 40px;
   display: flex;
   flex-direction: column;
@@ -228,11 +227,11 @@ body {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 1.5px;
-  margin-bottom: 6px; /* Дистанция до названия знака */
+  margin-bottom: 6px;
 }
 .big-value {
   font-family: 'Playfair Display', serif;
-  font-size: 26px; 
+  font-size: 24px; 
   font-weight: 600;
   color: #1a2638;
   line-height: 1.2;
@@ -265,7 +264,7 @@ body {
   </div>
 
   <div class="wheel">
-    <img src="{{ wheel_uri }}">
+    <img src="data:image/png;base64,{{ wheel_base64 }}">
   </div>
 
   <div class="right panel">
