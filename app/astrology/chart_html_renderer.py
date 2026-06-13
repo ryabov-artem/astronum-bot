@@ -18,12 +18,23 @@ def build_natal_card_image(chart_data, wheel_png_path, output_final_png):
     sun_data = next((p for p in chart_data["planets"] if p["name"] == "Солнце"), {"sign": "Неизвестно", "degree": 0.0})
     moon_data = next((p for p in chart_data["planets"] if p["name"] == "Луна"), {"sign": "Неизвестно", "degree": 0.0})
 
+    points = chart_data.get("points") or {}
+
+    chart_data["north_node"] = points.get("north_node")
+    chart_data["south_node"] = points.get("south_node")
+
     context = {
         "chart": chart_data,
         "asc": chart_data["ascendant"],
         "mc": chart_data["mc"],
         "sun": sun_data,
         "moon": moon_data,
+        "north_node": points.get("north_node"),
+        "south_node": points.get("south_node"),
+        "elements": chart_data.get("elements"),
+        "modality": chart_data.get("modality"),
+        "dominant_planet": chart_data.get("dominant_planet"),
+        "dominant_sign": chart_data.get("dominant_sign"),
         "wheel_base64": wheel_base64
     }
 

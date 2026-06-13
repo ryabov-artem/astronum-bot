@@ -21,6 +21,69 @@ PLANETS = {
     "Сатурн": swe.SATURN,
 }
 
+EXTRA_POINTS = {
+    "Северный узел": swe.MEAN_NODE,
+}
+
+SIGN_SYMBOLS = {
+    "Овен": "♈",
+    "Телец": "♉",
+    "Близнецы": "♊",
+    "Рак": "♋",
+    "Лев": "♌",
+    "Дева": "♍",
+    "Весы": "♎",
+    "Скорпион": "♏",
+    "Стрелец": "♐",
+    "Козерог": "♑",
+    "Водолей": "♒",
+    "Рыбы": "♓",
+}
+
+PLANET_SYMBOLS = {
+    "Солнце": "☉",
+    "Луна": "☽",
+    "Меркурий": "☿",
+    "Венера": "♀",
+    "Марс": "♂",
+    "Юпитер": "♃",
+    "Сатурн": "♄",
+    "Хирон": "⚷",
+    "Лилит": "⚸",
+    "Северный узел": "☊",
+    "Южный узел": "☋",
+}
+
+SIGN_ELEMENTS = {
+    "Овен": "fire",
+    "Лев": "fire",
+    "Стрелец": "fire",
+    "Телец": "earth",
+    "Дева": "earth",
+    "Козерог": "earth",
+    "Близнецы": "air",
+    "Весы": "air",
+    "Водолей": "air",
+    "Рак": "water",
+    "Скорпион": "water",
+    "Рыбы": "water",
+}
+
+SIGN_MODALITY = {
+    "Овен": "cardinal",
+    "Рак": "cardinal",
+    "Весы": "cardinal",
+    "Козерог": "cardinal",
+    "Телец": "fixed",
+    "Лев": "fixed",
+    "Скорпион": "fixed",
+    "Водолей": "fixed",
+    "Близнецы": "mutable",
+    "Дева": "mutable",
+    "Стрелец": "mutable",
+    "Рыбы": "mutable",
+}
+
 ASPECTS = [
     ("соединение", 0, 8),
     ("секстиль", 60, 5),
@@ -105,6 +168,114 @@ def house_for_longitude(longitude: float, houses: list[dict]) -> int:
     return 12
 
 
+
+def point_data(name: str, longitude: float) -> dict:
+    sign = sign_name(longitude)
+    return {
+        "name": name,
+        "symbol": PLANET_SYMBOLS.get(name, ""),
+        "longitude": round(longitude % 360, 2),
+        "sign": sign,
+        "sign_symbol": SIGN_SYMBOLS.get(sign, ""),
+        "degree": round(degree_in_sign(longitude), 2),
+    }
+
+
+def calculate_balance(items: list[dict], mapping: dict, keys: list[str]) -> dict:
+    counts = {key: 0 for key in keys}
+
+    for item in items:
+        key = mapping.get(item.get("sign"))
+        if key in counts:
+            counts[key] += 1
+
+    total = sum(counts.values()) or 1
+    return {key: round(counts[key] * 100 / total) for key in keys}
+
+
+def find_dominant_sign(items: list[dict]) -> dict:
+    counts = {}
+
+    for item in items:
+        sign = item.get("sign")
+        if sign:
+            counts[sign] = counts.get(sign, 0) + 1
+
+    if not counts:
+        name = "Не определён"
+    else:
+        name = max(counts, key=counts.get)
+
+    return {
+        "name": name,
+        "symbol": SIGN_SYMBOLS.get(name, ""),
+    }
+
+
+def calculate_top_planets(planets: list[dict], limit: int = 3) -> list[dict]:
+    weights = {
+        "Солнце": 5,
+        "Луна": 5,
+        "Меркурий": 3,
+        "Венера": 3,
+        "Марс": 3,
+        "Юпитер": 2,
+        "Сатурн": 2,
+    }
+
+    scored = []
+
+    for planet in planets:
+        name = planet.get("name")
+        score = weights.get(name, 1)
+
+        house = planet.get("house")
+        if house in (1, 4, 7, 10):
+            score += 2
+
+        item = dict(planet)
+        item["score"] = score
+        item["percent"] = round(score * 100 / 30)
+        scored.append(item)
+
+    scored.sort(key=lambda x: x.get("score", 0), reverse=True)
+    return scored[:limit]
+
+
+def find_dominant_planet(planets: list[dict]) -> dict:
+    if not planets:
+        return {"name": "Не определена", "symbol": ""}
+
+    weights = {
+        "Солнце": 5,
+        "Луна": 5,
+        "Меркурий": 3,
+        "Венера": 3,
+        "Марс": 3,
+        "Юпитер": 2,
+        "Сатурн": 2,
+    }
+
+    scores = {}
+
+    for planet in planets:
+        name = planet.get("name")
+        score = weights.get(name, 1)
+
+        house = planet.get("house")
+        if house in (1, 4, 7, 10):
+            score += 2
+
+        scores[name] = scores.get(name, 0) + score
+
+    name = max(scores, key=scores.get)
+
+    return {
+        "name": name,
+        "symbol": PLANET_SYMBOLS.get(name, ""),
+    }
+
+
 def calculate_real_chart(date_text: str, time_text: str, city: str) -> dict:
     lat, lon, address = geocode_city(city)
     tz_name = get_timezone(lat, lon)
@@ -123,13 +294,24 @@ def calculate_real_chart(date_text: str, time_text: str, city: str) -> dict:
 
     for name, planet_id in PLANETS.items():
         pos, _ = swe.calc_ut(jd, planet_id)
-        lon_deg = pos[0]
-        planets.append({
-            "name": name,
-            "longitude": round(lon_deg, 2),
-            "sign": sign_name(lon_deg),
-            "degree": round(degree_in_sign(lon_deg), 2),
-        })
+        planets.append(point_data(name, pos[0]))
+
+    extra_points = []
+    for name, point_id in EXTRA_POINTS.items():
+        pos, _ = swe.calc_ut(jd, point_id)
+        extra_points.append(point_data(name, pos[0]))
+
+    north_node = next((p for p in extra_points if p["name"] == "Северный узел"), None)
+
+    if north_node:
+        south_lon = (north_node["longitude"] + 180) % 360
+        south_node = point_data("Южный узел", south_lon)
+    else:
+        south_node = None
+
+    visible_planets = planets + extra_points
+    if south_node:
+        visible_planets.append(south_node)
 
     cusps, ascmc = swe.houses(jd, lat, lon)
     houses = []
@@ -142,7 +324,7 @@ def calculate_real_chart(date_text: str, time_text: str, city: str) -> dict:
             "degree": round(degree_in_sign(cusp_lon), 2),
         })
 
-    for planet in planets:
+    for planet in visible_planets:
         planet["house"] = house_for_longitude(planet["longitude"], houses)
 
     asc = ascmc[0]
@@ -156,9 +338,19 @@ def calculate_real_chart(date_text: str, time_text: str, city: str) -> dict:
         "latitude": round(lat, 4),
         "longitude": round(lon, 4),
         "timezone": tz_name,
-        "planets": planets,
+        "planets": visible_planets,
         "houses": houses,
         "aspects": calculate_aspects(planets),
+        "elements": calculate_balance(planets, SIGN_ELEMENTS, ["fire", "earth", "air", "water"]),
+        "modality": calculate_balance(planets, SIGN_MODALITY, ["cardinal", "fixed", "mutable"]),
+        "dominant_planet": find_dominant_planet(planets),
+        "dominant_sign": find_dominant_sign(planets),
+        "top_planets": calculate_top_planets(planets),
+        "dominant_planets": calculate_top_planets(planets),
+        "points": {
+            "north_node": north_node,
+            "south_node": south_node,
+        },
         "ascendant": {
             "longitude": round(asc, 2),
             "sign": sign_name(asc),
@@ -318,9 +510,6 @@ def generate_chart_png(chart: dict, output_path: str):
             
             tx, ty = xy(deg, R_outer + 28)
             draw.text((tx, ty), label, fill="#1E293B", font=f_tiny, anchor="mm")
-
-    img.save(output_path, "PNG", quality=95)
-    return output_path
 
     img.save(output_path, "PNG", quality=95)
     return output_path
