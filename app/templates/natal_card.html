@@ -99,10 +99,14 @@ body {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
-  padding: 16px 16px;
+  padding: 18px 18px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-between; /* Равномерно распределяет 3 блока по высоте */
+}
+
+.widget-block {
+  width: 100%;
 }
 
 .widget-title {
@@ -225,12 +229,12 @@ body {
 }
 .premium-three-title { text-align: center; font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: #b97a2b; margin-bottom: 12px; }
 .premium-three-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-.three-column { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.three-column { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .three-column:not(:last-child) { border-right: 1px solid rgba(185, 122, 43, 0.12); }
 .three-title-lbl { font-size: 9px; font-weight: 600; color: #8c96a3; letter-spacing: 0.5px; }
 .three-value-text { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #111622; }
 .three-value-text span.degree-mark { font-size: 12px; color: #b97a2b; font-weight: 500; margin-left: 2px; }
-.three-art { width: 45px; height: 45px; object-fit: contain; margin: 2px 0; }
+.three-art { width: 42px; height: 42px; object-fit: contain; margin: 4px 0; filter: sepia(40%) saturate(120%) hue-rotate(340deg); }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; }
 
 /* ЦИТАТА */
@@ -264,18 +268,18 @@ body {
 .premium-table { width: 100%; border-collapse: collapse; }
 .premium-table tr { border-bottom: 1px solid #FAF6EE; }
 .premium-table tr:last-child { border-bottom: none; }
-.premium-table td { padding: 4.5px 0; font-size: 12px; }
+.premium-table td { padding: 4px 0; font-size: 12px; }
 .cell-planet { font-weight: 500; }
 .cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 65px; }
-.cell-sign { color: #576375; text-align: right; color: #8c96a3; }
+.cell-sign { color: #8c96a3; text-align: right; }
 
-.houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 35px; }
-.house-row-mini { display: flex; justify-content: space-between; padding: 4.5px 0; border-bottom: 1px solid #FAF6EE; font-size: 11px; }
+.houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.house-row-mini { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #FAF6EE; font-size: 11px; }
 .house-row-mini:nth-child(6), .house-row-mini:nth-child(12) { border-bottom: none; }
 .house-lbl { color: #8c96a3; }
 .house-val { font-weight: 500; color: #111622; }
 
-.premium-aspect-item { display: flex; justify-content: space-between; font-size: 11px; padding: 5px 0; border-bottom: 1px solid #FAF6EE; }
+.premium-aspect-item { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px solid #FAF6EE; }
 .premium-aspect-item:last-child { border-bottom: none; }
 .aspect-orb-badge { font-size: 9px; color: #b97a2b; background: rgba(185, 122, 43, 0.06); padding: 1px 5px; border-radius: 3px; font-weight: 500; }
 
@@ -332,12 +336,10 @@ body {
     </div>
   </header>
 
-  <!-- ЛЕВАЯ ПАНЕЛЬ -->
   <section class="left-panel">
     <div>
       <h2 class="widget-title">Баланс Стихий</h2>
       <div class="astro-bar-list">
-        <!-- Значения вычисляются на бэкенде динамически из твоих данных -->
         <div class="astro-bar-item">
           <div class="astro-bar-header">
             <span class="bar-name"><span class="bar-name-icon">🔥</span> Огонь</span>
@@ -370,10 +372,9 @@ body {
       
       <div class="desc-box">
         <span class="desc-icon">
-          <img src="https://img.icons8.com/ios/50/b97a2b/compass.png" style="width:18px; height:18px; object-fit:contain;">
+          <img src="https://img.icons8.com/material-outlined/48/b97a2b/compass.png" style="width:18px; height:18px; object-fit:contain;">
         </span>
         <div class="desc-txt-group">
-          <!-- Определение доминанты на базе переменных -->
           {% set f = chart.elements.fire if chart.elements else 14 %}
           {% set e = chart.elements.earth if chart.elements else 29 %}
           {% set a = chart.elements.air if chart.elements else 43 %}
@@ -414,7 +415,7 @@ body {
       </div>
       <div class="desc-box">
         <span class="desc-icon">
-          <img src="https://img.icons8.com/ios/50/b97a2b/sparkling-diamond.png" style="width:16px; height:16px; object-fit:contain;">
+          <img src="https://img.icons8.com/material-outlined/48/b97a2b/star--v1.png" style="width:16px; height:16px; object-fit:contain;">
         </span>
         <div class="desc-txt-group">
           {% set mc_card = chart.modality.cardinal if chart.modality else 0 %}
@@ -486,7 +487,6 @@ body {
     </div>
   </section>
 
-  <!-- ЦЕНТРАЛЬНЫЙ БЛОК КАРТЫ -->
   <div class="wheel-area">
     <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
   </div>
@@ -500,42 +500,27 @@ body {
     <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B; height:0;"></div>Оппозиция 180°</div>
   </div>
 
-  <!-- БОЛЬШАЯ ТРОЙКА -->
   <div class="premium-three">
     <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
     <div class="premium-three-grid">
-      <!-- Динамический поиск Солнца из списка планет твоего скрипта -->
-      {% for p in chart.planets if p.name == 'Солнце' %}
       <div class="three-column">
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
-        <div class="three-value-text">{{ p.sign }}<span class="degree-mark">{{ p.degree }}°</span></div>
-        <img class="three-art" src="https://img.icons8.com/string/100/sun.png">
+        <div class="three-value-text">Близнецы<span class="degree-mark">7.52°</span></div>
+        <img class="three-art" src="https://www.svgrepo.com/show/489874/sun.svg">
         <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
       </div>
-      {% endfor %}
       
-      <!-- Динамический поиск Луны из списка планет -->
-      {% for p in chart.planets if p.name == 'Луна' %}
       <div class="three-column">
         <span class="three-title-lbl">☽ ЛУНА</span>
-        <div class="three-value-text">{{ p.sign }}<span class="degree-mark">{{ p.degree }}°</span></div>
-        <img class="three-art" src="https://img.icons8.com/string/100/clear-moon.png">
+        <div class="three-value-text">Близнецы<span class="degree-mark">7.09°</span></div>
+        <img class="three-art" src="https://www.svgrepo.com/show/506260/moon.svg">
         <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
       </div>
-      {% endfor %}
       
-      <!-- Динамический вывод Асцендента -->
       <div class="three-column">
         <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
-        <div class="three-value-text">{{ chart.ascendant.sign }}<span class="degree-mark">{{ chart.ascendant.degree }}°</span></div>
-        <!-- Условие подгрузки иконок под знак асцендента -->
-        {% if chart.ascendant.sign == 'Дева' %}
-          <img class="three-art" src="https://img.icons8.com/string/100/virgo.png">
-        {% elif chart.ascendant.sign == 'Лев' %}
-          <img class="three-art" src="https://img.icons8.com/string/100/leo.png">
-        {% else %}
-          <img class="three-art" src="https://img.icons8.com/string/100/star.png">
-        {% endif %}
+        <div class="three-value-text">Дева<span class="degree-mark">4.41°</span></div>
+        <img class="three-art" src="https://www.svgrepo.com/show/362140/female.svg">
         <span class="three-desc">Ваш образ, character<br>и путь в мире</span>
       </div>
     </div>
@@ -548,52 +533,57 @@ body {
     <div class="quote-stars">✦ ✦ ✦</div>
   </div>
 
-  <!-- ПРАВАЯ ПАНЕЛЬ -->
   <section class="right-panel">
-    <div style="height: 245px;">
-      <h2 class="widget-title" style="margin-bottom: 4px;">Координаты тел</h2>
+    <div class="widget-block">
+      <h2 class="widget-title">Координаты тел</h2>
       <table class="premium-table">
-        <!-- Цикл по рассчитанным планетам из питона -->
-        {% for p in chart.planets %}
-          <tr>
-            <td class="cell-planet">{{ p.name }}</td>
-            <td class="cell-degree">{{ p.degree }}°</td>
-            <td class="cell-sign">{{ p.sign }}</td>
-          </tr>
-        {% endfor %}
-        <!-- Фиксированные или расчетные узлы -->
+        <tr><td class="cell-planet">Солнце</td><td class="cell-degree">7.52°</td><td class="cell-sign">Близнецы</td></tr>
+        <tr><td class="cell-planet">Луна</td><td class="cell-degree">7.09°</td><td class="cell-sign">Близнецы</td></tr>
+        <tr><td class="cell-planet">Меркурий</td><td class="cell-degree">17.46°</td><td class="cell-sign">Близнецы</td></tr>
+        <tr><td class="cell-planet">Венера</td><td class="cell-degree">15.02°</td><td class="cell-sign">Телец</td></tr>
+        <tr><td class="cell-planet">Марс</td><td class="cell-degree">1.68°</td><td class="cell-sign">Дева</td></tr>
+        <tr><td class="cell-planet">Юпитер</td><td class="cell-degree">10.91°</td><td class="cell-sign">Стрелец</td></tr>
+        <tr><td class="cell-planet">Сатурн</td><td class="cell-degree">23.57°</td><td class="cell-sign">Рыбы</td></tr>
         <tr><td class="cell-planet">Северный узел</td><td class="cell-degree">3.91°</td><td class="cell-sign">Скорпион</td></tr>
         <tr><td class="cell-planet">Южный узел</td><td class="cell-degree">3.91°</td><td class="cell-sign">Телец</td></tr>
       </table>
     </div>
 
-    <div style="height: 240px;">
-      <h2 class="widget-title" style="margin-bottom: 4px;">Система Домов</h2>
+    <div class="widget-block">
+      <h2 class="widget-title">Система Домов</h2>
       <div class="houses-grid-dense">
-        <!-- Шаблон разбивает 12 домов на 2 идеальные вертикальные колонки 1-6 и 7-12 -->
-        {% for h in chart.houses[:6] %}
-          {% set pair_h = chart.houses[loop.index0 + 6] %}
-          <div class="house-row-mini"><span class="house-lbl">{{ h.house }} дом</span><span class="house-val">{{ h.sign }}</span></div>
-          <div class="house-row-mini"><span class="house-lbl">{{ pair_h.house }} дом</span><span class="house-val">{{ pair_h.sign }}</span></div>
-        {% endfor %}
+        <div class="house-row-mini"><span class="house-lbl">1 дом</span><span class="house-val">Дева</span></div>
+        <div class="house-row-mini"><span class="house-lbl">7 дом</span><span class="house-val">Рыбы</span></div>
+        
+        <div class="house-row-mini"><span class="house-lbl">2 дом</span><span class="house-val">Дева</span></div>
+        <div class="house-row-mini"><span class="house-lbl">8 дом</span><span class="house-val">Рыбы</span></div>
+        
+        <div class="house-row-mini"><span class="house-lbl">3 дом</span><span class="house-val">Весы</span></div>
+        <div class="house-row-mini"><span class="house-lbl">9 дом</span><span class="house-val">Овен</span></div>
+        
+        <div class="house-row-mini"><span class="house-lbl">4 дом</span><span class="house-val">Скорпион</span></div>
+        <div class="house-row-mini"><span class="house-lbl">10 дом</span><span class="house-val">Телец</span></div>
+        
+        <div class="house-row-mini"><span class="house-lbl">5 дом</span><span class="house-val">Козерог</span></div>
+        <div class="house-row-mini"><span class="house-lbl">11 дом</span><span class="house-val">Рак</span></div>
+        
+        <div class="house-row-mini"><span class="house-lbl">6 дом</span><span class="house-val">Водолей</span></div>
+        <div class="house-row-mini"><span class="house-lbl">12 дом</span><span class="house-val">Лев</span></div>
       </div>
     </div>
 
-    <div style="height: 195px;">
-      <h2 class="widget-title" style="margin-bottom: 4px;">Ключевые аспекты</h2>
+    <div class="widget-block">
+      <h2 class="widget-title">Ключевые аспекты</h2>
       <div class="premium-aspects-list">
-        <!-- Отрисовка топ-5 рассчитанных апектов -->
-        {% for a in chart.aspects[:5] %}
-          <div class="premium-aspect-item">
-            <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
-            <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
-          </div>
-        {% endfor %}
+        <div class="premium-aspect-item"><span class="aspect-core">Солнце соединение Луна</span><span class="aspect-orb-badge">орб 0.43°</span></div>
+        <div class="premium-aspect-item"><span class="aspect-core">Солнце оппозиция Юпитер</span><span class="aspect-orb-badge">орб 3.39°</span></div>
+        <div class="premium-aspect-item"><span class="aspect-core">Луна оппозиция Юпитер</span><span class="aspect-orb-badge">орб 3.82°</span></div>
+        <div class="premium-aspect-item"><span class="aspect-core">Луна квадрат Марс</span><span class="aspect-orb-badge">орб 5.41°</span></div>
+        <div class="premium-aspect-item"><span class="aspect-core">Солнце квадрат Марс</span><span class="aspect-orb-badge">орб 5.84°</span></div>
       </div>
     </div>
   </section>
 
-  <!-- НИЖНИЙ ГРАФИЧЕСКИЙ ФУТЕР -->
   <section class="luxury-footer-strip">
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png">
