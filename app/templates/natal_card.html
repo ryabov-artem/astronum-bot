@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>Астронум — Натальная Карта Premium</title>
+<title>Астронум — Премиальный Астрологический Паспорт</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,22 +23,11 @@ body {
 .card {
   width: 1536px;
   height: 1024px;
-  padding: 35px 70px 25px 70px; 
+  padding: 30px 50px 20px 50px; 
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.card-frame {
-  position: absolute;
-  top: 25px;
-  left: 25px;
-  right: 25px;
-  bottom: 25px;
-  border: 1px solid rgba(185, 122, 43, 0.2);
-  pointer-events: none;
-  z-index: 1;
 }
 
 /* ХЕДЕР КАРТЫ */
@@ -47,8 +36,8 @@ body {
   justify-content: space-between;
   align-items: flex-end;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
-  padding-bottom: 12px;
-  height: 60px;
+  padding-bottom: 10px;
+  height: 55px;
 }
 .main-title-group {
   display: flex;
@@ -56,17 +45,17 @@ body {
 }
 .main-title {
   font-family: 'Cinzel', serif;
-  font-size: 40px;
-  letter-spacing: 8px;
+  font-size: 36px;
+  letter-spacing: 6px;
   font-weight: 500;
   color: #111622;
   line-height: 1;
 }
 .main-subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
   color: #b97a2b;
   text-transform: uppercase;
   margin-top: 5px;
@@ -74,64 +63,65 @@ body {
 
 .top-meta {
   display: flex;
-  gap: 45px;
+  gap: 40px;
 }
 .meta-box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 .meta-label {
   font-size: 9px;
   font-weight: 600;
   color: #8c96a3;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
 }
 .meta-value {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: #111622;
 }
 
-/* ГЛАВНЫЙ МАКЕТ — СОКРАЩЕНЫ ОСТУПЫ МЕЖДУ БЛОКАМИ */
+/* ГЛАВНЫЙ МАКЕТ */
 .workspace {
   display: grid;
-  grid-template-columns: 320px 1fr 410px; /* Вернули плотную ширину боковых панелей */
-  gap: 25px; /* Уменьшили расстояние между блоками (было 45px) */
-  height: 820px; 
+  grid-template-columns: 290px 1fr 390px; 
+  gap: 30px; 
+  height: 735px; 
   margin-top: 15px;
-  margin-bottom: 15px;
   align-items: stretch; 
 }
 
-/* ЛЕВАЯ ПАНЕЛЬ */
-.left-sidebar-panel {
+/* БОКОВЫЕ МОНОЛИТЫ */
+.left-sidebar-panel, .right-sidebar-panel {
   background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.15);
-  border-radius: 14px;
-  padding: 24px 20px;
+  border: 1px solid rgba(185, 122, 43, 0.12);
+  border-radius: 12px;
+  padding: 20px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 4px 25px rgba(185, 122, 43, 0.01);
+  box-shadow: 0 4px 30px rgba(185, 122, 43, 0.01);
 }
 
 .widget-title {
   font-family: 'Cinzel', serif;
   font-size: 11px;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   color: #b97a2b;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(185, 122, 43, 0.15);
-  padding-bottom: 6px;
-  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(185, 122, 43, 0.12);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
 }
 
+/* ЛЕВАЯ ИНФОГРАФИКА */
 .astro-bar-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 .astro-bar-item {
   display: flex;
@@ -153,60 +143,114 @@ body {
   border-radius: 2px;
   overflow: hidden;
 }
-.bar-fill-gold { height: 100%; background: #b97a2b; border-radius: 2px; }
 
+/* Цветные маркеры стихий точь-в-точь как на референсе */
+.fill-fire { background: #E2583E; }
+.fill-earth { background: #B97A2B; }
+.fill-air { background: #6194A8; }
+.fill-water { background: #4D7699; }
+.fill-gold { background: #B97A2B; }
+
+/* Текстовые карточки-описания */
+.desc-box {
+  background: #FDFBF7;
+  border: 1px dashed rgba(185, 122, 43, 0.25);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.desc-icon { font-size: 22px; }
+.desc-txt-group { display: flex; flex-direction: column; gap: 2px; }
+.desc-title { font-size: 10px; font-weight: 700; color: #111622; }
+.desc-body { font-size: 10px; color: #576375; line-height: 1.3; }
+
+/* Виджет силы карты */
 .mini-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 .mini-card {
-  background: #FDFBF7; 
-  border: 1px solid rgba(185, 122, 43, 0.1);
-  padding: 10px 5px;
+  background: #ffffff; 
+  border: 1px solid rgba(185, 122, 43, 0.12);
+  padding: 8px;
   border-radius: 8px;
   text-align: center;
 }
 .mini-card.wide { grid-column: span 2; }
 .mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.mini-card-val { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 500; color: #111622; }
+.mini-card-val { font-size: 12px; font-weight: 600; color: #111622; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+/* Преобладающие планеты с точечным заполнением */
+.dotted-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+}
+.dotted-name { font-weight: 500; color: #111622; width: 80px; }
+.dotted-leader {
+  flex-grow: 1;
+  border-bottom: 4px dotted rgba(185, 122, 43, 0.3);
+  margin: 0 8px;
+  position: relative;
+  top: -2px;
+}
+.dotted-val { font-weight: 600; color: #111622; width: 30px; text-align: right; }
 
 /* ЦЕНТРАЛЬНАЯ ЧАСТЬ */
 .center-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   height: 100%;
 }
 .natal-wheel-frame {
   width: 100%;
-  flex-grow: 1; 
+  flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 .natal-wheel-frame img {
-  max-width: 530px; 
-  max-height: 530px;
+  max-width: 440px;
+  max-height: 440px;
   object-fit: contain;
 }
 
-/* БОЛЬШАЯ ТРОЙКА — ВЕРНУЛИ ШИРИНУ НА 100% */
+/* Легенда аспектов под колесом */
+.aspects-legend {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #576375;
+  margin-bottom: 15px;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-line { width: 16px; height: 2px; }
+
+/* БОЛЬШАЯ ТРОЙКА С ИЛЛЮСТРАЦИЯМИ */
 .premium-three {
-  width: 100%; 
+  width: 100%;
   background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.2);
+  border: 1px solid rgba(185, 122, 43, 0.15);
   border-radius: 12px;
-  padding: 20px 25px;
-  box-shadow: 0 4px 20px rgba(185, 122, 43, 0.02);
-  margin-top: auto; 
+  padding: 15px 20px;
 }
 .premium-three-title {
   text-align: center;
   font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 4px;
+  font-size: 10px;
+  letter-spacing: 3px;
   color: #b97a2b;
   margin-bottom: 12px;
 }
@@ -219,127 +263,150 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 .three-column:not(:last-child) {
-  border-right: 1px solid rgba(185, 122, 43, 0.15);
+  border-right: 1px solid rgba(185, 122, 43, 0.12);
 }
 .three-title-lbl {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   color: #8c96a3;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 .three-value-text {
   font-family: 'Playfair Display', serif;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
   color: #111622;
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 4px;
 }
 .three-value-text span.degree-mark {
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   color: #b97a2b;
   font-weight: 500;
 }
-
-/* ПРАВАЯ ПАНЕЛЬ */
-.right-sidebar-panel {
-  background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.15);
-  border-radius: 14px;
-  padding: 24px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 4px 25px rgba(185, 122, 43, 0.01);
+.three-art {
+  width: 45px;
+  height: 45px;
+  margin: 2px 0;
+  object-fit: contain;
+  opacity: 0.85;
 }
+.three-desc { font-size: 9px; color: #8c96a3; line-height: 1.2; }
 
+/* Монолитная цитата */
+.quote-banner {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(185, 122, 43, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  color: #111622;
+  margin-top: 12px;
+}
+.quote-banner span { color: #b97a2b; font-weight: 500; font-size: 16px; }
+
+/* ПРАВЫЕ ТАБЛИЦЫ */
 .premium-table {
   width: 100%;
   border-collapse: collapse;
 }
-.premium-table tr {
-  border-bottom: 1px solid #FAF6EE;
-}
-.premium-table tr:last-child {
-  border-bottom: none;
-}
-.premium-table td {
-  padding: 6px 0;
-  font-size: 12px;
-}
+.premium-table tr { border-bottom: 1px solid #FAF6EE; }
+.premium-table tr:last-child { border-bottom: none; }
+.premium-table td { padding: 5px 0; font-size: 12px; }
 .cell-planet { font-weight: 500; color: #111622; }
-.cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 70px; }
+.cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 65px; }
 .cell-sign { color: #576375; text-align: right; }
 
-/* СИСТЕМА ДОМОВ С СОХРАНЕННЫМ ОТСТУПОМ */
 .houses-grid-dense {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 45px; 
+  gap: 0 40px; 
 }
 .house-row-mini {
   display: flex;
   justify-content: space-between;
-  padding: 5px 0;
+  padding: 4px 0;
   border-bottom: 1px solid #FAF6EE;
-  font-size: 12px;
+  font-size: 11px;
 }
 .house-row-mini:nth-last-child(1), .house-row-mini:nth-last-child(2) { border-bottom: none; }
-.house-lbl { color: #8c96a3; font-weight: 500; }
-.house-val { color: #111622; font-weight: 500; font-family: 'Playfair Display', serif; }
+.house-lbl { color: #8c96a3; }
+.house-val { color: #111622; font-weight: 500; }
 
 .premium-aspect-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 0;
+  padding: 4px 0;
   border-bottom: 1px solid #FAF6EE;
-  font-size: 12px;
+  font-size: 11px;
 }
 .aspect-core { color: #111622; }
 .aspect-orb-badge {
-  font-size: 10px;
+  font-size: 9px;
   color: #b97a2b;
-  background: rgba(185, 122, 43, 0.07);
-  padding: 1px 6px;
+  background: rgba(185, 122, 43, 0.06);
+  padding: 1px 5px;
   border-radius: 4px;
-  font-weight: 500;
 }
 
-/* СТУДИЙНЫЙ ФУТЕР */
-.footer-block {
+/* ТАТУАЖНЫЙ ИНФО-ФУТЕР (4 КОЛОНКИ С ИКОНКАМИ) */
+.luxury-footer-strip {
+  border-top: 1px solid rgba(185, 122, 43, 0.15);
+  margin-top: 15px;
+  padding-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.footer-node {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.footer-node-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  opacity: 0.8;
+}
+.footer-node-group { display: flex; flex-direction: column; gap: 2px; }
+.footer-node-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #111622;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.footer-node-desc {
+  font-size: 10px;
+  color: #8c96a3;
+  line-height: 1.3;
+}
+
+/* САМЫЙ НИЖНИЙ ТЕХ-ФУТЕР */
+.tech-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid rgba(185, 122, 43, 0.15);
-  padding-top: 10px;
   font-size: 9px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   color: #8c96a3;
   text-transform: uppercase;
-  height: 25px;
-}
-.footer-quote {
-  font-family: 'Playfair Display', serif;
-  font-style: normal;
-  text-transform: none;
-  color: #b97a2b;
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  margin-top: 10px;
+  height: 15px;
 }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <div class="card-frame"></div>
 
   <header class="header-block">
     <div class="main-title-group">
@@ -370,19 +437,27 @@ body {
         <div class="astro-bar-list">
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Огонь</span><span class="bar-percentage">{{ chart.elements.fire }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.elements.fire }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-fire" style="width: {{ chart.elements.fire }}%;"></div></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Земля</span><span class="bar-percentage">{{ chart.elements.earth }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.elements.earth }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-earth" style="width: {{ chart.elements.earth }}%;"></div></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Воздух</span><span class="bar-percentage">{{ chart.elements.air }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.elements.air }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-air" style="width: {{ chart.elements.air }}%;"></div></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Вода</span><span class="bar-percentage">{{ chart.elements.water }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.elements.water }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-water" style="width: {{ chart.elements.water }}%;"></div></div>
+          </div>
+        </div>
+
+        <div class="desc-box">
+          <span class="desc-icon">🔥</span>
+          <div class="desc-txt-group">
+            <div class="desc-title">Доминирует стихия Воздуха</div>
+            <div class="desc-body">Развитый интеллект, общительность, любознательность и гибкость мышления.</div>
           </div>
         </div>
       </div>
@@ -392,15 +467,23 @@ body {
         <div class="astro-bar-list">
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Кардинальный</span><span class="bar-percentage">{{ chart.modality.cardinal }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.modality.cardinal }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-gold" style="width: {{ chart.modality.cardinal }}%;"></div></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Фиксированный</span><span class="bar-percentage">{{ chart.modality.fixed }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.modality.fixed }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-gold" style="width: {{ chart.modality.fixed }}%;"></div></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Мутабельный</span><span class="bar-percentage">{{ chart.modality.mutable }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold" style="width: {{ chart.modality.mutable }}%;"></div></div>
+            <div class="bar-track"><div class="bar-fill-gold fill-gold" style="width: {{ chart.modality.mutable }}%;"></div></div>
+          </div>
+        </div>
+
+        <div class="desc-box">
+          <span class="desc-icon">✨</span>
+          <div class="desc-txt-group">
+            <div class="desc-title">Преобладает мутабельный крест</div>
+            <div class="desc-body">Адаптивность, гибкость, умение легко перестраиваться и находить решения.</div>
           </div>
         </div>
       </div>
@@ -410,17 +493,32 @@ body {
         <div class="mini-cards-grid">
           <div class="mini-card">
             <div class="mini-card-lbl">Управитель ASC</div>
-            <div class="mini-card-val">{{ chart.dominant_planet.symbol }} {{ chart.dominant_planet.name }}</div>
+            <div class="mini-card-val">☿ Меркурий</div>
           </div>
           <div class="mini-card">
             <div class="mini-card-lbl">Дом. знак</div>
-            <div class="mini-card-val">{{ chart.dominant_sign.symbol }} {{ chart.dominant_sign.name }}</div>
+            <div class="mini-card-val">♍ Дева</div>
           </div>
           <div class="mini-card wide">
             <div class="mini-card-lbl">Кармические Узлы</div>
-            <div class="mini-card-val" style="font-size: 11px; font-family: 'Inter', sans-serif; font-weight: 400;">
-              ☊ {{ chart.north_node.sign }} — ☋ {{ chart.south_node.sign }}
+            <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 11px;">
+              ☊ Скорпион {{"%.2f"|format(chart.north_node.degree)}}° — ☋ Телец {{"%.2f"|format(chart.south_node.degree)}}°
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="widget-title">Преобладающие планеты</h2>
+        <div class="dotted-bar-list">
+          <div class="dotted-row">
+            <span class="dotted-name">☿ Меркурий</span><div class="dotted-leader"></div><span class="dotted-val">17%</span>
+          </div>
+          <div class="dotted-row">
+            <span class="dotted-name">♄ Сатурн</span><div class="dotted-leader"></div><span class="dotted-val">14%</span>
+          </div>
+          <div class="dotted-row">
+            <span class="dotted-name">♀ Венера</span><div class="dotted-leader"></div><span class="dotted-val">14%</span>
           </div>
         </div>
       </div>
@@ -431,22 +529,40 @@ body {
         <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
       </div>
 
+      <div class="aspects-legend">
+        <div class="legend-item"><div class="legend-line" style="background: #E2583E;"></div>Соединение 0°</div>
+        <div class="legend-item"><div class="legend-line" style="background: #4D7699;"></div>Тригон 120°</div>
+        <div class="legend-item"><div class="legend-line" style="background: #6194A8; border-bottom: 2px dashed #6194A8;"></div>Секстиль 60°</div>
+        <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #E2583E;"></div>Квадрат 90°</div>
+        <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B;"></div>Оппозиция 180°</div>
+      </div>
+
       <div class="premium-three">
         <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
         <div class="premium-three-grid">
           <div class="three-column">
             <span class="three-title-lbl">☉ СОЛНЦЕ</span>
-            <div class="three-value-text">{{ sun.sign }}<span class="degree-mark">{{ "%.1f"|format(sun.degree) }}°</span></div>
+            <div class="three-value-text">{{ sun.sign }} <span class="degree-mark">{{ "%.2f"|format(sun.degree) }}°</span></div>
+            <img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/sun--v1.png" alt="sun">
+            <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
           </div>
           <div class="three-column">
             <span class="three-title-lbl">☽ ЛУНА</span>
-            <div class="three-value-text">{{ moon.sign }}<span class="degree-mark">{{ "%.1f"|format(moon.degree) }}°</span></div>
+            <div class="three-value-text">{{ moon.sign }} <span class="degree-mark">{{ "%.2f"|format(moon.degree) }}°</span></div>
+            <img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/crescent-moon.png" alt="moon">
+            <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
           </div>
           <div class="three-column">
             <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
-            <div class="three-value-text">{{ asc.sign }}<span class="degree-mark">{{ "%.1f"|format(asc.degree) }}°</span></div>
+            <div class="three-value-text">{{ asc.sign }} <span class="degree-mark">{{ "%.2f"|format(asc.degree) }}°</span></div>
+            <img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/goddess.png" alt="asc">
+            <span class="three-desc">Ваш образ, характер<br>и путь в мире</span>
           </div>
         </div>
+      </div>
+
+      <div class="quote-banner">
+        <span>“</span> Познай себя. Создавай своё будущее. <span>”</span>
       </div>
     </section>
 
@@ -454,7 +570,7 @@ body {
       <div>
         <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
         <table class="premium-table">
-          {% for p in chart.planets[:8] %}
+          {% for p in chart.planets[:9] %}
             <tr>
               <td class="cell-planet">{% if p.retrograde %}ℛ {% endif %}{{ p.name }}</td>
               <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
@@ -479,7 +595,7 @@ body {
       <div>
         <h2 class="widget-title" style="margin-bottom: 6px;">Ключевые аспекты</h2>
         <div class="premium-aspects-list">
-          {% for a in chart.aspects[:3] %}
+          {% for a in chart.aspects[:5] %}
             <div class="premium-aspect-item">
               <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
               <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
@@ -491,10 +607,40 @@ body {
 
   </main>
 
-  <footer class="footer-block">
+  <section class="luxury-footer-strip">
+    <div class="footer-node">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png" alt="brain">
+      <div class="footer-node-group">
+        <div class="footer-node-title">Интеллект и общение</div>
+        <div class="footer-node-desc">Сильная ментальная энергия и любознательность</div>
+      </div>
+    </div>
+    <div class="footer-node">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/curly-arrow.png" alt="flex">
+      <div class="footer-node-group">
+        <div class="footer-node-title">Гибкость и адаптация</div>
+        <div class="footer-node-desc">Умение быстро перестраиваться и находить решения</div>
+      </div>
+    </div>
+    <div class="footer-node">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/heart-with-pulse.png" alt="heart">
+      <div class="footer-node-group">
+        <div class="footer-node-title">Гармония и красота</div>
+        <div class="footer-node-desc">Ценность отношений, эстетики и личных удовольствий</div>
+      </div>
+    </div>
+    <div class="footer-node">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/mountain.png" alt="mount">
+      <div class="footer-node-group">
+        <div class="footer-node-title">Цели и рост</div>
+        <div class="footer-node-desc">Стремление к развитию, смыслу и достижениям</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="tech-footer">
     <div>ASTRONUM DESIGN STUDIO</div>
-    <div class="footer-quote">Познай себя. Создавай своё будущее.</div>
-    <div>@astronum_aibot</div>
+    <div>@ASTRONUM_AIBOT</div>
   </footer>
 </div>
 
