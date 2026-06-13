@@ -185,31 +185,33 @@ body {
   object-fit: contain;
 }
 
-/* Большая тройка (Исправлены размеры и отступы) */
+/* Большая тройка — ИСПРАВЛЕНО */
 .big-three {
   position: absolute;
   left: 70px;
-  top: 850px; /* Слегка приподняли саму панель */
+  top: 840px; 
   width: 1396px;
-  height: 145px; /* Увеличили высоту для баланса */
-  padding: 20px 40px;
+  height: 140px; 
+  padding: 24px 40px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
 }
 .big-title {
   text-align: center;
   font-family: 'Playfair Display', serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   color: #b97a2b;
-  margin-bottom: 14px;
+  margin: 0 0 16px 0;
+  line-height: 1;
 }
 .big-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
+  flex-grow: 1;
 }
 .big-item {
   text-align: center;
@@ -218,35 +220,49 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px; /* Четкий фиксированный отступ между мелким и крупным текстом */
+  gap: 12px; 
 }
 .big-item:last-child { 
   border-right: none; 
 }
 .big-label {
-  color: #576375; /* Сделали темнее и контрастнее */
-  font-size: 13px; /* Увеличили размер */
+  color: #8c96a3; 
+  font-size: 11px; 
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
+  line-height: 1;
 }
 .big-value {
   font-family: 'Playfair Display', serif;
-  font-size: 26px; 
-  font-weight: 600;
+  font-size: 32px; 
+  font-weight: 400;
   color: #1a2638;
-  line-height: 1.1;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+/* Красивый уменьшенный знак градуса, который не улетает вверх */
+.big-value span.degree {
+  font-size: 18px;
+  color: #b97a2b;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  position: relative;
+  top: -2px;
 }
 
-/* Железобетонный футер (Опущен чуть ниже, чтобы убрать наложение) */
+/* Футер — Смещен чуть ниже, чтобы не накладывался */
 .footer {
   position: absolute;
-  bottom: 20px; /* Идеальное расстояние до края */
+  bottom: 15px; 
   left: 70px;
   width: 1396px;
-  height: 40px;
+  height: 30px;
   border-top: 1px solid #eadecc;
-  padding-top: 15px;
-  font-size: 11px;
+  padding-top: 12px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 1.5px;
   color: #8c96a3;
@@ -256,12 +272,12 @@ body {
 .footer-left {
   position: absolute;
   left: 0;
-  top: 15px;
+  top: 12px;
 }
 .footer-center {
   position: absolute;
   left: 50%;
-  top: 13px;
+  top: 10px;
   transform: translateX(-50%);
   font-family: 'Playfair Display', serif;
   font-style: italic;
@@ -273,7 +289,7 @@ body {
 .footer-right {
   position: absolute;
   right: 0;
-  top: 15px;
+  top: 12px;
 }
 </style>
 </head>
@@ -331,15 +347,21 @@ body {
     <div class="big-grid">
       <div class="big-item">
         <div class="big-label">☉ СОЛНЦЕ</div>
-        <div class="big-value">{{ sun.sign }} {{ "%.1f"|format(sun.degree) }}°</div>
+        <div class="big-value">
+          {{ sun.sign }} <span class="degree">{{ "%.1f"|format(sun.degree) }}°</span>
+        </div>
       </div>
       <div class="big-item">
         <div class="big-label">☽ ЛУНА</div>
-        <div class="big-value">{{ moon.sign }} {{ "%.1f"|format(moon.degree) }}°</div>
+        <div class="big-value">
+          {{ moon.sign }} <span class="degree">{{ "%.1f"|format(moon.degree) }}°</span>
+        </div>
       </div>
       <div class="big-item">
         <div class="big-label">↑ АСЦЕНДЕНТ</div>
-        <div class="big-value">{{ asc.sign }} {{ "%.1f"|format(asc.degree) }}°</div>
+        <div class="big-value">
+          {{ asc.sign }} <span class="degree">{{ "%.1f"|format(asc.degree) }}°</span>
+        </div>
       </div>
     </div>
   </div>
