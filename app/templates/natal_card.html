@@ -2,375 +2,518 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>Астронум — Натальная Карта</title>
+<title>ASTRONUM — Natal Chart Premium</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  margin: 0;
   width: 1536px;
   height: 1024px;
-  background: #fbf7ef;
+  background-color: #F9F5EE; /* Мягкий премиальный оттенок слоновой кости */
   font-family: 'Inter', sans-serif;
-  color: #1a2638;
+  color: #0F151F; /* Глубокий ночной антрацит вместо черного */
   -webkit-font-smoothing: antialiased;
-}
-.card {
-  width: 1536px;
-  height: 1024px;
-  position: relative;
-  padding: 40px 70px;
   overflow: hidden;
 }
-.title {
-  text-align: center;
-  font-family: 'Playfair Display', serif;
-  font-size: 64px;
-  letter-spacing: 6px;
-  font-weight: 600;
-  color: #1a2638;
-  line-height: 1.1;
-}
-.subtitle {
-  text-align: center;
-  color: #b97a2b;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 4px;
-  margin-top: 10px;
-  text-transform: uppercase;
-}
 
-/* Верхняя панель */
-.topbar {
-  position: absolute;
-  left: 70px;
-  top: 160px;
-  width: 950px;
-  height: 90px;
-  background: #ffffff;
-  border: 1px solid #eadecc;
-  border-radius: 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.3fr 1fr;
-  align-items: center;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(185, 122, 43, 0.04);
-}
-.topbar > div {
-  border-right: 1px solid #f3ece0;
-  height: 100%;
+.card-wrapper {
+  width: 1536px;
+  height: 1024px;
+  padding: 50px 60px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 0 10px;
-}
-.topbar > div:last-child {
-  border-right: none;
-}
-.topbar .label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #8c96a3;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.topbar .value {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1a2638;
-  margin-top: 6px;
+  justify-content: space-between;
+  position: relative;
 }
 
-/* Панели */
-.panel {
-  background: #ffffff;
-  border: 1px solid #eadecc;
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(185, 122, 43, 0.04);
-}
-
-/* Правая колонка */
-.right {
+/* Элегантный фон с тонкими рамками */
+.card-border {
   position: absolute;
-  top: 160px;
-  left: 1050px;
-  width: 416px;
-  height: 680px;
-  padding: 30px 28px;
-  display: flex;
-  flex-direction: column;
+  top: 25px;
+  left: 25px;
+  right: 25px;
+  bottom: 25px;
+  border: 1px solid rgba(196, 154, 85, 0.25);
+  pointer-events: none;
 }
-.section-title {
-  color: #b97a2b;
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-.data-block {
-  margin-bottom: 5px;
-}
-.row {
-  display: grid;
-  grid-template-columns: 125px 75px 1fr;
-  font-size: 14px;
-  padding: 5px 0;
-  border-bottom: 1px solid #f8f4ed;
-  color: #2c3a4e;
-}
-.row:last-child {
-  border-bottom: none;
-}
-.row div:nth-child(2) {
-  font-weight: 600;
-  color: #1a2638;
-}
-.row div:nth-child(3) {
-  color: #788290;
-  text-align: right;
-}
-.small-row {
-  font-size: 14px;
-  padding: 6px 0;
-  color: #2c3a4e;
-  border-bottom: 1px solid #f8f4ed;
-}
-.small-row:last-child {
-  border-bottom: none;
-}
-.divider {
-  height: 1px;
-  background: #eadecc;
-  margin: 12px 0;
-  opacity: 0.5;
-}
-.aspect {
+
+/* ХЕДЕР */
+.header {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-  padding: 5px 0;
-  color: #2c3a4e;
-  border-bottom: 1px solid #f8f4ed;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(196, 154, 85, 0.2);
+  padding-bottom: 20px;
 }
-.aspect:last-child {
-  border-bottom: none;
-}
-.aspect span:last-child {
-  color: #b97a2b;
+.brand-title {
+  font-family: 'Cinzel', serif;
+  font-size: 38px;
+  letter-spacing: 7px;
   font-weight: 500;
-  white-space: nowrap;
+  color: #0F151F;
+  line-height: 1;
+}
+.brand-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  color: #C49A55;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.meta-info {
+  display: flex;
+  gap: 40px;
+}
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.meta-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8A94A6;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.meta-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0F151F;
 }
 
-/* Колесо */
-.wheel {
-  position: absolute;
-  left: 70px;
-  top: 270px;
-  width: 950px;
-  height: 570px;
+/* ОСНОВНОЙ ТРЕХКОЛОНОЧНЫЙ МАКЕТ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr 360px;
+  gap: 40px;
+  height: 800px;
+  margin-top: 30px;
+  align-items: start;
+}
+
+/* КОЛОНКА 1: АСТРО-БАЛАНС & ДОМИНАНТЫ */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.section-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #C49A55;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(196, 154, 85, 0.15);
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+}
+
+/* Инфографика стихий и крестов */
+.balance-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.bar-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+}
+.bar-label { color: #4A5568; }
+.bar-value { color: #0F151F; font-weight: 600; }
+.bar-bg {
+  width: 100%;
+  height: 3px;
+  background: rgba(196, 154, 85, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: #C49A55;
+}
+
+/* Карточки доминант */
+.dominants-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.dom-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(196, 154, 85, 0.15);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+.dom-card.full-width {
+  grid-column: span 2;
+}
+.dom-title {
+  font-size: 10px;
+  color: #8A94A6;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.dom-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #0F151F;
+}
+
+/* КОЛОНКА 2: ЦЕНТР (КОЛЕСО И БОЛЬШАЯ ТРОЙКА) */
+.center-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding-bottom: 10px;
+}
+.wheel-container {
+  width: 100%;
+  height: 560px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.wheel img {
-  width: 680px; 
-  height: 680px; 
+.wheel-container img {
+  max-width: 550px;
+  max-height: 550px;
   object-fit: contain;
 }
 
-/* Большая тройка — ИСПРАВЛЕНО */
-.big-three {
-  position: absolute;
-  left: 70px;
-  top: 840px; 
-  width: 1396px;
-  height: 140px; 
-  padding: 24px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* Измененная визуально «Большая тройка» */
+.big-three-container {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid rgba(196, 154, 85, 0.2);
+  border-radius: 12px;
+  padding: 20px 30px;
+  box-shadow: 0 4px 25px rgba(15, 21, 31, 0.02);
 }
-.big-title {
+.big-three-title {
   text-align: center;
-  font-family: 'Playfair Display', serif;
-  font-size: 14px;
-  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
   letter-spacing: 4px;
-  color: #b97a2b;
-  margin: 0 0 16px 0;
-  line-height: 1;
+  color: #C49A55;
+  margin-bottom: 18px;
 }
-.big-grid {
+.big-three-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  align-items: center;
-  flex-grow: 1;
 }
-.big-item {
+.three-item {
   text-align: center;
-  border-right: 1px solid #eadecc;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px; 
+  gap: 6px;
 }
-.big-item:last-child { 
-  border-right: none; 
+.three-item:not(:last-child) {
+  border-right: 1px solid rgba(196, 154, 85, 0.15);
 }
-.big-label {
-  color: #8c96a3; 
-  font-size: 11px; 
+.three-label {
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 2px;
-  line-height: 1;
+  color: #8A94A6;
+  letter-spacing: 1px;
 }
-.big-value {
+.three-value {
   font-family: 'Playfair Display', serif;
-  font-size: 32px; 
-  font-weight: 400;
-  color: #1a2638;
-  line-height: 1;
+  font-size: 24px;
+  color: #0F151F;
   display: flex;
   align-items: baseline;
-  justify-content: center;
   gap: 4px;
 }
-/* Красивый уменьшенный знак градуса, который не улетает вверх */
-.big-value span.degree {
-  font-size: 18px;
-  color: #b97a2b;
+.three-value span.deg {
   font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  position: relative;
-  top: -2px;
+  font-size: 14px;
+  color: #C49A55;
 }
 
-/* Футер — Смещен чуть ниже, чтобы не накладывался */
+/* КОЛОНКА 3: ТАБЛИЦЫ ДАННЫХ (ПРАВАЯ) */
+.right-column {
+  background: #FFFFFF;
+  border: 1px solid rgba(196, 154, 85, 0.15);
+  border-radius: 12px;
+  padding: 25px 20px;
+  height: 770px;
+  display: flex;
+  flex-direction: column;
+}
+.scrollable-data {
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.astro-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.astro-table tr {
+  border-bottom: 1px solid #F4EFE6;
+}
+.astro-table tr:last-child {
+  border-bottom: none;
+}
+.astro-table td {
+  padding: 8px 0;
+  font-size: 13px;
+}
+.td-name {
+  font-weight: 500;
+  color: #0F151F;
+}
+.td-deg {
+  font-weight: 600;
+  color: #C49A55;
+  text-align: center;
+  width: 70px;
+}
+.td-sign {
+  color: #5C677D;
+  text-align: right;
+}
+.td-house {
+  color: #8A94A6;
+  font-size: 11px;
+  text-align: right;
+  width: 40px;
+}
+
+/* Стили для аспектов */
+.aspect-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid #F4EFE6;
+  font-size: 13px;
+}
+.aspect-formula {
+  color: #0F151F;
+  font-weight: 400;
+}
+.aspect-orb {
+  font-size: 11px;
+  color: #C49A55;
+  background: rgba(196, 154, 85, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ФУТЕР */
 .footer {
-  position: absolute;
-  bottom: 15px; 
-  left: 70px;
-  width: 1396px;
-  height: 30px;
-  border-top: 1px solid #eadecc;
-  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(196, 154, 85, 0.2);
+  padding-top: 15px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1.5px;
-  color: #8c96a3;
+  letter-spacing: 2px;
+  color: #8A94A6;
   text-transform: uppercase;
-  white-space: nowrap;
 }
-.footer-left {
-  position: absolute;
-  left: 0;
-  top: 12px;
-}
-.footer-center {
-  position: absolute;
-  left: 50%;
-  top: 10px;
-  transform: translateX(-50%);
+.footer-motto {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   text-transform: none;
-  color: #b97a2b;
-  font-size: 14px;
+  color: #C49A55;
+  font-size: 13px;
   letter-spacing: 0.5px;
-}
-.footer-right {
-  position: absolute;
-  right: 0;
-  top: 12px;
 }
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="title">АСТРОНУМ</div>
-  <div class="subtitle">✦ натальная карта ✦</div>
 
-  <div class="topbar">
-    <div><div class="label">Дата рождения</div><div class="value">{{ chart.birth_date }}</div></div>
-    <div><div class="label">Время рождения</div><div class="value">{{ chart.birth_time }}</div></div>
-    <div><div class="label">Место рождения</div><div class="value">{{ chart.birth_city }}</div></div>
-    <div><div class="label">Асцендент</div><div class="value">{{ "%.2f"|format(asc.degree) }}° {{ asc.sign }}</div></div>
-  </div>
+<div class="card-wrapper">
+  <div class="card-border"></div>
 
-  <div class="wheel">
-    <img src="data:image/png;base64,{{ wheel_base64 }}">
-  </div>
-
-  <div class="right panel">
-    <div class="section-title">Планеты</div>
-    <div class="data-block">
-      {% for p in chart.planets %}
-        <div class="row">
-          <div>{{ p.name }}</div>
-          <div>{{ "%.2f"|format(p.degree) }}°</div>
-          <div>{{ p.sign }}</div>
-        </div>
-      {% endfor %}
+  <!-- ВЕРХНЯЯ ПАНЕЛЬ С ДАННЫМИ РОЖДЕНИЯ -->
+  <header class="header">
+    <div>
+      <h1 class="brand-title">ASTRONUM</h1>
+      <div class="brand-subtitle">Premium Astrological Passport</div>
     </div>
+    <div class="meta-info">
+      <div class="meta-item">
+        <span class="meta-label">Дата рождения</span>
+        <span class="meta-value">{{ chart.birth_date }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Время рождения</span>
+        <span class="meta-value">{{ chart.birth_time }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Место рождения</span>
+        <span class="meta-value">{{ chart.birth_city }}</span>
+      </div>
+    </div>
+  </header>
 
-    <div class="divider"></div>
+  <!-- ОСНОВНОЙ СЕТОЧНЫЙ МАКЕТ -->
+  <main class="main-layout">
     
-    <div class="section-title">Углы карты</div>
-    <div class="data-block">
-      <div class="small-row"><strong>ASC</strong> Асцендент — {{ "%.2f"|format(asc.degree) }}° {{ asc.sign }}</div>
-      <div class="small-row"><strong>MC</strong> Мидхевен — {{ "%.2f"|format(mc.degree) }}° {{ mc.sign }}</div>
-    </div>
-
-    <div class="divider"></div>
-    
-    <div class="section-title">Ключевые аспекты</div>
-    <div class="data-block">
-      {% for a in chart.aspects[:5] %}
-        <div class="aspect">
-          <span>{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
-          <span>орб {{ a.orb }}°</span>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-
-  <div class="big-three panel">
-    <div class="big-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
-    <div class="big-grid">
-      <div class="big-item">
-        <div class="big-label">☉ СОЛНЦЕ</div>
-        <div class="big-value">
-          {{ sun.sign }} <span class="degree">{{ "%.1f"|format(sun.degree) }}°</span>
-        </div>
-      </div>
-      <div class="big-item">
-        <div class="big-label">☽ ЛУНА</div>
-        <div class="big-value">
-          {{ moon.sign }} <span class="degree">{{ "%.1f"|format(moon.degree) }}°</span>
+    <!-- ЛЕВАЯ КОЛОНКА: СТИХИИ, КРЕСТЫ, ДОМИНАНТЫ -->
+    <section class="left-column">
+      
+      <div>
+        <h2 class="section-heading">Баланс Стихий</h2>
+        <div class="balance-group">
+          <!-- Огонь -->
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Огонь</span><span class="bar-value">{{ chart.elements.fire }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.elements.fire }}%;"></div></div>
+          </div>
+          <!-- Земля -->
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Земля</span><span class="bar-value">{{ chart.elements.earth }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.elements.earth }}%;"></div></div>
+          </div>
+          <!-- Воздух -->
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Воздух</span><span class="bar-value">{{ chart.elements.air }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.elements.air }}%;"></div></div>
+          </div>
+          <!-- Вода -->
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Вода</span><span class="bar-value">{{ chart.elements.water }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.elements.water }}%;"></div></div>
+          </div>
         </div>
       </div>
-      <div class="big-item">
-        <div class="big-label">↑ АСЦЕНДЕНТ</div>
-        <div class="big-value">
-          {{ asc.sign }} <span class="degree">{{ "%.1f"|format(asc.degree) }}°</span>
+
+      <div>
+        <h2 class="section-heading">Кресты качеств</h2>
+        <div class="balance-group">
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Кардинальный</span><span class="bar-value">{{ chart.modality.cardinal }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.modality.cardinal }}%;"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Фиксированный</span><span class="bar-value">{{ chart.modality.fixed }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.modality.fixed }}%;"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-text"><span class="bar-label">Мутабельный</span><span class="bar-value">{{ chart.modality.mutable }}%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width: {{ chart.modality.mutable }}%;"></div></div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="footer">
-    <div class="footer-left">✦ АСТРОНУМ ✦</div>
-    <div class="footer-center">Познай себя. Создавай своё будущее.</div>
-    <div class="footer-right">@astronum_aibot</div>
-  </div>
+      <div>
+        <h2 class="section-heading">Доминанты карты</h2>
+        <div class="dominants-grid">
+          <div class="dom-card">
+            <div class="dom-title">Управитель ASC</div>
+            <div class="dom-value">{{ chart.dominant_planet.symbol }} {{ chart.dominant_planet.name }}</div>
+          </div>
+          <div class="dom-card">
+            <div class="dom-title">Доминирующий знак</div>
+            <div class="dom-value">{{ chart.dominant_sign.symbol }} {{ chart.dominant_sign.name }}</div>
+          </div>
+          <div class="dom-card full-width">
+            <div class="dom-title">Кармический вектор (Узлы)</div>
+            <div class="dom-value" style="font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 400;">
+              ☊ {{ chart.points.north_node.sign }} — ☋ {{ chart.points.south_node.sign }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ЦЕНТРАЛЬНАЯ КОЛОНКА: КОЛЕСО КАРТЫ + БОЛЬШАЯ ТРОЙКА -->
+    <section class="center-column">
+      <div class="wheel-container">
+        <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Wheel">
+      </div>
+
+      <div class="big-three-container">
+        <div class="big-three-title">THE BIG THREE • БОЛЬШАЯ ТРОЙКА</div>
+        <div class="big-three-grid">
+          <div class="three-item">
+            <span class="three-label">☉ СОЛНЦЕ</span>
+            <div class="three-value">{{ sun.sign }}<span class="deg">{{ "%.1f"|format(sun.degree) }}°</span></div>
+          </div>
+          <div class="three-item">
+            <span class="three-label">☽ ЛУНА</span>
+            <div class="three-value">{{ moon.sign }}<span class="deg">{{ "%.1f"|format(moon.degree) }}°</span></div>
+          </div>
+          <div class="three-item">
+            <span class="three-label">↑ АСЦЕНДЕНТ</span>
+            <div class="three-value">{{ asc.sign }}<span class="deg">{{ "%.1f"|format(asc.degree) }}°</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ПРАВАЯ КОЛОНКА: ПОЛНЫЙ СПИСОК ПЛАНЕТ И АСПЕКТОВ -->
+    <section class="right-column">
+      <div class="scrollable-data">
+        
+        <div>
+          <h2 class="section-heading" style="margin-bottom: 8px;">Координаты тел</h2>
+          <table class="astro-table">
+            {% for p in chart.planets %}
+              <tr>
+                <td class="td-name">
+                  {% if p.retrograde %}ℛ {% endif %}{{ p.name }}
+                </td>
+                <td class="td-deg">{{ "%.2f"|format(p.degree) }}°</td>
+                <td class="td-sign">{{ p.sign }}</td>
+                <td class="td-house">{{ p.house }} дом</td>
+              </tr>
+            {% endfor %}
+            <!-- Сюда бэкэнд будет подмешивать Лилит и Хирон, так как они лежат в общем списке planets -->
+          </table>
+        </div>
+
+        <div>
+          <h2 class="section-heading" style="margin-bottom: 8px;">Ключевые аспекты</h2>
+          <div class="aspects-list">
+            {% for a in chart.aspects[:6] %}
+              <div class="aspect-row">
+                <span class="aspect-formula">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
+                <span class="aspect-orb">орб {{ a.orb }}°</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- СТИЛЬНЫЙ СТУДИЙНЫЙ ФУТЕР -->
+  <footer class="footer">
+    <div>ASTRONUM STUDIO</div>
+    <div class="footer-motto">Познай себя. Создавай своё будущее.</div>
+    <div>@astronum_aibot</div>
+  </footer>
 </div>
+
 </body>
 </html>
