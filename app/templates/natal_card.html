@@ -44,7 +44,7 @@ body {
   text-transform: uppercase;
 }
 
-/* Верхняя панель */
+/* Верхняя панель (4 колонки) */
 .topbar {
   position: absolute;
   left: 70px;
@@ -55,7 +55,7 @@ body {
   border: 1px solid #eadecc;
   border-radius: 16px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1.2fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1.3fr 1fr;
   align-items: center;
   text-align: center;
   box-shadow: 0 4px 20px rgba(185, 122, 43, 0.04);
@@ -180,8 +180,8 @@ body {
   justify-content: center;
 }
 .wheel img {
-  width: 680px;  /* Увеличили с 530px до 680px */
-  height: 680px; /* Увеличили с 530px до 680px */
+  width: 680px; 
+  height: 680px; 
   object-fit: contain;
 }
 
@@ -237,16 +237,29 @@ body {
   line-height: 1.2;
 }
 
-/* Подвал */
+/* Финальный красивый и аккуратный футер */
 .footer {
   position: absolute;
-  bottom: 15px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 12px;
-  letter-spacing: 1px;
+  bottom: 30px;
+  left: 70px;
+  width: 1396px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #eadecc; /* Изящная линия-разделитель в цвет темы */
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
   color: #8c96a3;
+  text-transform: uppercase;
+}
+.footer-tagline {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  text-transform: none;
+  color: #b97a2b;
+  font-size: 13px;
 }
 </style>
 </head>
@@ -260,7 +273,6 @@ body {
     <div><div class="label">Время рождения</div><div class="value">{{ chart.birth_time }}</div></div>
     <div><div class="label">Место рождения</div><div class="value">{{ chart.birth_city }}</div></div>
     <div><div class="label">Асцендент</div><div class="value">{{ deg_text(asc) }}</div></div>
-    <div><div class="label">MC</div><div class="value">{{ deg_text(mc) }}</div></div>
   </div>
 
   <div class="wheel">
@@ -318,7 +330,11 @@ body {
     </div>
   </div>
 
-  <div class="footer">Познай себя. Используй свои сильные стороны. Создавай своё будущее. ✦ АСТРОНУМ ✦ @astronum_aibot</div>
+  <div class="footer">
+    <div>✦ АСТРОНУМ ✦</div>
+    <div class="footer-tagline">Познай себя. Создавай своё будущее.</div>
+    <div>@astronum_aibot</div>
+  </div>
 </div>
 </body>
 </html>
