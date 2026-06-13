@@ -23,7 +23,7 @@ body {
 .card {
   width: 1536px;
   height: 1024px;
-  padding: 50px 70px 40px 70px;
+  padding: 45px 70px 35px 70px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -47,7 +47,8 @@ body {
   justify-content: space-between;
   align-items: flex-end;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
-  padding-bottom: 20px;
+  padding-bottom: 15px;
+  height: 65px;
 }
 .main-title-group {
   display: flex;
@@ -55,7 +56,7 @@ body {
 }
 .main-title {
   font-family: 'Cinzel', serif;
-  font-size: 44px;
+  font-size: 42px;
   letter-spacing: 8px;
   font-weight: 500;
   color: #111622;
@@ -63,12 +64,12 @@ body {
 }
 .main-subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 5px;
   color: #b97a2b;
   text-transform: uppercase;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .top-meta {
@@ -78,7 +79,7 @@ body {
 .meta-box {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 .meta-label {
   font-size: 10px;
@@ -88,7 +89,7 @@ body {
   letter-spacing: 1.5px;
 }
 .meta-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: #111622;
 }
@@ -96,44 +97,50 @@ body {
 /* ГЛАВНЫЙ МАКЕТ */
 .workspace {
   display: grid;
-  grid-template-columns: 310px 1fr 410px;
-  gap: 40px;
-  height: 750px;
+  grid-template-columns: 330px 1fr 410px;
+  gap: 35px;
+  height: 760px;
   margin-top: 25px;
-  align-items: start;
+  align-items: stretch; 
 }
 
 /* ЛЕВАЯ ПАНЕЛЬ */
-.left-sidebar {
+.left-sidebar-panel {
+  background: #ffffff;
+  border: 1px solid rgba(185, 122, 43, 0.15);
+  border-radius: 14px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  justify-content: space-between; 
+  box-shadow: 0 4px 25px rgba(185, 122, 43, 0.01);
 }
+
 .widget-title {
   font-family: 'Cinzel', serif;
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 2px;
   color: #b97a2b;
   text-transform: uppercase;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
   padding-bottom: 6px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .astro-bar-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 .astro-bar-item {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 .astro-bar-header {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
 }
 .bar-name { color: #3a4757; }
@@ -141,7 +148,7 @@ body {
 .bar-track {
   width: 100%;
   height: 4px;
-  background: rgba(185, 122, 43, 0.1);
+  background: rgba(185, 122, 43, 0.08);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -150,12 +157,12 @@ body {
 .mini-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 .mini-card {
-  background: #ffffff;
-  border: 1px solid rgba(185, 122, 43, 0.15);
-  padding: 12px;
+  background: #FDFBF7; 
+  border: 1px solid rgba(185, 122, 43, 0.1);
+  padding: 10px;
   border-radius: 8px;
   text-align: center;
   display: flex;
@@ -164,27 +171,36 @@ body {
   align-items: center;
 }
 .mini-card.wide { grid-column: span 2; }
-.mini-card-lbl { font-size: 9px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-.mini-card-val { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; color: #111622; }
+.mini-card-lbl { font-size: 9px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.mini-card-val { 
+  font-family: 'Playfair Display', serif; 
+  font-size: 15px; 
+  font-weight: 500; 
+  color: #111622;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
 
 /* ЦЕНТРАЛЬНАЯ ЧАСТЬ */
 .center-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; 
   height: 100%;
 }
 .natal-wheel-frame {
   width: 100%;
-  height: 540px;
+  flex-grow: 1; 
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .natal-wheel-frame img {
-  max-width: 530px;
-  max-height: 530px;
+  max-width: 500px;
+  max-height: 500px;
   object-fit: contain;
 }
 
@@ -193,16 +209,17 @@ body {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.2);
   border-radius: 12px;
-  padding: 20px 25px;
+  padding: 22px 25px;
   box-shadow: 0 4px 20px rgba(185, 122, 43, 0.02);
+  margin-top: auto; 
 }
 .premium-three-title {
   text-align: center;
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 4px;
   color: #b97a2b;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 .premium-three-grid {
   display: grid;
@@ -213,13 +230,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .three-column:not(:last-child) {
   border-right: 1px solid rgba(185, 122, 43, 0.15);
 }
 .three-title-lbl {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: #8c96a3;
   letter-spacing: 1px;
@@ -247,15 +264,15 @@ body {
   border: 1px solid rgba(185, 122, 43, 0.15);
   border-radius: 14px;
   padding: 24px 20px;
-  height: 740px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   box-shadow: 0 4px 25px rgba(185, 122, 43, 0.01);
 }
 .sidebar-scroll-box {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
 }
 .premium-table {
   width: 100%;
@@ -268,7 +285,7 @@ body {
   border-bottom: none;
 }
 .premium-table td {
-  padding: 7px 0;
+  padding: 6px 0;
   font-size: 13px;
 }
 .cell-planet { font-weight: 500; color: #111622; }
@@ -279,7 +296,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 5px 0;
   border-bottom: 1px solid #FAF6EE;
   font-size: 13px;
 }
@@ -299,16 +316,18 @@ body {
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid rgba(185, 122, 43, 0.15);
-  padding-top: 15px;
+  padding-top: 12px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 2px;
   color: #8c96a3;
   text-transform: uppercase;
+  height: 30px;
 }
+/* УБРАН КУРСИВ (ИСПРАВЛЕНО) */
 .footer-quote {
   font-family: 'Playfair Display', serif;
-  font-style: italic;
+  font-style: normal;
   text-transform: none;
   color: #b97a2b;
   font-size: 13px;
@@ -321,6 +340,7 @@ body {
 <div class="card">
   <div class="card-frame"></div>
 
+  <!-- ВЕРХНИЙ БЛОК ПАСПОРТА КАРТЫ -->
   <header class="header-block">
     <div class="main-title-group">
       <h1 class="main-title">ASTRONUM</h1>
@@ -342,10 +362,11 @@ body {
     </div>
   </header>
 
+  <!-- СЕТОЧНЫЙ СТРУКТУРНЫЙ МАКЕТ -->
   <main class="workspace">
     
-    <section class="left-sidebar">
-      
+    <!-- ЛЕВАЯ ПАНЕЛЬ -->
+    <section class="left-sidebar-panel">
       <div>
         <h2 class="widget-title">Баланс Стихий</h2>
         <div class="astro-bar-list">
@@ -399,15 +420,15 @@ body {
           </div>
           <div class="mini-card wide">
             <div class="mini-card-lbl">Кармические Узлы</div>
-            <div class="mini-card-val" style="font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 400;">
+            <div class="mini-card-val" style="font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 400;">
               ☊ {{ chart.north_node.sign }} — ☋ {{ chart.south_node.sign }}
             </div>
           </div>
         </div>
       </div>
-
     </section>
 
+    <!-- ЦЕНТРАЛЬНАЯ ЧАСТЬ -->
     <section class="center-area">
       <div class="natal-wheel-frame">
         <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
@@ -432,11 +453,11 @@ body {
       </div>
     </section>
 
+    <!-- ПРАВАЯ ЧАСТЬ -->
     <section class="right-sidebar">
       <div class="sidebar-scroll-box">
-        
         <div>
-          <h2 class="widget-title" style="margin-bottom: 8px;">Координаты тел</h2>
+          <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
           <table class="premium-table">
             {% for p in chart.planets %}
               <tr>
@@ -449,7 +470,7 @@ body {
         </div>
 
         <div>
-          <h2 class="widget-title" style="margin-bottom: 8px;">Ключевые аспекты</h2>
+          <h2 class="widget-title" style="margin-bottom: 6px;">Ключевые аспекты</h2>
           <div class="premium-aspects-list">
             {% for a in chart.aspects[:5] %}
               <div class="premium-aspect-item">
@@ -459,12 +480,11 @@ body {
             {% endfor %}
           </div>
         </div>
-
-      </div>
     </section>
 
   </main>
 
+  <!-- СТУДИЙНЫЙ ФУТЕР -->
   <footer class="footer-block">
     <div>ASTRONUM DESIGN STUDIO</div>
     <div class="footer-quote">Познай себя. Создавай своё будущее.</div>
