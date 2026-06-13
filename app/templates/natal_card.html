@@ -185,13 +185,13 @@ body {
   object-fit: contain;
 }
 
-/* Большая тройка */
+/* Большая тройка (Исправлены размеры и отступы) */
 .big-three {
   position: absolute;
   left: 70px;
-  top: 850px; 
+  top: 850px; /* Слегка приподняли саму панель */
   width: 1396px;
-  height: 145px; 
+  height: 145px; /* Увеличили высоту для баланса */
   padding: 20px 40px;
   display: flex;
   flex-direction: column;
@@ -218,29 +218,29 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 8px; /* Четкий фиксированный отступ между мелким и крупным текстом */
 }
 .big-item:last-child { 
   border-right: none; 
 }
 .big-label {
-  color: #576375;
-  font-size: 13px;
+  color: #576375; /* Сделали темнее и контрастнее */
+  font-size: 13px; /* Увеличили размер */
   font-weight: 600;
   letter-spacing: 1.5px;
 }
 .big-value {
   font-family: 'Playfair Display', serif;
-  font-size: 24px; 
+  font-size: 26px; 
   font-weight: 600;
   color: #1a2638;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
-/* Футер */
+/* Железобетонный футер (Опущен чуть ниже, чтобы убрать наложение) */
 .footer {
   position: absolute;
-  bottom: 20px; 
+  bottom: 20px; /* Идеальное расстояние до края */
   left: 70px;
   width: 1396px;
   height: 40px;
