@@ -25,8 +25,6 @@ body {
   position: relative;
   overflow: hidden;
   padding: 40px 50px;
-  display: flex;
-  flex-direction: column;
 }
 
 .card-frame {
@@ -40,13 +38,14 @@ body {
   z-index: 1;
 }
 
-/* ХЕДЕР */
+/* ХЕДЕР — Жестко на месте */
 .header-block {
+  position: absolute;
+  top: 45px;
+  left: 50px;
   width: 1436px;
   height: 60px;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
-  margin-bottom: 25px;
-  position: relative;
 }
 .main-title {
   font-family: 'Cinzel', serif;
@@ -74,73 +73,47 @@ body {
 .meta-label { font-size: 9px; font-weight: 600; color: #8c96a3; text-transform: uppercase; }
 .meta-value { font-size: 13px; font-weight: 600; }
 
-/* ГЛАВНЫЙ КОНТЕЙНЕР ДЛЯ ВЫРАВНИВАНИЯ НИЗА БЛОКОВ */
-.main-container {
-  display: flex;
-  width: 1436px;
-  justify-content: space-between;
-  align-items: flex-end; /* Выстраивает левый, правый и центральный блок строго по одной нижней оси */
-  flex-grow: 1;
-  margin-bottom: 25px;
-}
-
-/* ЛЕВАЯ И ПРАВАЯ ПАНЕЛИ */
-.left-panel, .right-panel {
+/* ПАНЕЛИ — упираются в шапку (top: 135px) и имеют фиксированную высоту для баланса */
+.left-panel {
+  position: absolute;
+  top: 135px;
+  left: 50px;
   width: 350px; 
+  height: 725px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
   padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 22px;
 }
 
-/* ЦЕНТРАЛЬНЫЙ БЛОК */
-.center-column {
-  width: 696px;
+.right-panel {
+  position: absolute;
+  top: 135px;
+  right: 50px;
+  width: 350px; 
+  height: 725px;
+  background: #ffffff;
+  border: 1px solid rgba(185, 122, 43, 0.12);
+  border-radius: 12px;
+  padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 24px;
 }
 
-/* КРУГ КАРТЫ УВЕЛИЧЕН, ЧТОБЫ ВЫТАЛКИВАТЬ НИЗ ЦЕНТРА */
-.wheel-area {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 5px; /* Минимальный отступ снизу круга */
-}
-.wheel-area img {
-  max-width: 540px; /* Увеличено для баланса высоты с боковыми панелями */
-  max-height: 540px;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* ЛЕГЕНДА АСПЕКТОВ С МИНИМАЛЬНЫМ ОТСТУПОМ */
-.aspects-legend {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  font-size: 9px;
-  font-weight: 600;
-  color: #576375;
-  margin-bottom: 12px; /* Уменьшенный отступ до Большой Тройки */
-}
-.legend-title-main { color: #b97a2b; font-family: 'Cinzel', serif; letter-spacing: 1px; margin-right: 5px; }
-.legend-item { display: flex; align-items: center; gap: 5px; }
-.legend-line { width: 14px; height: 2px; }
-
-/* НИЖНЯЯ ЧАСТЬ ЦЕНТРА */
+/* ЦЕНТРАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ — идеально выровнена по нижней линии боковых панелей (860px) */
 .center-sub-panel {
-  width: 100%;
+  position: absolute;
+  top: 635px; 
+  left: 420px;
+  width: 696px;
+  height: 225px; 
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .widget-block { width: 100%; }
@@ -223,6 +196,40 @@ body {
 }
 .dotted-val { font-weight: 600; text-align: right; }
 
+/* КРУГ КАРТЫ ОПТИМИЗИРОВАН ПОД СЕТКУ ДЛЯ ИСКЛЮЧЕНИЯ ПУСТОТЫ СВЕРХУ */
+.wheel-area {
+  position: absolute;
+  top: 115px; 
+  left: 420px; 
+  width: 696px;
+  height: 485px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wheel-area img {
+  max-width: 485px; /* Оптимальный размер для выравнивания всех блоков на одной оси */
+  max-height: 485px;
+  object-fit: contain;
+}
+
+/* ЛЕГЕНДА АСПЕКТОВ МАКСИМАЛЬНО ПЛОТНО К КРУГУ И НИЖНЕМУ БЛОКУ */
+.aspects-legend {
+  position: absolute;
+  top: 603px; 
+  left: 420px; 
+  width: 696px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #576375;
+}
+.legend-title-main { color: #b97a2b; font-family: 'Cinzel', serif; letter-spacing: 1px; margin-right: 5px; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-line { width: 14px; height: 2px; }
+
 /* БОЛЬШАЯ ТРОЙКА */
 .premium-three {
   width: 100%; 
@@ -287,6 +294,9 @@ body {
 
 /* НИЖНИЙ ГРАФИЧЕСКИЙ ФУТЕР */
 .luxury-footer-strip {
+  position: absolute;
+  top: 890px;
+  left: 50px;
   width: 1436px;
   height: 60px;
   border-top: 1px solid rgba(185, 122, 43, 0.15);
@@ -294,7 +304,6 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  margin-bottom: 15px;
 }
 .footer-node { display: flex; gap: 12px; align-items: flex-start; }
 .footer-node-icon { width: 24px; height: 24px; object-fit: contain; margin-top: 2px; }
@@ -303,6 +312,9 @@ body {
 .footer-node-desc { font-size: 10px; color: #8c96a3; line-height: 1.3; }
 
 .tech-footer {
+  position: absolute;
+  top: 965px;
+  left: 50px;
   width: 1436px;
   display: flex;
   justify-content: space-between;
@@ -333,300 +345,296 @@ body {
     </div>
   </header>
 
-  <div class="main-container">
-    
-    <section class="left-panel">
-      <div class="widget-block">
-        <h2 class="widget-title">Баланс Стихий</h2>
-        <div class="astro-bar-list">
-          <div class="astro-bar-item">
-            <div class="astro-bar-header">
-              <span class="bar-name"><span class="bar-name-icon">🔥</span> Огонь</span>
-              <span class="bar-percentage">{{ chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 }}%</span>
-            </div>
-            <div class="bar-track"><span class="bar-fill fill-fire" style="width: {{ chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 }}%;"></span></div>
+  <section class="left-panel">
+    <div class="widget-block">
+      <h2 class="widget-title">Баланс Стихий</h2>
+      <div class="astro-bar-list">
+        <div class="astro-bar-item">
+          <div class="astro-bar-header">
+            <span class="bar-name"><span class="bar-name-icon">🔥</span> Огонь</span>
+            <span class="bar-percentage">{{ chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 }}%</span>
           </div>
-          <div class="astro-bar-item">
-            <div class="astro-bar-header">
-              <span class="bar-name"><span class="bar-name-icon">🪵</span> Земля</span>
-              <span class="bar-percentage">{{ chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 }}%</span>
-            </div>
-            <div class="bar-track"><span class="bar-fill fill-earth" style="width: {{ chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 }}%;"></span></div>
-          </div>
-          <div class="astro-bar-item">
-            <div class="astro-bar-header">
-              <span class="bar-name"><span class="bar-name-icon">💨</span> Воздух</span>
-              <span class="bar-percentage">{{ chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 }}%</span>
-            </div>
-            <div class="bar-track"><span class="bar-fill fill-air" style="width: {{ chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 }}%;"></span></div>
-          </div>
-          <div class="astro-bar-item">
-            <div class="astro-bar-header">
-              <span class="bar-name"><span class="bar-name-icon">💧</span> Вода</span>
-              <span class="bar-percentage">{{ chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 }}%</span>
-            </div>
-            <div class="bar-track"><span class="bar-fill fill-water" style="width: {{ chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 }}%;"></span></div>
-          </div>
+          <div class="bar-track"><span class="bar-fill fill-fire" style="width: {{ chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 }}%;"></span></div>
         </div>
-        
-        <div class="desc-box">
-          <span class="desc-icon">
-            <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:none; stroke:#b97a2b; stroke-width:2;"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8L13.4 13.4L7.8 16.2L10.6 10.6L16.2 7.8Z"/></svg>
-          </span>
-          <div class="desc-txt-group">
-            {% set f = chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 %}
-            {% set e = chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 %}
-            {% set a = chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 %}
-            {% set w = chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 %}
-            
-            {% if a >= f and a >= e and a >= w %}
-              <div class="desc-title">Доминирует стихия Воздуха</div>
-              <div class="desc-body">Развитый интеллект, общительность, любознательность и гибкость мышления.</div>
-            {% elif f >= e and f >= w %}
-              <div class="desc-title">Доминирует стихия Огня</div>
-              <div class="desc-body">Страсть, инициативность, лидерство и непреодолимая воля к действию.</div>
-            {% elif e >= w %}
-              <div class="desc-title">Доминирует стихия Земли</div>
-              <div class="desc-body">Практичность, стабильность, надежность и опора на материальный мир.</div>
-            {% else %}
-              <div class="desc-title">Доминирует стихия Воды</div>
-              <div class="desc-body">Глубокая эмпатия, интуитивность, богатый внутренний мир и развитые чувства.</div>
+        <div class="astro-bar-item">
+          <div class="astro-bar-header">
+            <span class="bar-name"><span class="bar-name-icon">🪵</span> Земля</span>
+            <span class="bar-percentage">{{ chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 }}%</span>
+          </div>
+          <div class="bar-track"><span class="bar-fill fill-earth" style="width: {{ chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 }}%;"></span></div>
+        </div>
+        <div class="astro-bar-item">
+          <div class="astro-bar-header">
+            <span class="bar-name"><span class="bar-name-icon">💨</span> Воздух</span>
+            <span class="bar-percentage">{{ chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 }}%</span>
+          </div>
+          <div class="bar-track"><span class="bar-fill fill-air" style="width: {{ chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 }}%;"></span></div>
+        </div>
+        <div class="astro-bar-item">
+          <div class="astro-bar-header">
+            <span class="bar-name"><span class="bar-name-icon">💧</span> Вода</span>
+            <span class="bar-percentage">{{ chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 }}%</span>
+          </div>
+          <div class="bar-track"><span class="bar-fill fill-water" style="width: {{ chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 }}%;"></span></div>
+        </div>
+      </div>
+      
+      <div class="desc-box">
+        <span class="desc-icon">
+          <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:none; stroke:#b97a2b; stroke-width:2;"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8L13.4 13.4L7.8 16.2L10.6 10.6L16.2 7.8Z"/></svg>
+        </span>
+        <div class="desc-txt-group">
+          {% set f = chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 %}
+          {% set e = chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 %}
+          {% set a = chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 %}
+          {% set w = chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 %}
+          
+          {% if a >= f and a >= e and a >= w %}
+            <div class="desc-title">Доминирует стихия Воздуха</div>
+            <div class="desc-body">Развитый интеллект, общительность, любознательность и гибкость мышления.</div>
+          {% elif f >= e and f >= w %}
+            <div class="desc-title">Доминирует стихия Огня</div>
+            <div class="desc-body">Страсть, инициативность, лидерство и непреодолимая воля к действию.</div>
+          {% elif e >= w %}
+            <div class="desc-title">Доминирует стихия Земли</div>
+            <div class="desc-body">Практичность, стабильность, надежность и опора на материальный мир.</div>
+          {% else %}
+            <div class="desc-title">Доминирует стихия Воды</div>
+            <div class="desc-body">Глубокая эмпатия, интуитивность, богатый внутренний мир и развитые чувства.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="widget-block">
+      <h2 class="widget-title">Кресты качеств</h2>
+      <div class="astro-bar-list">
+        <div class="astro-bar-item">
+          <div class="astro-bar-header"><span class="bar-name">Кардинальный</span><span class="bar-percentage">{{ chart.modality.cardinal if chart.modality else 20 }}%</span></div>
+          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.cardinal if chart.modality else 20 }}%;"></span></div>
+        </div>
+        <div class="astro-bar-item">
+          <div class="astro-bar-header"><span class="bar-name">Фиксированный</span><span class="bar-percentage">{{ chart.modality.fixed if chart.modality else 40 }}%</span></div>
+          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.fixed if chart.modality else 40 }}%;"></span></div>
+        </div>
+        <div class="astro-bar-item">
+          <div class="astro-bar-header"><span class="bar-name">Мутабельный</span><span class="bar-percentage">{{ chart.modality.mutable if chart.modality else 40 }}%</span></div>
+          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.mutable if chart.modality else 40 }}%;"></span></div>
+        </div>
+      </div>
+      <div class="desc-box">
+        <span class="desc-icon">
+          <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:none; stroke:#b97a2b; stroke-width:2;"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        </span>
+        <div class="desc-txt-group">
+          {% set mc_card = chart.modality.cardinal if chart.modality else 20 %}
+          {% set mc_fix = chart.modality.fixed if chart.modality else 40 %}
+          {% set mc_mut = chart.modality.mutable if chart.modality else 40 %}
+          
+          {% if mc_mut >= mc_card and mc_mut >= mc_fix %}
+            <div class="desc-title">Преобладает мутабельный крест</div>
+            <div class="desc-body">Адаптивность, гибкость, умение легко перестраиваться и находить решения.</div>
+          {% elif mc_card >= mc_fix %}
+            <div class="desc-title">Преобладает кардинальный крест</div>
+            <div class="desc-body">Решительность, стремление к реформам, запуск проектов и амбиции.</div>
+          {% else %}
+            <div class="desc-title">Преобладает фиксированный крест</div>
+            <div class="desc-body">Устойчивость, верность принципам и колоссальное упорство.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="widget-block">
+      <h2 class="widget-title">Сила карты</h2>
+      <div class="mini-cards-grid">
+        <div class="mini-card">
+          <div class="mini-card-lbl">Управитель ASC</div>
+          <div class="mini-card-val">
+            {% set asc_s = chart.ascendant.sign if chart.ascendant else 'Дева' %}
+            {% if asc_s in ['Овен', 'Скорпион'] %} Марс
+            {% elif asc_s in ['Телец', 'Весы'] %}♀ Венера
+            {% elif asc_s in ['Близнецы', 'Дева'] %}☿ Меркурий
+            {% elif asc_s == 'Рак' %}☽ Луна
+            {% elif asc_s == 'Лев' %}☉ Солнце
+            {% elif asc_s in ['Стрелец', 'Рыбы'] %}♃ Юпитер
+            {% else %}♄ Сатурн
             {% endif %}
           </div>
         </div>
-      </div>
-
-      <div class="widget-block">
-        <h2 class="widget-title">Кресты качеств</h2>
-        <div class="astro-bar-list">
-          <div class="astro-bar-item">
-            <div class="astro-bar-header"><span class="bar-name">Кардинальный</span><span class="bar-percentage">{{ chart.modality.cardinal if chart.modality else 20 }}%</span></div>
-            <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.cardinal if chart.modality else 20 }}%;"></span></div>
-          </div>
-          <div class="astro-bar-item">
-            <div class="astro-bar-header"><span class="bar-name">Фиксированный</span><span class="bar-percentage">{{ chart.modality.fixed if chart.modality else 40 }}%</span></div>
-            <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.fixed if chart.modality else 40 }}%;"></span></div>
-          </div>
-          <div class="astro-bar-item">
-            <div class="astro-bar-header"><span class="bar-name">Мутабельный</span><span class="bar-percentage">{{ chart.modality.mutable if chart.modality else 40 }}%</span></div>
-            <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.mutable if chart.modality else 40 }}%;"></span></div>
+        <div class="mini-card">
+          <div class="mini-card-lbl">Дом. знак</div>
+          <div class="mini-card-val">
+            {% set sun_s = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
+            {% if sun_s and sun_s.sign == 'Близнецы' %}♊ Близнецы
+            {% elif sun_s and sun_s.sign == 'Козерог' %}♑ Козерог
+            {% elif sun_s and sun_s.sign == 'Лев' %}♌ Лев
+            {% elif sun_s and sun_s.sign == 'Дева' %}♍ Дева
+            {% elif sun_s and sun_s.sign == 'Стрелец' %}♐ Стрелец
+            {% else %}♊ Близнецы{% endif %}
           </div>
         </div>
-        <div class="desc-box">
-          <span class="desc-icon">
-            <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:none; stroke:#b97a2b; stroke-width:2;"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-          </span>
-          <div class="desc-txt-group">
-            {% set mc_card = chart.modality.cardinal if chart.modality else 20 %}
-            {% set mc_fix = chart.modality.fixed if chart.modality else 40 %}
-            {% set mc_mut = chart.modality.mutable if chart.modality else 40 %}
-            
-            {% if mc_mut >= mc_card and mc_mut >= mc_fix %}
-              <div class="desc-title">Преобладает мутабельный крест</div>
-              <div class="desc-body">Адаптивность, гибкость, умение легко перестраиваться и находить решения.</div>
-            {% elif mc_card >= mc_fix %}
-              <div class="desc-title">Преобладает кардинальный крест</div>
-              <div class="desc-body">Решительность, стремление к реформам, запуск проектов и амбиции.</div>
-            {% else %}
-              <div class="desc-title">Преобладает фиксированный крест</div>
-              <div class="desc-body">Устойчивость, верность принципам и колоссальное упорство.</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-
-      <div class="widget-block">
-        <h2 class="widget-title">Сила карты</h2>
-        <div class="mini-cards-grid">
-          <div class="mini-card">
-            <div class="mini-card-lbl">Управитель ASC</div>
-            <div class="mini-card-val">
-              {% set asc_s = chart.ascendant.sign if chart.ascendant else 'Дева' %}
-              {% if asc_s in ['Овен', 'Скорпион'] %} Марс
-              {% elif asc_s in ['Телец', 'Весы'] %}♀ Венера
-              {% elif asc_s in ['Близнецы', 'Дева'] %}☿ Меркурий
-              {% elif asc_s == 'Рак' %}☽ Луна
-              {% elif asc_s == 'Лев' %}☉ Солнце
-              {% elif asc_s in ['Стрелец', 'Рыбы'] %}♃ Юпитер
-              {% else %}♄ Сатурн
-              {% endif %}
-            </div>
-          </div>
-          <div class="mini-card">
-            <div class="mini-card-lbl">Дом. знак</div>
-            <div class="mini-card-val">
-              {% set sun_s = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
-              {% if sun_s and sun_s.sign == 'Близнецы' %}♊ Близнецы
-              {% elif sun_s and sun_s.sign == 'Козерог' %}♑ Козерог
-              {% elif sun_s and sun_s.sign == 'Лев' %}♌ Лев
-              {% elif sun_s and sun_s.sign == 'Дева' %}♍ Дева
-              {% elif sun_s and sun_s.sign == 'Стрелец' %}♐ Стрелец
-              {% else %}♊ Близнецы{% endif %}
-            </div>
-          </div>
-          <div class="mini-card wide">
-            <div class="mini-card-lbl">Кармические Узлы</div>
-            <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 10px; gap: 4px;">
-              ☊ {{ chart.north_node.sign if chart.north_node else 'Скорпион' }} — ☋ {{ chart.south_node.sign if chart.south_node else 'Телец' }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="widget-block">
-        <h2 class="widget-title">Преобладающие планеты</h2>
-        <div class="dotted-bar-list">
-          <div class="dotted-row">
-            <span class="dotted-name">☉ Солнце</span>
-            <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 65%;"></div></div>
-            <span class="dotted-val">17%</span>
-          </div>
-          <div class="dotted-row">
-            <span class="dotted-name">☽ Луна</span>
-            <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 50%;"></div></div>
-            <span class="dotted-val">14%</span>
-          </div>
-          <div class="dotted-row">
-            <span class="dotted-name">☿ Меркурий</span>
-            <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 45%;"></div></div>
-            <span class="dotted-val">14%</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="center-column">
-      <div class="wheel-area">
-        <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
-      </div>
-
-      <div class="aspects-legend">
-        <span class="legend-title-main">АСПЕКТЫ</span>
-        <div class="legend-item"><div class="legend-line" style="background: #E2583E;"></div>Соединение 0°</div>
-        <div class="legend-item"><div class="legend-line" style="background: #4D7699;"></div>Тригон 120°</div>
-        <div class="legend-item"><div class="legend-line" style="background: #6194A8;"></div>Секстиль 60°</div>
-        <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #E2583E; height:0;"></div>Квадрат 90°</div>
-        <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B; height:0;"></div>Оппозиция 180°</div>
-      </div>
-
-      <div class="center-sub-panel">
-        <div class="premium-three">
-          <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
-          <div class="premium-three-grid">
-            
-            <div class="three-column">
-              <span class="three-title-lbl">☉ СОЛНЦЕ</span>
-              {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
-              {% set s_sign = sun_p.sign if sun_p else 'Близнецы' %}
-              <div class="three-value-text">
-                {{ s_sign }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '7.52' }}°</span>
-              </div>
-              <div class="three-art-wrap">
-                {% if s_sign == 'Козерог' %}♑{% elif s_sign == 'Близнецы' %}♊{% elif s_sign == 'Лев' %}♌{% elif s_sign == 'Дева' %}♍{% elif s_sign == 'Стрелец' %}♐{% else %}☉{% endif %}
-              </div>
-              <span class="three-desc">
-                {% if s_sign == 'Стрелец' %}Оптимизм, поиск истины и стремление к расширению горизонтов{% else %}Самовыражение, воля и ключевая жизненная энергия{% endif %}
-              </span>
-            </div>
-            
-            <div class="three-column">
-              <span class="three-title-lbl">☽ ЛУНА</span>
-              {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
-              {% set m_sign = moon_p.sign if moon_p else 'Близнецы' %}
-              <div class="three-value-text">
-                {{ m_sign }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '7.09' }}°</span>
-              </div>
-              <div class="three-art-wrap">
-                {% if m_sign == 'Близнецы' %}♊{% elif m_sign == 'Рыбы' %}♓{% elif m_sign == 'Овен' %}♈{% elif m_sign == 'Дева' %}♍{% else %}☽{% endif %}
-              </div>
-              <span class="three-desc">
-                {% if m_sign == 'Близнецы' %}Гибкие эмоции, живой ум и потребность в постоянном обмене информацией{% else %}Внутренний мир, подсознательные реакции и интуиция{% endif %}
-              </span>
-            </div>
-            
-            <div class="three-column">
-              <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
-              <div class="three-value-text">
-                {{ chart.ascendant.sign if chart.ascendant else 'Дева' }}<span class="degree-mark">{{ "%.2f"|format(chart.ascendant.degree) if chart.ascendant else '4.41' }}°</span>
-              </div>
-              <div class="three-art-wrap">
-                {% set a_sign = chart.ascendant.sign if chart.ascendant else 'Дева' %}
-                {% if a_sign == 'Рак' %}♋{% elif a_sign == 'Козерог' %}♑{% elif a_sign == 'Стрелец' %}♐{% elif a_sign == 'Дева' %}♍{% elif a_sign == 'Весы' %}♎{% else %}↑{% endif %}
-              </div>
-              <span class="three-desc">
-                {% if a_sign == 'Весы' %}Дипломатичный образ, стремление к гармонии и партнерству во всем{% else %}Ваш внешний имидж, характер и путь проявления в мире{% endif %}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="quote-container">
-          <div class="quote-banner">
-            <div class="quote-text-wrap">
-              <span class="quote-marks">“</span> Познай себя. Создавай своё будущее. <span class="quote-marks">”</span>
-            </div>
-            <div class="quote-stars">✦ ✦ ✦</div>
+        <div class="mini-card wide">
+          <div class="mini-card-lbl">Кармические Узлы</div>
+          <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 10px; gap: 4px;">
+            ☊ {{ chart.north_node.sign if chart.north_node else 'Скорпион' }} — ☋ {{ chart.south_node.sign if chart.south_node else 'Телец' }}
           </div>
         </div>
       </div>
     </div>
 
-    <section class="right-panel">
-      <div class="widget-block">
-        <h2 class="widget-title">Координаты тел</h2>
-        <table class="premium-table">
-          {% if chart.planets %}
-            {% for p in chart.planets if p.name.lower() not in ['северный узел', 'южный узел', 'северный куспид', 'южный куспид'] %}
-              <tr>
-                <td class="cell-planet">{{ p.name }}</td>
-                <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
-                <td class="cell-sign">{{ p.sign }}</td>
-              </tr>
-            {% endfor %}
-          {% endif %}
-          <tr>
-            <td class="cell-planet">Северный узел</td>
-            <td class="cell-degree">{{ "%.2f"|format(chart.north_node.degree) if chart.north_node else '3.91' }}°</td>
-            <td class="cell-sign">{{ chart.north_node.sign if chart.north_node else 'Скорпион' }}</td>
-          </tr>
-          <tr>
-            <td class="cell-planet">Южный узел</td>
-            <td class="cell-degree">{{ "%.2f"|format(chart.south_node.degree) if chart.south_node else '3.91' }}°</td>
-            <td class="cell-sign">{{ chart.south_node.sign if chart.south_node else 'Телец' }}</td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="widget-block">
-        <h2 class="widget-title">Система Домов</h2>
-        <div class="houses-grid-dense">
-          {% if chart.houses %}
-            {% for house_item in chart.houses %}
-              <div class="house-row-mini">
-                <span class="house-lbl">{{ house_item.house }} дом</span>
-                <span class="house-val">{{ house_item.sign }}</span>
-              </div>
-            {% endfor %}
-          {% endif %}
+    <div class="widget-block">
+      <h2 class="widget-title">Преобладающие планеты</h2>
+      <div class="dotted-bar-list">
+        <div class="dotted-row">
+          <span class="dotted-name">☉ Солнце</span>
+          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 65%;"></div></div>
+          <span class="dotted-val">17%</span>
+        </div>
+        <div class="dotted-row">
+          <span class="dotted-name">☽ Луна</span>
+          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 50%;"></div></div>
+          <span class="dotted-val">14%</span>
+        </div>
+        <div class="dotted-row">
+          <span class="dotted-name">☿ Меркурий</span>
+          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 45%;"></div></div>
+          <span class="dotted-val">14%</span>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="widget-block">
-        <h2 class="widget-title">Ключевые аспекты</h2>
-        <div class="premium-aspects-list">
-          {% if chart.aspects %}
-            {% for a in chart.aspects[:5] %}
-              <div class="premium-aspect-item">
-                <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
-                <span class="aspect-orb-badge">орб {{ "%.2f"|format(a.orb) }}°</span>
-              </div>
-            {% endfor %}
-          {% endif %}
+  <div class="wheel-area">
+    <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
+  </div>
+
+  <div class="aspects-legend">
+    <span class="legend-title-main">АСПЕКТЫ</span>
+    <div class="legend-item"><div class="legend-line" style="background: #E2583E;"></div>Соединение 0°</div>
+    <div class="legend-item"><div class="legend-line" style="background: #4D7699;"></div>Тригон 120°</div>
+    <div class="legend-item"><div class="legend-line" style="background: #6194A8;"></div>Секстиль 60°</div>
+    <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #E2583E; height:0;"></div>Квадрат 90°</div>
+    <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B; height:0;"></div>Оппозиция 180°</div>
+  </div>
+
+  <div class="center-sub-panel">
+    
+    <div class="premium-three">
+      <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
+      <div class="premium-three-grid">
+        
+        <div class="three-column">
+          <span class="three-title-lbl">☉ СОЛНЦЕ</span>
+          {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
+          {% set s_sign = sun_p.sign if sun_p else 'Близнецы' %}
+          <div class="three-value-text">
+            {{ s_sign }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '7.52' }}°</span>
+          </div>
+          <div class="three-art-wrap">
+            {% if s_sign == 'Козерог' %}♑{% elif s_sign == 'Близнецы' %}♊{% elif s_sign == 'Лев' %}♌{% elif s_sign == 'Дева' %}♍{% elif s_sign == 'Стрелец' %}♐{% else %}☉{% endif %}
+          </div>
+          <span class="three-desc">
+            {% if s_sign == 'Стрелец' %}Оптимизм, поиск истины и стремление к расширению горизонтов{% else %}Самовыражение, воля и ключевая жизненная энергия{% endif %}
+          </span>
+        </div>
+        
+        <div class="three-column">
+          <span class="three-title-lbl">☽ ЛУНА</span>
+          {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
+          {% set m_sign = moon_p.sign if moon_p else 'Близнецы' %}
+          <div class="three-value-text">
+            {{ m_sign }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '7.09' }}°</span>
+          </div>
+          <div class="three-art-wrap">
+            {% if m_sign == 'Близнецы' %}♊{% elif m_sign == 'Рыбы' %}♓{% elif m_sign == 'Овен' %}♈{% elif m_sign == 'Дева' %}♍{% else %}☽{% endif %}
+          </div>
+          <span class="three-desc">
+            {% if m_sign == 'Близнецы' %}Гибкие эмоции, живой ум и потребность в постоянном обмене информацией{% else %}Внутренний мир, подсознательные реакции и интуиция{% endif %}
+          </span>
+        </div>
+        
+        <div class="three-column">
+          <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
+          <div class="three-value-text">
+            {{ chart.ascendant.sign if chart.ascendant else 'Дева' }}<span class="degree-mark">{{ "%.2f"|format(chart.ascendant.degree) if chart.ascendant else '4.41' }}°</span>
+          </div>
+          <div class="three-art-wrap">
+            {% set a_sign = chart.ascendant.sign if chart.ascendant else 'Дева' %}
+            {% if a_sign == 'Рак' %}♋{% elif a_sign == 'Козерог' %}♑{% elif a_sign == 'Стрелец' %}♐{% elif a_sign == 'Дева' %}♍{% elif a_sign == 'Весы' %}♎{% else %}↑{% endif %}
+          </div>
+          <span class="three-desc">
+            {% if a_sign == 'Весы' %}Дипломатичный образ, стремление к гармонии и партнерству во всем{% else %}Ваш внешний имидж, характер и путь проявления в мире{% endif %}
+          </span>
         </div>
       </div>
-    </section>
+    </div>
+
+    <div class="quote-container">
+      <div class="quote-banner">
+        <div class="quote-text-wrap">
+          <span class="quote-marks">“</span> Познай себя. Создавай своё будущее. <span class="quote-marks">”</span>
+        </div>
+        <div class="quote-stars">✦ ✦ ✦</div>
+      </div>
+    </div>
 
   </div>
+
+  <section class="right-panel">
+    <div class="widget-block">
+      <h2 class="widget-title">Координаты тел</h2>
+      <table class="premium-table">
+        {% if chart.planets %}
+          {% for p in chart.planets if p.name.lower() not in ['северный узел', 'южный узел', 'северный куспид', 'южный куспид'] %}
+            <tr>
+              <td class="cell-planet">{{ p.name }}</td>
+              <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
+              <td class="cell-sign">{{ p.sign }}</td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+        <tr>
+          <td class="cell-planet">Северный узел</td>
+          <td class="cell-degree">{{ "%.2f"|format(chart.north_node.degree) if chart.north_node else '3.91' }}°</td>
+          <td class="cell-sign">{{ chart.north_node.sign if chart.north_node else 'Скорпион' }}</td>
+        </tr>
+        <tr>
+          <td class="cell-planet">Южный узел</td>
+          <td class="cell-degree">{{ "%.2f"|format(chart.south_node.degree) if chart.south_node else '3.91' }}°</td>
+          <td class="cell-sign">{{ chart.south_node.sign if chart.south_node else 'Телец' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="widget-block">
+      <h2 class="widget-title">Система Домов</h2>
+      <div class="houses-grid-dense">
+        {% if chart.houses %}
+          {% for house_item in chart.houses %}
+            <div class="house-row-mini">
+              <span class="house-lbl">{{ house_item.house }} дом</span>
+              <span class="house-val">{{ house_item.sign }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="widget-block">
+      <h2 class="widget-title">Ключевые аспекты</h2>
+      <div class="premium-aspects-list">
+        {% if chart.aspects %}
+          {% for a in chart.aspects[:5] %}
+            <div class="premium-aspect-item">
+              <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
+              <span class="aspect-orb-badge">орб {{ "%.2f"|format(a.orb) }}°</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </section>
 
   <section class="luxury-footer-strip">
     <div class="footer-node">
