@@ -44,7 +44,7 @@ body {
   text-transform: uppercase;
 }
 
-/* Верхняя панель (Идеально сбалансирована на 4 колонки) */
+/* Верхняя панель (4 колонки) */
 .topbar {
   position: absolute;
   left: 70px;
@@ -75,3 +75,214 @@ body {
   font-size: 11px;
   font-weight: 600;
   color: #8c96a3;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.topbar .value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a2638;
+  margin-top: 6px;
+}
+
+/* Панели интерфейса */
+.panel {
+  background: #ffffff;
+  border: 1px solid #eadecc;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(185, 122, 43, 0.04);
+}
+
+/* Правая колонка с таблицами */
+.right {
+  position: absolute;
+  top: 160px;
+  left: 1050px;
+  width: 416px;
+  height: 680px;
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+}
+.section-title {
+  color: #b97a2b;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.data-block {
+  margin-bottom: 5px;
+}
+.row {
+  display: grid;
+  grid-template-columns: 125px 75px 1fr;
+  font-size: 14px;
+  padding: 5px 0;
+  border-bottom: 1px solid #f8f4ed;
+  color: #2c3a4e;
+}
+.row:last-child {
+  border-bottom: none;
+}
+.row div:nth-child(2) {
+  font-weight: 600;
+  color: #1a2638;
+}
+.row div:nth-child(3) {
+  color: #788290;
+  text-align: right;
+}
+.small-row {
+  font-size: 14px;
+  padding: 6px 0;
+  color: #2c3a4e;
+  border-bottom: 1px solid #f8f4ed;
+}
+.small-row:last-child {
+  border-bottom: none;
+}
+.divider {
+  height: 1px;
+  background: #eadecc;
+  margin: 12px 0;
+  opacity: 0.5;
+}
+.aspect {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  padding: 5px 0;
+  color: #2c3a4e;
+  border-bottom: 1px solid #f8f4ed;
+}
+.aspect:last-child {
+  border-bottom: none;
+}
+.aspect span:last-child {
+  color: #b97a2b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Блок натального колеса */
+.wheel {
+  position: absolute;
+  left: 70px;
+  top: 270px;
+  width: 950px;
+  height: 570px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wheel img {
+  width: 680px; 
+  height: 680px; 
+  object-fit: contain;
+}
+
+/* Большая тройка */
+.big-three {
+  position: absolute;
+  left: 70px;
+  top: 850px; 
+  width: 1396px;
+  height: 145px; 
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.big-title {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #b97a2b;
+  margin-bottom: 14px;
+}
+.big-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+.big-item {
+  text-align: center;
+  border-right: 1px solid #eadecc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.big-item:last-child { 
+  border-right: none; 
+}
+.big-label {
+  color: #576375;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.big-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; 
+  font-weight: 600;
+  color: #1a2638;
+  line-height: 1.2;
+}
+
+/* Железобетонный монолитный футер */
+.footer {
+  position: absolute;
+  bottom: 20px; 
+  left: 70px;
+  width: 1396px;
+  height: 40px;
+  border-top: 1px solid #eadecc;
+  padding-top: 15px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #8c96a3;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.footer-left {
+  position: absolute;
+  left: 0;
+  top: 15px;
+}
+.footer-center {
+  position: absolute;
+  left: 50%;
+  top: 13px;
+  transform: translateX(-50%);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  text-transform: none;
+  color: #b97a2b;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+.footer-right {
+  position: absolute;
+  right: 0;
+  top: 15px;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="title">АСТРОНУМ</div>
+  <div class="subtitle">✦ натальная карта ✦</div>
+
+  <div class="topbar">
+    <div><div class="label">Дата рождения</div><div class="value">{{ chart.birth_date }}</div></div>
+    <div><div class="label">Время рождения</div><div class="value">{{ chart.birth_time }}</div></div>
+    <div><div class="label">Место рождения</div><div class="value">{{
