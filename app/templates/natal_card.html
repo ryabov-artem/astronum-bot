@@ -23,7 +23,7 @@ body {
 .card {
   width: 1536px;
   height: 1024px;
-  padding: 55px 70px 45px 70px;
+  padding: 35px 70px 25px 70px; 
   position: relative;
   display: flex;
   flex-direction: column;
@@ -47,8 +47,8 @@ body {
   justify-content: space-between;
   align-items: flex-end;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
-  padding-bottom: 20px;
-  height: 70px;
+  padding-bottom: 12px;
+  height: 60px;
 }
 .main-title-group {
   display: flex;
@@ -56,7 +56,7 @@ body {
 }
 .main-title {
   font-family: 'Cinzel', serif;
-  font-size: 44px;
+  font-size: 40px;
   letter-spacing: 8px;
   font-weight: 500;
   color: #111622;
@@ -64,53 +64,53 @@ body {
 }
 .main-subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 5px;
   color: #b97a2b;
   text-transform: uppercase;
-  margin-top: 6px;
+  margin-top: 5px;
 }
 
 .top-meta {
   display: flex;
-  gap: 50px;
+  gap: 45px;
 }
 .meta-box {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 .meta-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   color: #8c96a3;
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
 .meta-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: #111622;
 }
 
-/* ГЛАВНЫЙ МАКЕТ — ОПТИМИЗИРОВАНА ВЫСОТА И ОТСТУПЫ */
+/* ГЛАВНЫЙ МАКЕТ — СОКРАЩЕНЫ ОСТУПЫ МЕЖДУ БЛОКАМИ */
 .workspace {
   display: grid;
-  grid-template-columns: 320px 1fr 410px;
-  gap: 40px;
-  height: 660px; /* Уменьшили высоту рабочей зоны, убирая пустоту сверху и снизу колеса */
-  margin-top: auto;
-  margin-bottom: auto;
+  grid-template-columns: 320px 1fr 410px; /* Вернули плотную ширину боковых панелей */
+  gap: 25px; /* Уменьшили расстояние между блоками (было 45px) */
+  height: 820px; 
+  margin-top: 15px;
+  margin-bottom: 15px;
   align-items: stretch; 
 }
 
-/* МОНОЛИТНАЯ ЛЕВАЯ ПАНЕЛЬ */
+/* ЛЕВАЯ ПАНЕЛЬ */
 .left-sidebar-panel {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.15);
   border-radius: 14px;
-  padding: 26px 22px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -119,13 +119,13 @@ body {
 
 .widget-title {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 2px;
   color: #b97a2b;
   text-transform: uppercase;
   border-bottom: 1px solid rgba(185, 122, 43, 0.15);
   padding-bottom: 6px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .astro-bar-list {
@@ -158,18 +158,18 @@ body {
 .mini-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 .mini-card {
   background: #FDFBF7; 
   border: 1px solid rgba(185, 122, 43, 0.1);
-  padding: 10px;
+  padding: 10px 5px;
   border-radius: 8px;
   text-align: center;
 }
 .mini-card.wide { grid-column: span 2; }
-.mini-card-lbl { font-size: 9px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.mini-card-val { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 500; color: #111622; }
+.mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.mini-card-val { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 500; color: #111622; }
 
 /* ЦЕНТРАЛЬНАЯ ЧАСТЬ */
 .center-area {
@@ -187,18 +187,18 @@ body {
   justify-content: center;
 }
 .natal-wheel-frame img {
-  max-width: 470px;
-  max-height: 470px;
+  max-width: 530px; 
+  max-height: 530px;
   object-fit: contain;
 }
 
-/* БОЛЬШАЯ ТРОЙКА */
+/* БОЛЬШАЯ ТРОЙКА — ВЕРНУЛИ ШИРИНУ НА 100% */
 .premium-three {
-  width: 100%;
+  width: 100%; 
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.2);
   border-radius: 12px;
-  padding: 22px 25px;
+  padding: 20px 25px;
   box-shadow: 0 4px 20px rgba(185, 122, 43, 0.02);
   margin-top: auto; 
 }
@@ -247,7 +247,7 @@ body {
   font-weight: 500;
 }
 
-/* МОНОЛИТНАЯ ПРАВАЯ ПАНЕЛЬ С ИНТЕГРИРОВАННЫМИ ДОМАМИ */
+/* ПРАВАЯ ПАНЕЛЬ */
 .right-sidebar-panel {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.15);
@@ -270,23 +270,23 @@ body {
   border-bottom: none;
 }
 .premium-table td {
-  padding: 5px 0;
+  padding: 6px 0;
   font-size: 12px;
 }
 .cell-planet { font-weight: 500; color: #111622; }
 .cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 70px; }
 .cell-sign { color: #576375; text-align: right; }
 
-/* Двухколоночный вывод сетки всех 12 домов */
+/* СИСТЕМА ДОМОВ С СОХРАНЕННЫМ ОТСТУПОМ */
 .houses-grid-dense {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: x 20px;
+  gap: 0 45px; 
 }
 .house-row-mini {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 5px 0;
   border-bottom: 1px solid #FAF6EE;
   font-size: 12px;
 }
@@ -318,20 +318,20 @@ body {
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid rgba(185, 122, 43, 0.15);
-  padding-top: 15px;
-  font-size: 10px;
+  padding-top: 10px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 2px;
   color: #8c96a3;
   text-transform: uppercase;
-  height: 30px;
+  height: 25px;
 }
 .footer-quote {
   font-family: 'Playfair Display', serif;
   font-style: normal;
   text-transform: none;
   color: #b97a2b;
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.5px;
 }
 </style>
@@ -418,7 +418,7 @@ body {
           </div>
           <div class="mini-card wide">
             <div class="mini-card-lbl">Кармические Узлы</div>
-            <div class="mini-card-val" style="font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 400;">
+            <div class="mini-card-val" style="font-size: 11px; font-family: 'Inter', sans-serif; font-weight: 400;">
               ☊ {{ chart.north_node.sign }} — ☋ {{ chart.south_node.sign }}
             </div>
           </div>
@@ -454,7 +454,8 @@ body {
       <div>
         <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
         <table class="premium-table">
-          {% for p in chart.planets[:8] %} <tr>
+          {% for p in chart.planets[:8] %}
+            <tr>
               <td class="cell-planet">{% if p.retrograde %}ℛ {% endif %}{{ p.name }}</td>
               <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
               <td class="cell-sign">{{ p.sign }}</td>
@@ -478,7 +479,8 @@ body {
       <div>
         <h2 class="widget-title" style="margin-bottom: 6px;">Ключевые аспекты</h2>
         <div class="premium-aspects-list">
-          {% for a in chart.aspects[:3] %} <div class="premium-aspect-item">
+          {% for a in chart.aspects[:3] %}
+            <div class="premium-aspect-item">
               <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
               <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
             </div>
