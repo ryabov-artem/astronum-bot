@@ -238,28 +238,40 @@ body {
 }
 
 /* Финальный красивый и аккуратный футер */
+/* Финальный железобетонный футер */
 .footer {
   position: absolute;
-  bottom: 30px;
+  bottom: 25px;
   left: 70px;
   width: 1396px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  height: 40px;
+  border-top: 1px solid #eadecc;
   padding-top: 15px;
-  border-top: 1px solid #eadecc; /* Изящная линия-разделитель в цвет темы */
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 1.5px;
   color: #8c96a3;
   text-transform: uppercase;
+  white-space: nowrap;
 }
-.footer-tagline {
+.footer-left {
+  position: absolute;
+  left: 0;
+}
+.footer-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Playfair Display', serif;
   font-style: italic;
   text-transform: none;
   color: #b97a2b;
-  font-size: 13px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+.footer-right {
+  position: absolute;
+  right: 0;
 }
 </style>
 </head>
