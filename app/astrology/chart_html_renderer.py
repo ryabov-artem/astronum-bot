@@ -18,7 +18,7 @@ def build_natal_card_image(chart_data, wheel_png_path, output_final_png):
     template_path = os.path.join(os.path.dirname(__file__), "templates", "natal_card.html")
     # Если папки templates нет, укажи прямой абсолютный путь к natal_card.html
     if not os.path.exists(template_path):
-        template_path = "/opt/bots/astrology_bot/app/natal_card.html" # поменяй если лежит в другом месте
+        template_path = "/opt/bots/astrology_bot/app/templates/natal_card.html" # поменяй если лежит в другом месте
 
     with open(template_path, "r", encoding="utf-8") as f:
         template_html = f.read()
