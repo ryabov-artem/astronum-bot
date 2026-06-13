@@ -73,17 +73,17 @@ body {
 .meta-label { font-size: 9px; font-weight: 600; color: #8c96a3; text-transform: uppercase; }
 .meta-value { font-size: 13px; font-weight: 600; }
 
-/* ТРИ ОСНОВНЫЕ ПАНЕЛИ (ВЫРАВНЕНЫ ПО ОДНОЙ ОСИ) */
+/* ТРИ ОСНОВНЫЕ ПАНЕЛИ (ВЫРАВНЕНЫ ПО ОДНОЙ ОСИ И СИММЕТРИЧНЫ ПО ШИРИНЕ) */
 .left-panel {
   position: absolute;
   top: 135px;
   left: 50px;
-  width: 310px;
+  width: 350px; /* Уравняли ширину */
   height: 725px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
-  padding: 24px 18px 20px 18px;
+  padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 22px;
@@ -93,7 +93,7 @@ body {
   position: absolute;
   top: 135px;
   right: 50px;
-  width: 390px;
+  width: 350px; /* Уравняли ширину */
   height: 725px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
@@ -107,10 +107,10 @@ body {
 /* ЦЕНТРАЛЬНАЯ СУБ-ПАНЕЛЬ С ТРОЙКОЙ И ЦИТАТОЙ */
 .center-sub-panel {
   position: absolute;
-  top: 515px; /* Встает ровно под легенду карты */
-  left: 385px;
-  width: 736px;
-  height: 345px; /* Доводит общую высоту до уровня боковых панелей (135 + 725 = 860px) */
+  top: 515px; 
+  left: 420px; /* Сдвинута с учетом новой ширины левой панели */
+  width: 696px; /* Пересчитано под пиксельную точность: 1536 - 100(отступы) - 700(бока) - 40(гэпы) */
+  height: 345px; 
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -199,9 +199,9 @@ body {
 /* ЦЕНТРАЛЬНОЕ КОЛЕСО КАРТЫ */
 .wheel-area {
   position: absolute;
-  top: 95px; /* Слегка приподняли */
-  left: 360px;
-  width: 786px;
+  top: 95px; 
+  left: 420px; /* Отцентрировано относительно новой сетки */
+  width: 696px;
   height: 385px;
   display: flex;
   align-items: center;
@@ -216,9 +216,9 @@ body {
 /* ЛЕГЕНДА АСПЕКТОВ */
 .aspects-legend {
   position: absolute;
-  top: 485px; /* Прижата к низу колеса карты */
-  left: 360px;
-  width: 786px;
+  top: 485px; 
+  left: 420px; /* Отцентрировано */
+  width: 696px;
   display: flex;
   justify-content: center;
   gap: 15px;
@@ -249,7 +249,7 @@ body {
 .three-art-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; font-size: 28px; font-weight: 500; }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; padding: 0 10px; }
 
-/* ЦИТАТА ТЕПЕРЬ РАСТЯГИВАЕТСЯ НА ВЕСЬ ОСТАТОК ВЫСОТЫ */
+/* ЦИТАТА */
 .quote-container {
   flex-grow: 1;
   display: flex;
@@ -260,7 +260,7 @@ body {
 }
 .quote-banner {
   width: 100%;
-  height: 100%; /* Растягивает рамку по высоте flex-контейнера */
+  height: 100%; 
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 8px;
@@ -291,7 +291,7 @@ body {
 .cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 65px; }
 .cell-sign { color: #8c96a3; text-align: right; }
 
-.houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; } /* Чуть уменьшен гэп под новую ширину */
 .house-row-mini { display: flex; justify-content: space-between; padding: 4.5px 0; border-bottom: 1px solid #FAF6EE; font-size: 11px; }
 .house-row-mini:nth-child(11), .house-row-mini:nth-child(12) { border-bottom: none; }
 .house-lbl { color: #8c96a3; }
