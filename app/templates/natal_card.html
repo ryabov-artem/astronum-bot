@@ -237,8 +237,7 @@ body {
   line-height: 1.2;
 }
 
-/* Финальный красивый и аккуратный футер */
-/* Финальный железобетонный футер */
+/* Железобетонный футер */
 .footer {
   position: absolute;
   bottom: 25px;
@@ -252,15 +251,17 @@ body {
   letter-spacing: 1.5px;
   color: #8c96a3;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: nowrap; /* Запрещаем перенос строк */
 }
 .footer-left {
   position: absolute;
   left: 0;
+  top: 15px;
 }
 .footer-center {
   position: absolute;
   left: 50%;
+  top: 13px; /* Чуть выше, так как шрифт Playfair визуально сидит иначе */
   transform: translateX(-50%);
   font-family: 'Playfair Display', serif;
   font-style: italic;
@@ -272,6 +273,7 @@ body {
 .footer-right {
   position: absolute;
   right: 0;
+  top: 15px;
 }
 </style>
 </head>
@@ -343,9 +345,9 @@ body {
   </div>
 
   <div class="footer">
-    <div>✦ АСТРОНУМ ✦</div>
-    <div class="footer-tagline">Познай себя. Создавай своё будущее.</div>
-    <div>@astronum_aibot</div>
+    <div class="footer-left">✦ АСТРОНУМ ✦</div>
+    <div class="footer-center">Познай себя. Создавай своё будущее.</div>
+    <div class="footer-right">@astronum_aibot</div>
   </div>
 </div>
 </body>
