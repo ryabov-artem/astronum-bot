@@ -232,8 +232,8 @@ body {
 .three-title-lbl { font-size: 9px; font-weight: 600; color: #8c96a3; letter-spacing: 0.5px; }
 .three-value-text { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #111622; }
 .three-value-text span.degree-mark { font-size: 11px; color: #b97a2b; font-weight: 500; margin-left: 2px; }
-.three-art-wrap { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; }
-.three-art-wrap svg { width: 100%; height: 100%; fill: currentColor; }
+.three-art-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; }
+.three-art-wrap svg { width: 100%; height: 100%; }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; }
 
 /* ЦИТАТА */
@@ -335,7 +335,6 @@ body {
     </div>
   </header>
 
-  <!-- ЛЕВАЯ ПАНЕЛЬ -->
   <section class="left-panel">
     <div>
       <h2 class="widget-title">Баланс Стихий</h2>
@@ -461,7 +460,7 @@ body {
         <div class="mini-card wide">
           <div class="mini-card-lbl">Кармические Узлы</div>
           <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 10px; gap: 4px;">
-            ☊ Скорпион 3.91° — ☋ Телец 3.91°
+            ☊ {{ chart.north_node.sign }} {{ chart.north_node.degree }}° — ☋ {{ chart.south_node.sign }} {{ chart.south_node.degree }}°
           </div>
         </div>
       </div>
@@ -470,8 +469,8 @@ body {
     <div>
       <h2 class="widget-title">Преобладающие планеты</h2>
       <div class="dotted-bar-list">
-        {% if chart.planets and chart.planets|length >= 3 %}
-          {% for p in chart.planets[:3] %}
+        {% if chart.dominant_planets %}
+          {% for p in chart.dominant_planets %}
           <div class="dotted-row">
             <span class="dotted-name">
               {% if p.name == 'Солнце' %}☉ {% elif p.name == 'Луна' %}☽ {% elif p.name == 'Меркурий' %}☿ {% elif p.name == 'Венера' %}♀ {% elif p.name == 'Марс' %}♂ {% elif p.name == 'Юпитер' %}♃ {% else %}♄ {% endif %}{{ p.name }}
@@ -480,19 +479,14 @@ body {
               <div class="dotted-track-bg"></div>
               <div class="dotted-fill-bar" style="width: {{ 65 if loop.index0 == 0 else (50 if loop.index0 == 1 else 45) }}%;"></div>
             </div>
-            <span class="dotted-val">{{ 17 if loop.index0 == 0 else 14 }}%</span>
+            <span class="dotted-val">{{ p.percentage }}%</span>
           </div>
           {% endfor %}
-        {% else %}
-          <div class="dotted-row"><span class="dotted-name">☿ Меркурий</span><div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 65%;"></div></div><span class="dotted-val">17%</span></div>
-          <div class="dotted-row"><span class="dotted-name">♄ Сатурн</span><div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 50%;"></div></div><span class="dotted-val">14%</span></div>
-          <div class="dotted-row"><span class="dotted-name">♀ Венера</span><div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 45%;"></div></div><span class="dotted-val">14%</span></div>
         {% endif %}
       </div>
     </div>
   </section>
 
-  <!-- ЦЕНТРАЛЬНЫЙ БЛОК КАРТЫ -->
   <div class="wheel-area">
     <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
   </div>
@@ -506,12 +500,10 @@ body {
     <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B; height:0;"></div>Оппозиция 180°</div>
   </div>
 
-  <!-- БОЛЬШАЯ ТРОЙКА (INLINE SVG РЕШАЕТ ПРОБЛЕМУ БЛОКИРОВКИ КАРТИНОК) -->
   <div class="premium-three">
     <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
     <div class="premium-three-grid">
       
-      <!-- Динамическое Солнце -->
       <div class="three-column">
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
         {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
@@ -519,12 +511,11 @@ body {
           {{ sun_p.sign if sun_p else 'Лев' }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '26.82' }}°</span>
         </div>
         <div class="three-art-wrap">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="9"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+          {{ sun_p.svg | safe if sun_p else '' }}
         </div>
         <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
       </div>
       
-      <!-- Динамическая Луна -->
       <div class="three-column">
         <span class="three-title-lbl">☽ ЛУНА</span>
         {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
@@ -532,19 +523,18 @@ body {
           {{ moon_p.sign if moon_p else 'Овен' }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '16.40' }}°</span>
         </div>
         <div class="three-art-wrap">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          {{ moon_p.svg | safe if moon_p else '' }}
         </div>
         <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
       </div>
       
-      <!-- Динамический Асцендент -->
       <div class="three-column">
         <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
         <div class="three-value-text">
           {{ chart.ascendant.sign if chart.ascendant else 'Стрелец' }}<span class="degree-mark">{{ "%.2f"|format(chart.ascendant.degree) if chart.ascendant else '25.55' }}°</span>
         </div>
         <div class="three-art-wrap">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 14c-4.42 0-8 2.24-8 5v3h16v3c0-2.76-3.58-5-8-5z"/></svg>
+          {{ chart.ascendant.svg | safe if chart.ascendant else '' }}
         </div>
         <span class="three-desc">Ваш образ, характер<br>и путь в мире</span>
       </div>
@@ -558,7 +548,6 @@ body {
     <div class="quote-stars">✦ ✦ ✦</div>
   </div>
 
-  <!-- ПРАВАЯ ПАНЕЛЬ -->
   <section class="right-panel">
     <div class="widget-block">
       <h2 class="widget-title">Координаты тел</h2>
@@ -571,10 +560,17 @@ body {
               <td class="cell-sign">{{ p.sign }}</td>
             </tr>
           {% endfor %}
-        {% else %}
-          <tr><td class="cell-planet">Солнце</td><td class="cell-degree">26.82°</td><td class="cell-sign">Лев</td></tr>
-          <tr><td class="cell-planet">Луна</td><td class="cell-degree">16.40°</td><td class="cell-sign">Овен</td></tr>
         {% endif %}
+        <tr>
+          <td class="cell-planet">{{ chart.north_node.name }}</td>
+          <td class="cell-degree">{{ "%.2f"|format(chart.north_node.degree) }}°</td>
+          <td class="cell-sign">{{ chart.north_node.sign }}</td>
+        </tr>
+        <tr>
+          <td class="cell-planet">{{ chart.south_node.name }}</td>
+          <td class="cell-degree">{{ "%.2f"|format(chart.south_node.degree) }}°</td>
+          <td class="cell-sign">{{ chart.south_node.sign }}</td>
+        </tr>
       </table>
     </div>
 
@@ -588,9 +584,6 @@ body {
             <div class="house-row-mini"><span class="house-lbl">{{ h1.house }} дом</span><span class="house-val">{{ h1.sign }}</span></div>
             <div class="house-row-mini"><span class="house-lbl">{{ h2.house }} дом</span><span class="house-val">{{ h2.sign }}</span></div>
           {% endfor %}
-        {% else %}
-          <div class="house-row-mini"><span class="house-lbl">1 дом</span><span class="house-val">Стрелец</span></div>
-          <div class="house-row-mini"><span class="house-lbl">7 дом</span><span class="house-val">Близнецы</span></div>
         {% endif %}
       </div>
     </div>
@@ -605,41 +598,44 @@ body {
               <span class="aspect-orb-badge">орб {{ "%.2f"|format(a.orb) }}°</span>
             </div>
           {% endfor %}
-        {% else %}
-          <div class="premium-aspect-item"><span class="aspect-core">Солнце соединение Меркурий</span><span class="aspect-orb-badge">орб 2.63°</span></div>
         {% endif %}
       </div>
     </div>
   </section>
 
-  <!-- НИЖНИЙ ГРАФИЧЕСКИЙ ФУТЕР -->
   <section class="luxury-footer-strip">
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Интеллект и общение</div>
-        <div class="footer-node-desc">Сильная ментальная энергия и любознательность</div>
+        <div class="footer-node-desc">
+          {% if a >= 35 %}Сильная ментальная энергия, общительность и любознательность
+          {% else %}Глубокий стратегический ум, фокус на сложных аналитических задачах{% endif %}
+        </div>
       </div>
     </div>
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/curly-arrow.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Гибкость и адаптация</div>
-        <div class="footer-node-desc">Умение быстро перестраиваться и находить решения</div>
+        <div class="footer-node-desc">
+          {% if mc_mut >= 50 %}Умение мгновенно перестраиваться и находить решения в хаосе
+          {% else %}Высокая устойчивость, верность выбранным планам и надежность{% endif %}
+        </div>
       </div>
     </div>
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/heart-with-pulse.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Гармония и красота</div>
-        <div class="footer-node-desc">Ценность отношений, эстетики и личных удовольствий</div>
+        <div class="footer-node-desc">Ценность отношений, внутренней эстетики и личного баланса</div>
       </div>
     </div>
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/mountain.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Цели и рост</div>
-        <div class="footer-node-desc">Стремление к развитию, смыслу и достижениям</div>
+        <div class="footer-node-desc">Неуклонное стремление к духовному развитию и триумфальным достижениям</div>
       </div>
     </div>
   </section>
