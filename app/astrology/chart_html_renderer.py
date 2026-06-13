@@ -45,7 +45,7 @@ def build_natal_card_image(chart_data, wheel_png_path, output_final_png):
     # 4. Скриншот через Playwright
     with sync_playwright() as p:
         browser = p.chromium.launch(args=["--no-sandbox", "--disable-setuid-sandbox"])
-        page = browser.new_page()
+        page = browser.new_page(device_scale_factor=1)
         page.set_viewport_size({"width": 1536, "height": 1024})
         page.set_content(final_html)
         

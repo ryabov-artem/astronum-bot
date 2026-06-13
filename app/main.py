@@ -46,7 +46,7 @@ from astrology.calculator import zodiac_sign
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from dotenv import load_dotenv
@@ -186,7 +186,7 @@ natal_saved_keyboard = ReplyKeyboardMarkup(
 
 natal_decode_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="🔓 Расшифровать карту (3)")],
+        [KeyboardButton(text="✨ Открыть расшифровку (3)")],
         [KeyboardButton(text="⬅️ Назад")]
     ],
     resize_keyboard=True
@@ -214,6 +214,46 @@ my_data_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
+
+
+def parse_birth_datetime_place_strict(text: str) -> dict:
+    from datetime import datetime
+
+    parts = [x.strip() for x in text.split(",", 2)]
+
+    if len(parts) != 3:
+        raise ValueError("format")
+
+    birth_date, birth_time, birth_place = parts
+
+    if not birth_place or len(birth_place) < 2:
+        raise ValueError("place")
+
+    try:
+        datetime.strptime(birth_date, "%d.%m.%Y")
+    except ValueError:
+        raise ValueError("date")
+
+    try:
+        datetime.strptime(birth_time, "%H:%M")
+    except ValueError:
+        raise ValueError("time")
+
+    return {
+        "birth_date": birth_date,
+        "birth_time": birth_time,
+        "birth_place": birth_place,
+    }
+
+
+async def strict_birth_input_error(message: Message):
+    await message.answer(
+        "⚠️ <b>Неверный формат данных</b>\n\n"
+        "Введите строго в формате:\n\n"
+        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
+        parse_mode="HTML"
+    )
 
 
 async def user_has_spread_access(user_id):
@@ -387,10 +427,10 @@ async def delete_my_data(message: Message):
 
 @dp.message(AstrologyStates.awaiting_my_birth_profile)
 async def process_my_birth_profile(message: Message, state: FSMContext):
-    parts = [x.strip() for x in message.text.split(",", 2)]
-
-    if len(parts) != 3:
-        await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ, город")
+    try:
+        parsed = parse_birth_datetime_place_strict(message.text)
+    except ValueError:
+        await strict_birth_input_error(message)
         return
 
     from astrology.real_chart import calculate_real_chart
@@ -398,12 +438,12 @@ async def process_my_birth_profile(message: Message, state: FSMContext):
     progress_msg = await message.answer("⭐ Рассчитываю и сохраняю вашу карту...")
 
     try:
-        chart = calculate_real_chart(parts[0], parts[1], parts[2])
+        chart = calculate_real_chart(parsed["birth_date"], parsed["birth_time"], parsed["birth_place"])
         await save_birth_profile(
             user_id=message.from_user.id,
-            birth_date=parts[0],
-            birth_time=parts[1],
-            birth_place=parts[2],
+            birth_date=parsed["birth_date"],
+            birth_time=parsed["birth_time"],
+            birth_place=parsed["birth_place"],
             chart=chart
         )
     except Exception as e:
@@ -419,9 +459,9 @@ async def process_my_birth_profile(message: Message, state: FSMContext):
 
     await message.answer(
         "✅ <b>Карта сохранена</b>\n\n"
-        f"📅 Дата: <b>{parts[0]}</b>\n"
-        f"🕒 Время: <b>{parts[1]}</b>\n"
-        f"📍 Место: <b>{parts[2]}</b>\n\n"
+        f"📅 Дата: <b>{parsed['birth_date']}</b>\n"
+        f"🕒 Время: <b>{parsed['birth_time']}</b>\n"
+        f"📍 Место: <b>{parsed['birth_place']}</b>\n\n"
         "Теперь вы можете открыть сохранённую карту без повторного расчёта.",
         parse_mode="HTML",
         reply_markup=my_data_keyboard
@@ -625,6 +665,43 @@ async def remember_natal_message(state: FSMContext, sent_message: Message):
     await state.update_data(natal_cleanup_message_ids=ids)
 
 
+
+
+
+def data_hash(data: dict) -> str:
+    import hashlib
+    import json
+    raw = json.dumps(data, ensure_ascii=False, sort_keys=True, default=str)
+    return hashlib.md5(raw.encode("utf-8")).hexdigest()[:12]
+
+async def send_natal_card_image(message: Message, chart: dict, user_id: int):
+    from astrology.real_chart import generate_chart_png
+    from astrology.chart_html_renderer import build_natal_card_image
+
+    os.makedirs("/opt/bots/astrology_bot/data/charts", exist_ok=True)
+
+    ts = int(time.time())
+    cache_dir = "/opt/bots/astrology_bot/data/cache/cards"
+    os.makedirs(cache_dir, exist_ok=True)
+
+    cache_key = f"{user_id}_{data_hash(chart)}"
+    card_path = f"{cache_dir}/natal_card_{cache_key}.png"
+    wheel_path = f"/opt/bots/astrology_bot/data/charts/wheel_{user_id}_{ts}.png"
+
+    await bot.send_chat_action(chat_id=message.chat.id, action="upload_photo")
+
+    if not os.path.exists(card_path):
+        generate_chart_png(chart, wheel_path)
+        await asyncio.to_thread(build_natal_card_image, chart, wheel_path, card_path)
+
+    try:
+        await message.answer_photo(photo=FSInputFile(card_path))
+    finally:
+        try:
+            os.remove(wheel_path)
+        except Exception:
+            pass
+
 async def send_natal_chart_result(message: Message, state: FSMContext, data: dict, input_text: str, save_profile: bool = False):
     user_id = message.from_user.id
 
@@ -643,11 +720,18 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
         )
 
     try:
-        from astrology.real_chart import calculate_real_chart, generate_chart_png
+        from astrology.real_chart import calculate_real_chart
 
         chart = existing_chart
         if not chart:
-            chart = calculate_real_chart(data["birth_date"], data["birth_time"], data["birth_place"])
+            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+            await asyncio.sleep(0.2)
+            chart = await asyncio.to_thread(
+                calculate_real_chart,
+                data["birth_date"],
+                data["birth_time"],
+                data["birth_place"]
+            )
 
         if save_profile:
             await save_birth_profile(
@@ -669,15 +753,25 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
         asc = chart["ascendant"]
         mc = chart["mc"]
 
-        planet_lines = ""
-        for pl in chart["planets"]:
-            planet_lines += f"• {pl['name']}: <b>{pl['degree']}° {pl['sign']}</b>\n"
+        planet_lines = (
+            "☉ Солнце ............. 🔒\n"
+            "☽ Луна ............... 🔒\n"
+            "☿ Меркурий ........... 🔒\n"
+            "♀ Венера ............. 🔒\n"
+            "♂ Марс ............... 🔒\n"
+            "♃ Юпитер ............. 🔒\n"
+            "♄ Сатурн ............. 🔒\n"
+        )
 
         aspects_count = len(chart.get("aspects", []))
 
-        house_lines = ""
-        for h in chart.get("houses", []):
-            house_lines += f"• {h['house']} дом: <b>{h['degree']}° {h['sign']}</b>\n"
+        house_lines = (
+            "⬆ Асцендент .......... 🔒\n"
+            "MC ................... 🔒\n"
+            "🏠 Дома .............. 🔒\n"
+            "✨ Аспекты ........... 🔒\n"
+            "💎 Доминирующая планета 🔒\n"
+        )
 
         profile = await get_birth_profile(user_id)
         saved_interpretation = None
@@ -705,8 +799,7 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
             "✅ <b>Полная расшифровка уже куплена</b>\n\n"
             "Нажмите кнопку ниже, чтобы открыть её снова."
             if saved_interpretation else
-            "🔓 <b>Полная расшифровка карты — 3 кредита</b>\n\n"
-            "В неё входят личность, отношения, карьера, сильные стороны, внутренние конфликты, аспекты и рекомендации."
+""
         )
         decode_markup = natal_decode_paid_keyboard if saved_interpretation else natal_decode_keyboard
 
@@ -716,12 +809,16 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
             f"📅 Дата: <b>{data['birth_date']}</b>\n"
             f"🕒 Время: <b>{data['birth_time']}</b>\n"
             f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+            "🔐 <b>Ваша карта рассчитана</b>\n\n"
             f"{planet_lines}\n"
-            f"⬆ ASC: <b>{asc['degree']}° {asc['sign']}</b>\n"
-            f"MC: <b>{mc['degree']}° {mc['sign']}</b>\n\n"
-            f"🔥 Найдено значимых аспектов: <b>{aspects_count}</b>\n\n"
-            f"🏠 <b>Дома натальной карты</b>\n"
             f"{house_lines}\n"
+            "━━━━━━━━━━━━━━\n\n"
+            "🔓 <b>Открыть полную расшифровку — 3 кредита</b>\n\n"
+            "• психологический портрет\n"
+            "• отношения и любовь\n"
+            "• карьера и деньги\n"
+            "• предназначение\n"
+            "• скрытые таланты\n\n"
             f"{decode_text}",
             parse_mode="HTML",
             reply_markup=decode_markup
@@ -1765,6 +1862,10 @@ async def natal_chart_data_back(message: Message, state: FSMContext):
 async def natal_chart_open_saved_decode(message: Message, state: FSMContext):
     user_id = message.from_user.id
     await cleanup_natal_messages(message, state, delete_current=True)
+    progress_msg = await message.answer(
+        "🔓 Расшифровываю натальную карту...",
+        reply_markup=ReplyKeyboardRemove()
+    )
 
     state_data = await state.get_data()
     data = state_data.get("natal_decode_data")
@@ -1779,19 +1880,7 @@ async def natal_chart_open_saved_decode(message: Message, state: FSMContext):
 
     if chart:
         try:
-            from astrology.real_chart import generate_chart_png
-            chart_path = f"/opt/bots/astrology_bot/data/charts/chart_{user_id}_{int(time.time())}.png"
-            generate_chart_png(chart, chart_path)
-            try:
-                await message.answer_photo(
-                    photo=FSInputFile(chart_path),
-                    caption="⭐ Натальная карта / ASTRONUM\n@astronum_aibot"
-                )
-            finally:
-                try:
-                    os.remove(chart_path)
-                except Exception:
-                    pass
+            await send_natal_card_image(message, chart, user_id)
         except Exception as e:
             await message.answer(f"Карта сохранена, но изображение не удалось создать: {e}")
 
@@ -1808,7 +1897,7 @@ async def natal_chart_open_saved_decode(message: Message, state: FSMContext):
     await state.clear()
 
 
-@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "🔓 Расшифровать карту (3)")
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "✨ Открыть расшифровку (3)")
 async def natal_chart_paid_decode(message: Message, state: FSMContext):
     user_id = message.from_user.id
 
@@ -1828,6 +1917,7 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
             await spend_balance(user_id)
 
     await cleanup_natal_messages(message, state, delete_current=True)
+    await message.answer("🔓 Расшифровываю натальную карту...", reply_markup=ReplyKeyboardRemove())
 
     state_data = await state.get_data()
     data = state_data.get("natal_decode_data")
@@ -1842,21 +1932,14 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
     data["chart"] = chart
 
     try:
-        from astrology.real_chart import generate_chart_png
-        chart_path = f"/opt/bots/astrology_bot/data/charts/chart_{user_id}_{int(time.time())}.png"
-        generate_chart_png(chart, chart_path)
-        try:
-            await message.answer_photo(
-                photo=FSInputFile(chart_path),
-                caption="⭐ Натальная карта / ASTRONUM\n@astronum_aibot"
-            )
-        finally:
-            try:
-                os.remove(chart_path)
-            except Exception:
-                pass
+        await send_natal_card_image(message, chart, user_id)
     except Exception as e:
         await message.answer(f"Карта рассчитана, но изображение не удалось создать: {e}")
+
+    try:
+        await progress_msg.delete()
+    except Exception:
+        pass
 
     decode_progress_msg = await message.answer("🔓 Готовлю полную расшифровку натальной карты...")
 
@@ -1903,17 +1986,11 @@ async def natal_chart_decode_choice_fallback(message: Message):
 
 @dp.message(AstrologyStates.awaiting_natal_chart_data)
 async def process_natal_chart_data(message: Message, state: FSMContext):
-    parts = [x.strip() for x in message.text.split(",", 2)]
-
-    if len(parts) != 3:
-        await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ, город")
+    try:
+        data = parse_birth_datetime_place_strict(message.text)
+    except ValueError:
+        await strict_birth_input_error(message)
         return
-
-    data = {
-        "birth_date": parts[0],
-        "birth_time": parts[1],
-        "birth_place": parts[2],
-    }
 
     state_data = await state.get_data()
     save_profile = bool(state_data.get("natal_save_profile", False))
@@ -1998,12 +2075,11 @@ async def process_moon_sign_data(message: Message, state: FSMContext):
 async def process_ascendant_data(message: Message, state: FSMContext):
     user_id = message.from_user.id
 
-    parts = [x.strip() for x in message.text.split(",", 2)]
-    if len(parts) != 3:
-        await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ, город")
+    try:
+        data = parse_birth_datetime_place_strict(message.text)
+    except ValueError:
+        await strict_birth_input_error(message)
         return
-
-    data = {"birth_date": parts[0], "birth_time": parts[1], "birth_place": parts[2]}
 
     await message.answer("⬆️ Готовлю кредит асцендента...")
 
