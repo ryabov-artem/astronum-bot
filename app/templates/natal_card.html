@@ -93,12 +93,12 @@ body {
   align-items: stretch; 
 }
 
-/* БОКОВЫЕ МОНОЛИТЫ */
+/* БОКОВЫЕ ПАНЕЛИ */
 .left-sidebar-panel, .right-sidebar-panel {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
-  padding: 20px 18px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -116,12 +116,12 @@ body {
   margin-bottom: 10px;
 }
 
-/* ЛЕВАЯ ИНФОГРАФИКА */
+/* ПРОГРЕСС-БАРЫ (Железобетонная кросс-браузерная верстка) */
 .astro-bar-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .astro-bar-item {
   display: flex;
@@ -136,38 +136,43 @@ body {
 }
 .bar-name { color: #3a4757; }
 .bar-percentage { font-weight: 600; color: #111622; }
+
+/* Обновленный трек бара */
 .bar-track {
   width: 100%;
-  height: 4px;
-  background: rgba(185, 122, 43, 0.08);
-  border-radius: 2px;
-  overflow: hidden;
+  height: 5px;
+  background-color: #f0ebdf !important;
+  border-radius: 3px;
+  position: relative;
+  display: block;
 }
+.bar-fill {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+}
+.fill-fire { background-color: #E2583E !important; }
+.fill-earth { background-color: #B97A2B !important; }
+.fill-air { background-color: #6194A8 !important; }
+.fill-water { background-color: #4D7699 !important; }
+.fill-gold { background-color: #B97A2B !important; }
 
-/* Цветные маркеры стихий точь-в-точь как на референсе */
-.fill-fire { background: #E2583E; }
-.fill-earth { background: #B97A2B; }
-.fill-air { background: #6194A8; }
-.fill-water { background: #4D7699; }
-.fill-gold { background: #B97A2B; }
-
-/* Текстовые карточки-описания */
 .desc-box {
   background: #FDFBF7;
   border: 1px dashed rgba(185, 122, 43, 0.25);
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px 10px;
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
-.desc-icon { font-size: 22px; }
+.desc-icon { font-size: 20px; }
 .desc-txt-group { display: flex; flex-direction: column; gap: 2px; }
 .desc-title { font-size: 10px; font-weight: 700; color: #111622; }
 .desc-body { font-size: 10px; color: #576375; line-height: 1.3; }
 
-/* Виджет силы карты */
+/* Сила карты */
 .mini-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -177,15 +182,22 @@ body {
 .mini-card {
   background: #ffffff; 
   border: 1px solid rgba(185, 122, 43, 0.12);
-  padding: 8px;
+  padding: 8px 4px;
   border-radius: 8px;
   text-align: center;
 }
 .mini-card.wide { grid-column: span 2; }
 .mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.mini-card-val { font-size: 12px; font-weight: 600; color: #111622; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.mini-card-val { 
+  font-size: 12px; 
+  font-weight: 600; 
+  color: #111622; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 4px;
+}
 
-/* Преобладающие планеты с точечным заполнением */
 .dotted-row {
   display: flex;
   align-items: center;
@@ -217,15 +229,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 .natal-wheel-frame img {
-  max-width: 440px;
-  max-height: 440px;
+  max-width: 560px; 
+  max-height: 560px;
   object-fit: contain;
 }
 
-/* Легенда аспектов под колесом */
+/* Легенда апексов */
 .aspects-legend {
   display: flex;
   justify-content: center;
@@ -233,12 +244,36 @@ body {
   font-size: 9px;
   font-weight: 600;
   color: #576375;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .legend-line { width: 16px; height: 2px; }
 
-/* БОЛЬШАЯ ТРОЙКА С ИЛЛЮСТРАЦИЯМИ */
+/* ИСПРАВЛЕННЫЙ МИНИ-БЛОК АСПЕКТОВ ПОД КОЛЕСОМ (КАК НА РЕФЕРЕНСЕ) */
+.center-aspects-widget {
+  width: 100%;
+  background: #ffffff;
+  border: 1px dashed rgba(185, 122, 43, 0.25);
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+}
+.center-aspects-title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #b97a2b;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.center-aspects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 20px;
+}
+
+/* БОЛЬШАЯ ТРОЙКА */
 .premium-three {
   width: 100%;
   background: #ffffff;
@@ -287,15 +322,14 @@ body {
   font-weight: 500;
 }
 .three-art {
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   margin: 2px 0;
   object-fit: contain;
   opacity: 0.85;
 }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.2; }
 
-/* Монолитная цитата */
 .quote-banner {
   width: 100%;
   background: #ffffff;
@@ -325,12 +359,12 @@ body {
 .houses-grid-dense {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 40px; 
+  gap: 0 45px; 
 }
 .house-row-mini {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 3px 0; 
   border-bottom: 1px solid #FAF6EE;
   font-size: 11px;
 }
@@ -338,24 +372,7 @@ body {
 .house-lbl { color: #8c96a3; }
 .house-val { color: #111622; font-weight: 500; }
 
-.premium-aspect-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  border-bottom: 1px solid #FAF6EE;
-  font-size: 11px;
-}
-.aspect-core { color: #111622; }
-.aspect-orb-badge {
-  font-size: 9px;
-  color: #b97a2b;
-  background: rgba(185, 122, 43, 0.06);
-  padding: 1px 5px;
-  border-radius: 4px;
-}
-
-/* ТАТУАЖНЫЙ ИНФО-ФУТЕР (4 КОЛОНКИ С ИКОНКАМИ) */
+/* НИЖНИЙ ИНФО-ФУТЕР */
 .luxury-footer-strip {
   border-top: 1px solid rgba(185, 122, 43, 0.15);
   margin-top: 15px;
@@ -408,6 +425,7 @@ body {
 
 <div class="card">
 
+  <!-- ВЕРХНИЙ БЛОК ПАСПОРТА КАРТЫ -->
   <header class="header-block">
     <div class="main-title-group">
       <h1 class="main-title">ASTRONUM</h1>
@@ -429,27 +447,29 @@ body {
     </div>
   </header>
 
+  <!-- СЕТОЧНЫЙ СТРУКТУРНЫЙ МАКЕТ -->
   <main class="workspace">
     
+    <!-- ЛЕВАЯ ПАНЕЛЬ -->
     <section class="left-sidebar-panel">
       <div>
         <h2 class="widget-title">Баланс Стихий</h2>
         <div class="astro-bar-list">
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Огонь</span><span class="bar-percentage">{{ chart.elements.fire }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-fire" style="width: {{ chart.elements.fire }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-fire" style="width: {{ chart.elements.fire }}%;"></span></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Земля</span><span class="bar-percentage">{{ chart.elements.earth }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-earth" style="width: {{ chart.elements.earth }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-earth" style="width: {{ chart.elements.earth }}%;"></span></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Воздух</span><span class="bar-percentage">{{ chart.elements.air }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-air" style="width: {{ chart.elements.air }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-air" style="width: {{ chart.elements.air }}%;"></span></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Вода</span><span class="bar-percentage">{{ chart.elements.water }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-water" style="width: {{ chart.elements.water }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-water" style="width: {{ chart.elements.water }}%;"></span></div>
           </div>
         </div>
 
@@ -467,15 +487,15 @@ body {
         <div class="astro-bar-list">
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Кардинальный</span><span class="bar-percentage">{{ chart.modality.cardinal }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-gold" style="width: {{ chart.modality.cardinal }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.cardinal }}%;"></span></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Фиксированный</span><span class="bar-percentage">{{ chart.modality.fixed }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-gold" style="width: {{ chart.modality.fixed }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.fixed }}%;"></span></div>
           </div>
           <div class="astro-bar-item">
             <div class="astro-bar-header"><span class="bar-name">Мутабельный</span><span class="bar-percentage">{{ chart.modality.mutable }}%</span></div>
-            <div class="bar-track"><div class="bar-fill-gold fill-gold" style="width: {{ chart.modality.mutable }}%;"></div></div>
+            <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.mutable }}%;"></span></div>
           </div>
         </div>
 
@@ -497,7 +517,7 @@ body {
           </div>
           <div class="mini-card">
             <div class="mini-card-lbl">Дом. знак</div>
-            <div class="mini-card-val">♍ Дева</div>
+            <div class="mini-card-val">%-аккуратно-центрировано-%♍ Дева</div>
           </div>
           <div class="mini-card wide">
             <div class="mini-card-lbl">Кармические Узлы</div>
@@ -524,6 +544,7 @@ body {
       </div>
     </section>
 
+    <!-- ЦЕНТРАЛЬНАЯ ЧАСТЬ С КРУПНЫМ КОЛЕСОМ И ИНТЕГРИРОВАННЫМИ АСПЕКТАМИ -->
     <section class="center-area">
       <div class="natal-wheel-frame">
         <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
@@ -535,6 +556,19 @@ body {
         <div class="legend-item"><div class="legend-line" style="background: #6194A8; border-bottom: 2px dashed #6194A8;"></div>Секстиль 60°</div>
         <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #E2583E;"></div>Квадрат 90°</div>
         <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B;"></div>Оппозиция 180°</div>
+      </div>
+
+      <!-- ВЫДЕЛЕННЫЙ МИНИ-БЛОК ДЛЯ КЛЮЧЕВЫХ АСПЕКТОВ (КАК НА РЕФЕРЕНСЕ) -->
+      <div class="center-aspects-widget">
+        <div class="center-aspects-title">Ключевые аспекты карты</div>
+        <div class="center-aspects-grid">
+          {% for a in chart.aspects[:6] %}
+            <div class="premium-aspect-item">
+              <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
+              <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
+            </div>
+          {% endfor %}
+        </div>
       </div>
 
       <div class="premium-three">
@@ -555,7 +589,7 @@ body {
           <div class="three-column">
             <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
             <div class="three-value-text">{{ asc.sign }} <span class="degree-mark">{{ "%.2f"|format(asc.degree) }}°</span></div>
-            <img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/goddess.png" alt="asc">
+            <img class="three-art" src="https://img.icons8.com/ios-filled/100/b97a2b/venus-de-milo.png" alt="asc">
             <span class="three-desc">Ваш образ, характер<br>и путь в мире</span>
           </div>
         </div>
@@ -566,11 +600,12 @@ body {
       </div>
     </section>
 
+    <!-- ПРАВАЯ ПАНЕЛЬ (КЛАССИЧЕСКИЕ ДАННЫЕ И СИСТЕМА ДОМОВ) -->
     <section class="right-sidebar-panel">
       <div>
         <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
         <table class="premium-table">
-          {% for p in chart.planets[:9] %}
+          {% for p in chart.planets[:10] %}
             <tr>
               <td class="cell-planet">{% if p.retrograde %}ℛ {% endif %}{{ p.name }}</td>
               <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
@@ -591,22 +626,11 @@ body {
           {% endfor %}
         </div>
       </div>
-
-      <div>
-        <h2 class="widget-title" style="margin-bottom: 6px;">Ключевые аспекты</h2>
-        <div class="premium-aspects-list">
-          {% for a in chart.aspects[:5] %}
-            <div class="premium-aspect-item">
-              <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
-              <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
     </section>
 
   </main>
 
+  <!-- НИЖНИЙ ИНФО-ФУТЕР -->
   <section class="luxury-footer-strip">
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png" alt="brain">
@@ -638,6 +662,7 @@ body {
     </div>
   </section>
 
+  <!-- САМЫЙ НИЖНИЙ ТЕХНИЧЕСКИЙ СЛОЙ -->
   <footer class="tech-footer">
     <div>ASTRONUM DESIGN STUDIO</div>
     <div>@ASTRONUM_AIBOT</div>
