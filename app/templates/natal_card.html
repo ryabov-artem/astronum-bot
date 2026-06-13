@@ -335,6 +335,7 @@ body {
     </div>
   </header>
 
+  <!-- ЛЕВАЯ ПАНЕЛЬ -->
   <section class="left-panel">
     <div>
       <h2 class="widget-title">Баланс Стихий</h2>
@@ -487,6 +488,7 @@ body {
     </div>
   </section>
 
+  <!-- ЦЕНТРАЛЬНЫЙ БЛОК КАРТЫ -->
   <div class="wheel-area">
     <img src="data:image/png;base64,{{ wheel_base64 }}" alt="Natal Map Wheel">
   </div>
@@ -500,10 +502,12 @@ body {
     <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B; height:0;"></div>Оппозиция 180°</div>
   </div>
 
+  <!-- БОЛЬШАЯ ТРОЙКА -->
   <div class="premium-three">
     <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
     <div class="premium-three-grid">
       
+      <!-- Динамическое Солнце -->
       <div class="three-column">
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
         {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
@@ -516,6 +520,7 @@ body {
         <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
       </div>
       
+      <!-- Динамическая Луна -->
       <div class="three-column">
         <span class="three-title-lbl">☽ ЛУНА</span>
         {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
@@ -528,6 +533,7 @@ body {
         <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
       </div>
       
+      <!-- Динамический Асцендент -->
       <div class="three-column">
         <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
         <div class="three-value-text">
@@ -548,6 +554,7 @@ body {
     <div class="quote-stars">✦ ✦ ✦</div>
   </div>
 
+  <!-- ПРАВАЯ ПАНЕЛЬ -->
   <section class="right-panel">
     <div class="widget-block">
       <h2 class="widget-title">Координаты тел</h2>
@@ -561,6 +568,7 @@ body {
             </tr>
           {% endfor %}
         {% endif %}
+        <!-- Выводим узлы динамически, отталкиваясь от новых полей скрипта -->
         <tr>
           <td class="cell-planet">{{ chart.north_node.name }}</td>
           <td class="cell-degree">{{ "%.2f"|format(chart.north_node.degree) }}°</td>
@@ -603,6 +611,7 @@ body {
     </div>
   </section>
 
+  <!-- НИЖНИЙ ГРАФИЧЕСКИЙ ФУТЕР -->
   <section class="luxury-footer-strip">
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png">
