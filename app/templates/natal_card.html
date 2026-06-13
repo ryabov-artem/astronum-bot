@@ -27,6 +27,17 @@ body {
   padding: 40px 50px;
 }
 
+.card-frame {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  right: 25px;
+  bottom: 25px;
+  border: 1px solid rgba(185, 122, 43, 0.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
 /* ХЕДЕР */
 .header-block {
   position: absolute;
@@ -72,7 +83,7 @@ body {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
-  padding: 20px 16px;
+  padding: 16px 14px;
   box-shadow: 0 4px 30px rgba(185, 122, 43, 0.01);
 }
 
@@ -86,7 +97,7 @@ body {
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
-  padding: 20px 18px;
+  padding: 16px 16px;
   box-shadow: 0 4px 30px rgba(185, 122, 43, 0.01);
 }
 
@@ -97,69 +108,89 @@ body {
   color: #b97a2b;
   text-transform: uppercase;
   border-bottom: 1px solid rgba(185, 122, 43, 0.12);
-  padding-bottom: 5px;
-  margin-bottom: 12px;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
 }
 
-/* ПРОГРЕСС-БАРЫ */
-.astro-bar-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-.astro-bar-item { display: flex; flex-direction: column; gap: 4px; }
+/* ПРОГРЕСС-БАРЫ СТИХИЙ */
+.astro-bar-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+.astro-bar-item { display: flex; flex-direction: column; gap: 3px; }
 .astro-bar-header { display: flex; justify-content: space-between; font-size: 11px; }
-.bar-track { width: 100%; height: 5px; background-color: #f0ebdf; border-radius: 3px; }
+.bar-track { width: 100%; height: 5px; background-color: #f0ebdf !important; border-radius: 3px; }
 .bar-fill { display: block; height: 5px; border-radius: 3px; }
-.fill-fire { background-color: #E2583E; }
-.fill-earth { background-color: #B97A2B; }
-.fill-air { background-color: #6194A8; }
-.fill-water { background-color: #4D7699; }
-.fill-gold { background-color: #B97A2B; }
+.fill-fire { background-color: #E2583E !important; }
+.fill-earth { background-color: #B97A2B !important; }
+.fill-air { background-color: #6194A8 !important; }
+.fill-water { background-color: #4D7699 !important; }
+.fill-gold { background-color: #B97A2B !important; }
 
 .desc-box {
   background: #FDFBF7;
   border: 1px dashed rgba(185, 122, 43, 0.25);
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 6px 10px;
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .desc-icon { font-size: 18px; }
 .desc-txt-group { display: flex; flex-direction: column; }
 .desc-title { font-size: 10px; font-weight: 700; }
-.desc-body { font-size: 10px; color: #576375; line-height: 1.3; }
+.desc-body { font-size: 10px; color: #576375; line-height: 1.2; }
 
-.mini-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-.mini-card { background: #ffffff; border: 1px solid rgba(185, 122, 43, 0.12); padding: 8px; border-radius: 8px; text-align: center; }
+.mini-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.mini-card { background: #ffffff; border: 1px solid rgba(185, 122, 43, 0.12); padding: 6px; border-radius: 8px; text-align: center; }
 .mini-card.wide { grid-column: span 2; }
-.mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
-.mini-card-val { font-size: 12px; font-weight: 600; }
+.mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; text-transform: uppercase; margin-bottom: 3px; }
+.mini-card-val { font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-.dotted-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; padding: 2px 0; }
-.dotted-name { font-weight: 500; }
-.dotted-leader { flex-grow: 1; border-bottom: 3px dotted rgba(185, 122, 43, 0.25); margin: 0 8px; position: relative; top: 2px; }
-.dotted-val { font-weight: 600; }
+/* РАБОЧИЙ ТОЧЕЧНЫЙ ПРОГРЕСС-БАР ПЛАНЕТ */
+.dotted-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+.dotted-name { font-weight: 500; width: 85px; white-space: nowrap; }
+.dotted-container {
+  flex-grow: 1;
+  height: 6px;
+  margin: 0 10px;
+  position: relative;
+  overflow: hidden;
+}
+.dotted-track-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#f0ebdf 1.5px, transparent 1.5px) !important;
+  background-size: 6px 6px;
+}
+.dotted-fill-bar {
+  position: absolute;
+  height: 100%;
+  background-image: radial-gradient(#B97A2B 1.5px, transparent 1.5px) !important;
+  background-size: 6px 6px;
+}
+.dotted-val { font-weight: 600; width: 30px; text-align: right; }
 
-/* ЦЕНТРАЛЬНОЕ КОЛЕСО */
+/* ЦЕНТРАЛЬНОЕ КОЛЕСО КАРТЫ */
 .wheel-area {
   position: absolute;
   top: 110px;
   left: 380px;
   width: 716px;
-  height: 440px;
+  height: 450px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .wheel-area img {
-  max-width: 440px;
-  max-height: 440px;
+  max-width: 450px;
+  max-height: 450px;
   object-fit: contain;
 }
 
 /* ЛЕГЕНДА АСПЕКТОВ */
 .aspects-legend {
   position: absolute;
-  top: 555px;
+  top: 565px;
   left: 380px;
   width: 716px;
   display: flex;
@@ -172,38 +203,13 @@ body {
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .legend-line { width: 14px; height: 2px; }
 
-/* ВИДЖЕТ АСПЕКТОВ */
-.center-aspects-widget {
-  position: absolute;
-  top: 585px;
-  left: 380px;
-  width: 716px;
-  height: 95px;
-  background: #ffffff;
-  border: 1px dashed rgba(185, 122, 43, 0.25);
-  border-radius: 10px;
-  padding: 10px 15px;
-}
-.center-aspects-title {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: #b97a2b;
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 6px;
-}
-.center-aspects-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px 20px; }
-.premium-aspect-item { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; border-bottom: 1px solid #FAF6EE; }
-.aspect-orb-badge { font-size: 9px; color: #b97a2b; }
-
 /* БОЛЬШАЯ ТРОЙКА */
 .premium-three {
   position: absolute;
-  top: 695px;
+  top: 595px;
   left: 380px;
   width: 716px;
-  height: 135px;
+  height: 155px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.15);
   border-radius: 12px;
@@ -211,18 +217,18 @@ body {
 }
 .premium-three-title { text-align: center; font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: #b97a2b; margin-bottom: 8px; }
 .premium-three-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-.three-column { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.three-column { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .three-column:not(:last-child) { border-right: 1px solid rgba(185, 122, 43, 0.12); }
 .three-title-lbl { font-size: 9px; font-weight: 600; color: #8c96a3; }
 .three-value-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; }
 .three-value-text span.degree-mark { font-family: 'Inter', sans-serif; font-size: 12px; color: #b97a2b; }
-.three-art { width: 36px; height: 36px; object-fit: contain; }
+.three-art { width: 40px; height: 40px; object-fit: contain; }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.2; }
 
 /* ЦИТАТА */
 .quote-banner {
   position: absolute;
-  top: 842px;
+  top: 765px;
   left: 380px;
   width: 716px;
   height: 38px;
@@ -246,15 +252,18 @@ body {
 .cell-sign { color: #576375; text-align: right; }
 
 .houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
-.house-row-mini { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #FAF6EE; font-size: 11px; }
+.house-row-mini { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid #FAF6EE; font-size: 11px; }
 .house-row-mini:nth-last-child(1), .house-row-mini:nth-last-child(2) { border-bottom: none; }
 .house-lbl { color: #8c96a3; }
 .house-val { font-weight: 500; }
 
-/* РОСКОШНЫЙ ФУТЕР */
+.premium-aspect-item { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid #FAF6EE; }
+.aspect-orb-badge { font-size: 9px; color: #b97a2b; background: rgba(185, 122, 43, 0.06); padding: 0 4px; border-radius: 3px; }
+
+/* НИЖНИЙ ГРАФИЧЕСКИЙ ФУТЕР */
 .luxury-footer-strip {
   position: absolute;
-  top: 895px;
+  top: 890px;
   left: 50px;
   width: 1436px;
   height: 60px;
@@ -307,28 +316,28 @@ body {
       <h2 class="widget-title">Баланс Стихий</h2>
       <div class="astro-bar-list">
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Огонь</span><span class="bar-percentage">{{ chart.elements.fire }}%</span></div>
+          <div class="astro-bar-header"><span class="bar-name">🔥 Огонь</span><span class="bar-percentage">{{ chart.elements.fire }}%</span></div>
           <div class="bar-track"><span class="bar-fill fill-fire" style="width: {{ chart.elements.fire }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Земля</span><span class="bar-percentage">{{ chart.elements.earth }}%</span></div>
+          <div class="astro-bar-header"><span class="bar-name">⛰️ Земля</span><span class="bar-percentage">{{ chart.elements.earth }}%</span></div>
           <div class="bar-track"><span class="bar-fill fill-earth" style="width: {{ chart.elements.earth }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Воздух</span><span class="bar-percentage">{{ chart.elements.air }}%</span></div>
+          <div class="astro-bar-header"><span class="bar-name">💨 Воздух</span><span class="bar-percentage">{{ chart.elements.air }}%</span></div>
           <div class="bar-track"><span class="bar-fill fill-air" style="width: {{ chart.elements.air }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Вода</span><span class="bar-percentage">{{ chart.elements.water }}%</span></div>
+          <div class="astro-bar-header"><span class="bar-name">💧 Вода</span><span class="bar-percentage">{{ chart.elements.water }}%</span></div>
           <div class="bar-track"><span class="bar-fill fill-water" style="width: {{ chart.elements.water }}%;"></span></div>
         </div>
       </div>
+      
       <div class="desc-box">
-        <span class="desc-icon">🔥</span>
-        <div class="desc-txt-group">
-          <div class="desc-title">Доминирует стихия Воздуха</div>
-          <div class="desc-body">Развитый интеллект, общительность, любознательность и гибкость мышления.</div>
-        </div>
+        {% if chart.dominant_element == 'fire' %}<span class="desc-icon">🔥</span><div class="desc-txt-group"><div class="desc-title">Доминирует стихия Огня</div><div class="desc-body">Страсть, инициативность, лидерство и непреодолимая воля к действию.</div></div>
+        {% elif chart.dominant_element == 'earth' %}<span class="desc-icon">⛰️</span><div class="desc-txt-group"><div class="desc-title">Доминирует стихия Земли</div><div class="desc-body">Практичность, стабильность, надежность и опора на материальный мир.</div></div>
+        {% elif chart.dominant_element == 'water' %}<span class="desc-icon">💧</span><div class="desc-txt-group"><div class="desc-title">Доминирует стихия Воды</div><div class="desc-body">Глубокая эмпатия, интуитивность, богатый внутренний мир и развитые чувства.</div></div>
+        {% else %}<span class="desc-icon">💨</span><div class="desc-txt-group"><div class="desc-title">Доминирует стихия Воздуха</div><div class="desc-body">Развитый интеллект, общительность, любознательность и гибкость мышления.</div></div>{% endif %}
       </div>
     </div>
 
@@ -350,22 +359,21 @@ body {
       </div>
       <div class="desc-box">
         <span class="desc-icon">✨</span>
-        <div class="desc-txt-group">
-          <div class="desc-title">Преобладает мутабельный крест</div>
-          <div class="desc-body">Адаптивность, гибкость, умение легко перестраиваться и находить решения.</div>
-        </div>
+        {% if chart.dominant_modality == 'cardinal' %}<div class="desc-txt-group"><div class="desc-title">Преобладает кардинальный крест</div><div class="desc-body">Решительность, стремление к реформам, запуск масштабных проектов и амбиции.</div></div>
+        {% elif chart.dominant_modality == 'fixed' %}<div class="desc-txt-group"><div class="desc-title">Преобладает фиксированный крест</div><div class="desc-body">Устойчивость, верность принципам, колоссальное упорство и способность долго концентрироваться.</div></div>
+        {% else %}<div class="desc-txt-group"><div class="desc-title">Преобладает мутабельный крест</div><div class="desc-body">Адаптивность, гибкость, умение легко перестраиваться и находить решения.</div></div>{% endif %}
       </div>
     </div>
 
     <div>
       <h2 class="widget-title">Сила карты</h2>
       <div class="mini-cards-grid">
-        <div class="mini-card"><div class="mini-card-lbl">Управитель ASC</div><div class="mini-card-val">☿ Меркурий</div></div>
-        <div class="mini-card"><div class="mini-card-lbl">Дом. знак</div><div class="mini-card-val">♍ Дева</div></div>
+        <div class="mini-card"><div class="mini-card-lbl">Управитель ASC</div><div class="mini-card-val">{{ chart.dominant_planet.symbol }} {{ chart.dominant_planet.name }}</div></div>
+        <div class="mini-card"><div class="mini-card-lbl">Дом. знак</div><div class="mini-card-val">{{ chart.dominant_sign.symbol }} {{ chart.dominant_sign.name }}</div></div>
         <div class="mini-card wide">
           <div class="mini-card-lbl">Кармические Узлы</div>
           <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 11px;">
-            ☊ Скорпион {{"%.2f"|format(chart.north_node.degree)}}° — ☋ Телец {{"%.2f"|format(chart.south_node.degree)}}°
+            ☊ {{ chart.north_node.sign }} {{"%.1f"|format(chart.north_node.degree)}}° — ☋ {{ chart.south_node.sign }} {{"%.1f"|format(chart.south_node.degree)}}°
           </div>
         </div>
       </div>
@@ -374,9 +382,16 @@ body {
     <div>
       <h2 class="widget-title">Преобладающие планеты</h2>
       <div class="dotted-bar-list">
-        <div class="dotted-row"><span class="dotted-name">☿ Меркурий</span><div class="dotted-leader"></div><span class="dotted-val">17%</span></div>
-        <div class="dotted-row"><span class="dotted-name">♄ Сатурн</span><div class="dotted-leader"></div><span class="dotted-val">14%</span></div>
-        <div class="dotted-row"><span class="dotted-name">♀ Венера</span><div class="dotted-leader"></div><span class="dotted-val">14%</span></div>
+        {% for p in chart.top_planets[:3] %}
+        <div class="dotted-row">
+          <span class="dotted-name">{{ p.symbol }} {{ p.name }}</span>
+          <div class="dotted-container">
+            <div class="dotted-track-bg"></div>
+            <div class="dotted-fill-bar" style="width: {{ p.power }}%;"></div>
+          </div>
+          <span class="dotted-val">{{ p.power }}%</span>
+        </div>
+        {% endfor %}
       </div>
     </div>
   </section>
@@ -393,37 +408,33 @@ body {
     <div class="legend-item"><div class="legend-line" style="border-bottom: 2px dotted #B97A2B; height:0;"></div>Оппозиция 180°</div>
   </div>
 
-  <div class="center-aspects-widget">
-    <div class="center-aspects-title">Ключевые аспекты карты</div>
-    <div class="center-aspects-grid">
-      {% for a in chart.aspects[:6] %}
-        <div class="premium-aspect-item">
-          <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
-          <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-
   <div class="premium-three">
     <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
     <div class="premium-three-grid">
       <div class="three-column">
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
-        <div class="three-value-text">{{ sun.sign }} <span class="degree-mark">{{ "%.2f"|format(sun.degree) }}°</span></div>
-        <img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/sun--v1.png" alt="sun">
+        <div class="three-value-text">{{ sun.sign }} <span class="degree-mark">{{ "%.1f"|format(sun.degree) }}°</span></div>
+        {% if sun.sign == 'Близнецы' %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/gemini.png">
+        {% elif sun.sign == 'Скорпион' %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/scorpio.png">
+        {% else %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/sun--v1.png">{% endif %}
         <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
       </div>
+      
       <div class="three-column">
         <span class="three-title-lbl">☽ ЛУНА</span>
-        <div class="three-value-text">{{ moon.sign }} <span class="degree-mark">{{ "%.2f"|format(moon.degree) }}°</span></div>
-        <img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/crescent-moon.png" alt="moon">
+        <div class="three-value-text">{{ moon.sign }} <span class="degree-mark">{{ "%.1f"|format(moon.degree) }}°</span></div>
+        {% if moon.sign == 'Близнецы' %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/gemini.png">
+        {% elif moon.sign == 'Водолей' %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/aquarius.png">
+        {% else %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/crescent-moon.png">{% endif %}
         <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
       </div>
+      
       <div class="three-column">
         <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
-        <div class="three-value-text">{{ asc.sign }} <span class="degree-mark">{{ "%.2f"|format(asc.degree) }}°</span></div>
-        <img class="three-art" src="https://img.icons8.com/ios-filled/100/b97a2b/venus-de-milo.png" alt="asc">
+        <div class="three-value-text">{{ asc.sign }} <span class="degree-mark">{{ "%.1f"|format(asc.degree) }}°</span></div>
+        {% if asc.sign == 'Лев' %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/leo.png">
+        {% elif asc.sign == 'Дева' %}<img class="three-art" src="https://img.icons8.com/ios/100/b97a2b/virgo.png">
+        {% else %}<img class="three-art" src="https://img.icons8.com/ios-filled/100/b97a2b/venus-de-milo.png">{% endif %}
         <span class="three-desc">Ваш образ, характер<br>и путь в мире</span>
       </div>
     </div>
@@ -434,10 +445,10 @@ body {
   </div>
 
   <section class="right-panel">
-    <div style="height: 330px;">
-      <h2 class="widget-title" style="margin-bottom: 6px;">Координаты тел</h2>
+    <div style="height: 250px;">
+      <h2 class="widget-title" style="margin-bottom: 4px;">Координаты тел</h2>
       <table class="premium-table">
-        {% for p in chart.planets[:10] %}
+        {% for p in chart.planets[:8] %}
           <tr>
             <td class="cell-planet">{% if p.retrograde %}ℛ {% endif %}{{ p.name }}</td>
             <td class="cell-degree">{{ "%.2f"|format(p.degree) }}°</td>
@@ -447,8 +458,8 @@ body {
       </table>
     </div>
 
-    <div style="height: 360px;">
-      <h2 class="widget-title" style="margin-bottom: 6px;">Система Домов</h2>
+    <div style="height: 250px;">
+      <h2 class="widget-title" style="margin-bottom: 4px;">Система Домов</h2>
       <div class="houses-grid-dense">
         {% for h in chart.houses %}
           <div class="house-row-mini">
@@ -458,35 +469,47 @@ body {
         {% endfor %}
       </div>
     </div>
+
+    <div style="height: 200px;">
+      <h2 class="widget-title" style="margin-bottom: 4px;">Ключевые аспекты</h2>
+      <div class="premium-aspects-list">
+        {% for a in chart.aspects[:5] %}
+          <div class="premium-aspect-item">
+            <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
+            <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   </section>
 
   <section class="luxury-footer-strip">
     <div class="footer-node">
-      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png" alt="brain">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Интеллект и общение</div>
-        <div class="footer-node-desc">Сильная ментальная энергия и любознательность</div>
+        <div class="footer-node-desc">{% if chart.dominant_sign.name == 'Близнецы' %}Сильная ментальная энергия и безграничная любознательность{% else %}Глубокий стратегический ум, фокус на важных аналитических задачах{% endif %}</div>
       </div>
     </div>
     <div class="footer-node">
-      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/curly-arrow.png" alt="flex">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/curly-arrow.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Гибкость и адаптация</div>
-        <div class="footer-node-desc">Умение быстро перестраиваться и находить решения</div>
+        <div class="footer-node-desc">{% if chart.modality.mutable > 50 %}Умение мгновенно перестраиваться и находить решения в хаосе{% else %}Высокая устойчивость, верность выбранным планам и надежность{% endif %}</div>
       </div>
     </div>
     <div class="footer-node">
-      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/heart-with-pulse.png" alt="heart">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/heart-with-pulse.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Гармония и красота</div>
-        <div class="footer-node-desc">Ценность отношений, эстетики и личных удовольствий</div>
+        <div class="footer-node-desc">Ценность глубоких отношений, внутренней эстетики и личного баланса</div>
       </div>
     </div>
     <div class="footer-node">
-      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/mountain.png" alt="mount">
+      <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/mountain.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Цели и рост</div>
-        <div class="footer-node-desc">Стремление к развитию, смыслу и достижениям</div>
+        <div class="footer-node-desc">Неуклонное стремление к духовному развитию, смыслу и триумфальным достижениям</div>
       </div>
     </div>
   </section>
