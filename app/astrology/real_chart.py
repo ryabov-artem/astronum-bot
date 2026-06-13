@@ -212,8 +212,8 @@ def generate_chart_png(chart: dict, output_path: str):
     import math
     from PIL import Image, ImageDraw, ImageFont
 
-    # Рисуем строго чистый натальный круг на прозрачном фоне
-    W, H = 600, 600
+    # Увеличили холст до 750x750, чтобы убрать лишнее пустое пространство
+    W, H = 750, 750
     img = Image.new("RGBA", (W, H), (255, 255, 255, 0))
     draw = ImageDraw.Draw(img)
 
@@ -229,14 +229,16 @@ def generate_chart_png(chart: dict, output_path: str):
                 pass
         return ImageFont.load_default()
 
-    f_tiny = font(12)
-    f_symbol = font(26, True)
+    f_tiny = font(14, True)
+    f_symbol = font(28, True)  # Увеличили размер планет для лучшей читаемости
 
-    cx, cy = 300, 300
-    R_outer = 240
-    R_zodiac = 205
-    R_inner = 120
-    R_aspect = 90
+    cx, cy = 375, 375  # Новая центральная точка на холсте 750x750
+    
+    # Пропорционально увеличили все радиусы
+    R_outer = 310
+    R_zodiac = 265
+    R_inner = 160
+    R_aspect = 145
 
     zodiac_symbols = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"]
     planet_symbols = {
@@ -244,17 +246,21 @@ def generate_chart_png(chart: dict, output_path: str):
         "Марс": "♂", "Юпитер": "♃", "Сатурн": "♄"
     }
 
+    # Вычисляем сдвиг: ASC должен быть строго слева (180°)
+    asc_long = chart.get("ascendant", {}).get("longitude", 0.0)
+    
     def xy(deg, r):
-        a = math.radians(180 - deg)
+        adjusted_deg = (deg - asc_long + 180) % 360
+        a = math.radians(adjusted_deg)
         return (cx + math.cos(a) * r, cy - math.sin(a) * r)
 
-    # Отрисовка колец
+    # Отрисовка колец с повышенной толщиной (width) для контраста
     for r, color, width in [
-        (R_outer, "#7C93B8", 3),
-        (R_zodiac, "#B9C8DE", 2),
-        (165, "#DDE8F5", 1),
-        (R_inner, "#B9C8DE", 2),
-        (45, "#DDE8F5", 1),
+        (R_outer, "#1E293B", 4),  # Сделали темнее и толще
+        (R_zodiac, "#7C93B8", 3),
+        (215, "#CBD8EA", 2),
+        (R_inner, "#7C93B8", 3),
+        (60, "#DDE8F5", 2),
     ]:
         draw.ellipse((cx-r, cy-r, cx+r, cy+r), outline=color, width=width)
 
@@ -263,17 +269,18 @@ def generate_chart_png(chart: dict, output_path: str):
         deg = i * 30
         x1, y1 = xy(deg, R_inner)
         x2, y2 = xy(deg, R_outer)
-        draw.line((x1, y1, x2, y2), fill="#CBD8EA", width=2)
+        draw.line((x1, y1, x2, y2), fill="#7C93B8", width=3)  # Сделали разделители контрастнее
 
-        tx, ty = xy(deg + 15, 222)
-        draw.text((tx, ty), sym, fill="#1E293B", font=font(22, True), anchor="mm")
+        tx, ty = xy(deg + 15, 288)
+        draw.text((tx, ty), sym, fill="#1E293B", font=font(26, True), anchor="mm")
 
+        # Рисочки градусов внутри секторов
         for d in range(5, 30, 5):
-            xx1, yy1 = xy(deg + d, 180)
-            xx2, yy2 = xy(deg + d, 190)
-            draw.line((xx1, yy1, xx2, yy2), fill="#E2EAF5", width=1)
+            xx1, yy1 = xy(deg + d, 235)
+            xx2, yy2 = xy(deg + d, 245)
+            draw.line((xx1, yy1, xx2, yy2), fill="#94A3B8", width=2)
 
-    # Аспекты внутри круга
+    # Аспекты внутри круга (сделали линии чуть толще — width=3)
     planets = chart.get("planets", [])
     lon_by_name = {pl["name"]: pl["longitude"] for pl in planets}
     for a in chart.get("aspects", [])[:8]:
@@ -284,29 +291,36 @@ def generate_chart_png(chart: dict, output_path: str):
         x1, y1 = xy(lon_by_name[p1], R_aspect)
         x2, y2 = xy(lon_by_name[p2], R_aspect)
         color = "#EF4444" if a.get("aspect") in ("квадрат", "оппозиция") else "#3B82F6"
-        draw.line((x1, y1, x2, y2), fill=color, width=2)
+        draw.line((x1, y1, x2, y2), fill=color, width=3)
 
     # Планеты на круге
     used = {}
     for pl in planets:
         deg = pl["longitude"]
-        bucket = int(deg // 10)
+        bucket = int(deg // 12)
         used[bucket] = used.get(bucket, 0) + 1
-        offset = used[bucket] * 14
-        px, py = xy(deg, 135 + offset)
+        offset = used[bucket] * 20
+        px, py = xy(deg, 175 + offset)
         sym = planet_symbols.get(pl["name"], pl["name"][0])
-        draw.ellipse((px-16, py-16, px+16, py+16), fill="#FFFFFF", outline="#7C93B8", width=1)
-        draw.text((px, py-1), sym, fill="#182235", font=f_symbol, anchor="mm")
+        
+        # Белая подложка-кружок под планету с контрастной рамкой
+        draw.ellipse((px-18, py-18, px+18, py+18), fill="#FFFFFF", outline="#1E293B", width=2)
+        draw.text((px, py + 1), sym, fill="#1E293B", font=f_symbol, anchor="mm")
 
-    # Сетки ASC / MC
+    # Оси ASC / MC (Главные оси карты, делаем их максимально четкими)
     for key, label in [("ascendant", "ASC"), ("mc", "MC")]:
         item = chart.get(key, {})
         if item:
-            x1, y1 = xy(item["longitude"], 40)
-            x2, y2 = xy(item["longitude"], R_outer + 10)
-            draw.line((x1, y1, x2, y2), fill="#182235", width=2)
-            tx, ty = xy(item["longitude"], R_outer + 20)
-            draw.text((tx, ty), label, fill="#182235", font=f_tiny, anchor="mm")
+            deg = item["longitude"]
+            x1, y1 = xy(deg, 60)
+            x2, y2 = xy(deg, R_outer + 15)
+            draw.line((x1, y1, x2, y2), fill="#1E293B", width=3)
+            
+            tx, ty = xy(deg, R_outer + 28)
+            draw.text((tx, ty), label, fill="#1E293B", font=f_tiny, anchor="mm")
+
+    img.save(output_path, "PNG", quality=95)
+    return output_path
 
     img.save(output_path, "PNG", quality=95)
     return output_path
