@@ -212,8 +212,9 @@ def generate_chart_png(chart: dict, output_path: str):
     import math
     from PIL import Image, ImageDraw, ImageFont
 
-    W, H = 1600, 1000
-    img = Image.new("RGB", (W, H), "#F8FBFF")
+    # Рисуем строго чистый натальный круг на прозрачном фоне
+    W, H = 600, 600
+    img = Image.new("RGBA", (W, H), (255, 255, 255, 0))
     draw = ImageDraw.Draw(img)
 
     def font(size, bold=False):
@@ -228,99 +229,54 @@ def generate_chart_png(chart: dict, output_path: str):
                 pass
         return ImageFont.load_default()
 
-    f_title = font(42, True)
-    f_subtitle = font(22)
-    f_label = font(24, True)
-    f_text = font(22)
-    f_small = font(17)
-    f_tiny = font(14)
-    f_logo = font(52, True)
-    f_symbol = font(30, True)
+    f_tiny = font(12)
+    f_symbol = font(26, True)
 
-    # soft background
-    for y in range(H):
-        ratio = y / H
-        r = int(247 - ratio * 6)
-        g = int(242 - ratio * 10)
-        b = int(234 - ratio * 18)
-        draw.line([(0, y), (W, y)], fill=(r, g, b))
-
-    # decorative circles
-    draw.ellipse((-220, -250, 480, 450), outline="#DCE7F3", width=3)
-    draw.ellipse((1180, 680, 1780, 1280), outline="#DCE7F3", width=3)
-
-    # watermark
-    draw.text((470, 500), "ASTRONUM", fill="#EEF4FB", font=font(96, True), anchor="mm")
-    draw.text((470, 570), "ТВОЯ КАРТА · ТВОЙ ПУТЬ", fill="#EEF4FB", font=font(22, True), anchor="mm")
-
-    # headers
-    draw.text((70, 55), "Натальная карта", fill="#182235", font=f_title)
-    draw.text((72, 110), "персональный астрологический расчёт", fill="#64748B", font=f_subtitle)
-
-    birth_line = f"{chart.get('birth_date', '')} · {chart.get('birth_time', '')} · {chart.get('birth_city', '')}"
-    draw.rounded_rectangle((70, 150, 590, 230), radius=24, fill="#FFFFFF", outline="#D6E2F0", width=2)
-    draw.text((100, 172), birth_line[:48], fill="#182235", font=f_text)
-    draw.text((100, 202), f"{chart.get('latitude', '')}°, {chart.get('longitude', '')}°", fill="#64748B", font=f_small)
-
-    # wheel geometry
-    cx, cy = 485, 565
-    R_outer = 365
-    R_zodiac = 315
-    R_inner = 178
-    R_aspect = 135
+    cx, cy = 300, 300
+    R_outer = 240
+    R_zodiac = 205
+    R_inner = 120
+    R_aspect = 90
 
     zodiac_symbols = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"]
     planet_symbols = {
-        "Солнце": "☉",
-        "Луна": "☽",
-        "Меркурий": "☿",
-        "Венера": "♀",
-        "Марс": "♂",
-        "Юпитер": "♃",
-        "Сатурн": "♄",
-    }
-    aspect_symbols = {
-        "соединение": "☌",
-        "секстиль": "✶",
-        "квадрат": "□",
-        "трин": "△",
-        "оппозиция": "☍",
+        "Солнце": "☉", "Луна": "☽", "Меркурий": "☿", "Венера": "♀", 
+        "Марс": "♂", "Юпитер": "♃", "Сатурн": "♄"
     }
 
     def xy(deg, r):
-        # astrology wheel: 0 Aries at left, clockwise
         a = math.radians(180 - deg)
         return (cx + math.cos(a) * r, cy - math.sin(a) * r)
 
-    # wheel rings
+    # Отрисовка колец
     for r, color, width in [
-        (R_outer, "#7C93B8", 4),
+        (R_outer, "#7C93B8", 3),
         (R_zodiac, "#B9C8DE", 2),
-        (245, "#DDE8F5", 2),
+        (165, "#DDE8F5", 1),
         (R_inner, "#B9C8DE", 2),
-        (70, "#DDE8F5", 2),
+        (45, "#DDE8F5", 1),
     ]:
         draw.ellipse((cx-r, cy-r, cx+r, cy+r), outline=color, width=width)
 
-    # zodiac sectors
+    # Сектора знаков зодиака
     for i, sym in enumerate(zodiac_symbols):
         deg = i * 30
         x1, y1 = xy(deg, R_inner)
         x2, y2 = xy(deg, R_outer)
         draw.line((x1, y1, x2, y2), fill="#CBD8EA", width=2)
 
-        tx, ty = xy(deg + 15, 315)
-        draw.text((tx, ty), sym, fill="#1E293B", font=font(34, True), anchor="mm")
+        tx, ty = xy(deg + 15, 222)
+        draw.text((tx, ty), sym, fill="#1E293B", font=font(22, True), anchor="mm")
 
         for d in range(5, 30, 5):
-            xx1, yy1 = xy(deg + d, 276)
-            xx2, yy2 = xy(deg + d, 292)
+            xx1, yy1 = xy(deg + d, 180)
+            xx2, yy2 = xy(deg + d, 190)
             draw.line((xx1, yy1, xx2, yy2), fill="#E2EAF5", width=1)
 
-    # aspects
+    # Аспекты внутри круга
     planets = chart.get("planets", [])
     lon_by_name = {pl["name"]: pl["longitude"] for pl in planets}
-    for a in chart.get("aspects", [])[:9]:
+    for a in chart.get("aspects", [])[:8]:
         p1 = a.get("planet1")
         p2 = a.get("planet2")
         if p1 not in lon_by_name or p2 not in lon_by_name:
@@ -330,76 +286,27 @@ def generate_chart_png(chart: dict, output_path: str):
         color = "#EF4444" if a.get("aspect") in ("квадрат", "оппозиция") else "#3B82F6"
         draw.line((x1, y1, x2, y2), fill=color, width=2)
 
-    # planets on wheel
+    # Планеты на круге
     used = {}
     for pl in planets:
         deg = pl["longitude"]
-        bucket = int(deg // 6)
+        bucket = int(deg // 10)
         used[bucket] = used.get(bucket, 0) + 1
-        offset = used[bucket] * 18
-        px, py = xy(deg, 215 + offset)
+        offset = used[bucket] * 14
+        px, py = xy(deg, 135 + offset)
         sym = planet_symbols.get(pl["name"], pl["name"][0])
-        draw.ellipse((px-25, py-25, px+25, py+25), fill="#FFFFFF", outline="#7C93B8", width=2)
+        draw.ellipse((px-16, py-16, px+16, py+16), fill="#FFFFFF", outline="#7C93B8", width=1)
         draw.text((px, py-1), sym, fill="#182235", font=f_symbol, anchor="mm")
 
-    # ASC / MC
+    # Сетки ASC / MC
     for key, label in [("ascendant", "ASC"), ("mc", "MC")]:
         item = chart.get(key, {})
         if item:
-            x1, y1 = xy(item["longitude"], 60)
-            x2, y2 = xy(item["longitude"], R_outer + 18)
-            draw.line((x1, y1, x2, y2), fill="#182235", width=3)
-            tx, ty = xy(item["longitude"], R_outer + 45)
-            draw.rounded_rectangle((tx-35, ty-16, tx+35, ty+16), radius=10, fill="#182235")
-            draw.text((tx, ty-1), label, fill="#FFFFFF", font=f_tiny, anchor="mm")
+            x1, y1 = xy(item["longitude"], 40)
+            x2, y2 = xy(item["longitude"], R_outer + 10)
+            draw.line((x1, y1, x2, y2), fill="#182235", width=2)
+            tx, ty = xy(item["longitude"], R_outer + 20)
+            draw.text((tx, ty), label, fill="#182235", font=f_tiny, anchor="mm")
 
-    # right cards
-    panel_x = 930
-    draw.rounded_rectangle((875, 55, 1535, 940), radius=34, fill="#FFFFFF", outline="#D6E2F0", width=2)
-
-    draw.text((930, 95), "ASTRONUM", fill="#182235", font=f_logo)
-    draw.text((932, 150), "@astronum_aibot · t.me/astronum_aibot", fill="#64748B", font=f_small)
-    draw.line((930, 188, 1490, 188), fill="#D6E2F0", width=2)
-
-    y = 220
-    draw.text((930, y), "Планеты", fill="#182235", font=f_label)
-    y += 42
-    for pl in planets:
-        sym = planet_symbols.get(pl["name"], "")
-        draw.text((930, y), f"{sym}  {pl['name']}", fill="#182235", font=f_text)
-        draw.text((1160, y), f"{pl['degree']:.2f}°", fill="#64748B", font=f_text)
-        draw.text((1275, y), pl["sign"], fill="#182235", font=f_text)
-        y += 36
-
-    y += 20
-    draw.text((930, y), "Углы карты", fill="#182235", font=f_label)
-    y += 42
-    asc = chart.get("ascendant", {})
-    mc = chart.get("mc", {})
-    if asc:
-        draw.text((930, y), "ASC Асцендент", fill="#182235", font=f_text)
-        draw.text((1160, y), f"{asc['degree']:.2f}°", fill="#64748B", font=f_text)
-        draw.text((1275, y), asc["sign"], fill="#182235", font=f_text)
-        y += 36
-    if mc:
-        draw.text((930, y), "MC Мидхевен", fill="#182235", font=f_text)
-        draw.text((1160, y), f"{mc['degree']:.2f}°", fill="#64748B", font=f_text)
-        draw.text((1275, y), mc["sign"], fill="#182235", font=f_text)
-        y += 50
-
-    draw.text((930, y), "Ключевые аспекты", fill="#182235", font=f_label)
-    y += 42
-    for a in chart.get("aspects", [])[:6]:
-        sym = aspect_symbols.get(a.get("aspect"), a.get("aspect"))
-        draw.text((930, y), f"{a['planet1']} {sym} {a['planet2']}", fill="#182235", font=f_small)
-        draw.text((1335, y), f"орб {a['orb']}°", fill="#64748B", font=f_small)
-        y += 30
-
-    # footer
-    draw.rounded_rectangle((70, 910, 820, 965), radius=18, fill="#182235")
-    draw.text((100, 927), "✦ ASTRONUM", fill="#FFFFFF", font=font(22, True))
-    draw.text((300, 930), "Натальная карта построена по данным пользователя", fill="#E8F0FA", font=f_small)
-
-    img.save(output_path, quality=95)
+    img.save(output_path, "PNG", quality=95)
     return output_path
-
