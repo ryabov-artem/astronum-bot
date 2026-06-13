@@ -186,7 +186,8 @@ natal_saved_keyboard = ReplyKeyboardMarkup(
 
 natal_decode_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="✨ Открыть расшифровку (3)")],
+        [KeyboardButton(text="👀 Пример расшифровки")],
+        [KeyboardButton(text="✨ Открыть расшифровку (3 кредита)")],
         [KeyboardButton(text="⬅️ Назад")]
     ],
     resize_keyboard=True
@@ -252,7 +253,8 @@ async def strict_birth_input_error(message: Message):
         "⚠️ <b>Неверный формат данных</b>\n\n"
         "Введите строго в формате:\n\n"
         "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=natal_data_keyboard
     )
 
 
@@ -373,7 +375,8 @@ async def my_birth_profile(message: Message, state: FSMContext):
             "Сохранённой карты пока нет.\n\n"
             "Введите данные в формате:\n\n"
             "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=natal_data_keyboard
         )
         return
 
@@ -423,6 +426,18 @@ async def open_my_saved_chart(message: Message, state: FSMContext):
 async def delete_my_data(message: Message):
     await delete_birth_profile(message.from_user.id)
     await message.answer("🗑 Сохранённая карта удалена.")
+
+
+
+
+@dp.message(AstrologyStates.awaiting_my_birth_profile, F.text == "⬅️ Назад")
+async def my_birth_profile_back(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
+    await state.clear()
+    await message.answer(
+        "Главное меню",
+        reply_markup=get_main_keyboard(message.from_user.id)
+    )
 
 
 @dp.message(AstrologyStates.awaiting_my_birth_profile)
@@ -864,7 +879,7 @@ async def natal_chart_for_me(message: Message, state: FSMContext):
         input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
 
         if data.get("chart"):
-            await message.answer(
+            sent = await message.answer(
                 "✅ <b>У вас уже есть готовая натальная карта</b>\n\n"
                 f"📅 Дата: <b>{data['birth_date']}</b>\n"
                 f"🕒 Время: <b>{data['birth_time']}</b>\n"
@@ -873,6 +888,7 @@ async def natal_chart_for_me(message: Message, state: FSMContext):
                 parse_mode="HTML",
                 reply_markup=get_main_keyboard(message.from_user.id)
             )
+            await remember_natal_message(state, sent)
         else:
             await message.answer(
                 "🗂 <b>Использую сохранённые данные</b>\n\n"
@@ -885,6 +901,12 @@ async def natal_chart_for_me(message: Message, state: FSMContext):
             )
 
         await send_natal_chart_result(message, state, data, input_text, save_profile=not bool(data.get("chart")))
+
+        try:
+            await sent.delete()
+        except Exception:
+            pass
+
         return
 
     await state.update_data(natal_save_profile=True)
@@ -1858,46 +1880,33 @@ async def natal_chart_data_back(message: Message, state: FSMContext):
 
 
 
-@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "📖 Открыть расшифровку")
-async def natal_chart_open_saved_decode(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    await cleanup_natal_messages(message, state, delete_current=True)
-    progress_msg = await message.answer(
-        "🔓 Расшифровываю натальную карту...",
-        reply_markup=ReplyKeyboardRemove()
-    )
 
-    state_data = await state.get_data()
-    data = state_data.get("natal_decode_data")
-    interpretation = state_data.get("natal_saved_interpretation")
 
-    if not data or not interpretation:
-        await message.answer("⚠️ Сохранённая расшифровка не найдена.", reply_markup=get_main_keyboard(user_id))
-        await state.clear()
-        return
 
-    chart = state_data.get("natal_decode_chart")
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "👀 Пример расшифровки")
+async def natal_chart_decode_example(message: Message):
+    card_path = "/opt/bots/astrology_bot/data/examples/natal_example_card.png"
 
-    if chart:
-        try:
-            await send_natal_card_image(message, chart, user_id)
-        except Exception as e:
-            await message.answer(f"Карта сохранена, но изображение не удалось создать: {e}")
+    if os.path.exists(card_path):
+        await message.answer_photo(photo=FSInputFile(card_path))
 
     await message.answer(
-        f"⭐ <b>Полная расшифровка натальной карты</b>\n\n"
-        f"📅 Дата: <b>{data['birth_date']}</b>\n"
-        f"🕒 Время: <b>{data['birth_time']}</b>\n"
-        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
+        "👀 <b>Пример полной расшифровки</b>\n\n"
+        "После открытия вы получите:\n\n"
+        "⭐ Полный психологический портрет\n"
+        "❤️ Анализ отношений и эмоциональных сценариев\n"
+        "💼 Карьерные сильные стороны и таланты\n"
+        "🎯 Главные задачи и точки роста\n"
+        "✨ Разбор ключевых аспектов карты\n"
+        "🪐 Интерпретацию реальных положений планет\n\n"
+        "Каждая расшифровка создаётся индивидуально по вашей дате, времени и месту рождения.\n\n"
+        "💎 Стоимость полной расшифровки: <b>3 кредита</b>",
         parse_mode="HTML",
-        reply_markup=get_main_keyboard(user_id)
+        reply_markup=natal_decode_keyboard
     )
 
-    await state.clear()
 
-
-@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "✨ Открыть расшифровку (3)")
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "✨ Открыть расшифровку (3 кредита)")
 async def natal_chart_paid_decode(message: Message, state: FSMContext):
     user_id = message.from_user.id
 
@@ -1917,7 +1926,10 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
             await spend_balance(user_id)
 
     await cleanup_natal_messages(message, state, delete_current=True)
-    await message.answer("🔓 Расшифровываю натальную карту...", reply_markup=ReplyKeyboardRemove())
+    progress_msg = await message.answer(
+        "🔓 Расшифровываю натальную карту...",
+        reply_markup=ReplyKeyboardRemove()
+    )
 
     state_data = await state.get_data()
     data = state_data.get("natal_decode_data")
@@ -1932,14 +1944,14 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
     data["chart"] = chart
 
     try:
-        await send_natal_card_image(message, chart, user_id)
-    except Exception as e:
-        await message.answer(f"Карта рассчитана, но изображение не удалось создать: {e}")
-
-    try:
         await progress_msg.delete()
     except Exception:
         pass
+
+    try:
+        await send_natal_card_image(message, chart, user_id)
+    except Exception as e:
+        await message.answer(f"Карта рассчитана, но изображение не удалось создать: {e}")
 
     decode_progress_msg = await message.answer("🔓 Готовлю полную расшифровку натальной карты...")
 

@@ -486,21 +486,18 @@ body {
     <div class="widget-block">
       <h2 class="widget-title">Преобладающие планеты</h2>
       <div class="dotted-bar-list">
-        <div class="dotted-row">
-          <span class="dotted-name">☉ Солнце</span>
-          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 65%;"></div></div>
-          <span class="dotted-val">17%</span>
-        </div>
-        <div class="dotted-row">
-          <span class="dotted-name">☽ Луна</span>
-          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 50%;"></div></div>
-          <span class="dotted-val">14%</span>
-        </div>
-        <div class="dotted-row">
-          <span class="dotted-name">☿ Меркурий</span>
-          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 45%;"></div></div>
-          <span class="dotted-val">14%</span>
-        </div>
+        {% if chart.dominant_planets %}
+          {% for p in chart.dominant_planets[:3] %}
+            <div class="dotted-row">
+              <span class="dotted-name">{{ p.symbol }} {{ p.name }}</span>
+              <div class="dotted-container">
+                <div class="dotted-track-bg"></div>
+                <div class="dotted-fill-bar" style="width: {{ p.percent }}%;"></div>
+              </div>
+              <span class="dotted-val">{{ p.percent }}%</span>
+            </div>
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
   </section>
@@ -573,7 +570,7 @@ body {
     <div class="quote-container">
       <div class="quote-banner">
         <div class="quote-text-wrap">
-          <span class="quote-marks">“</span> Познай себя. Создавай своё будущее. <span class="quote-marks">”</span>
+          <span class="quote-marks">“</span> Познай себя. Раскрой потенциал своей карты. <span class="quote-marks">”</span>
         </div>
         
       </div>
@@ -668,7 +665,7 @@ body {
   </section>
 
   <footer class="tech-footer">
-    <div>ASTRONUM DESIGN STUDIO</div>
+    <div>ASTRONUM</div>
     <div class="footer-center-star">✦</div>
     <div>@ASTRONUM_AIBOT</div>
   </footer>

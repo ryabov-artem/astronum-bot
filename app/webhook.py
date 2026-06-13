@@ -168,5 +168,5 @@ app.router.add_get("/health", health)
 app.router.add_post("/yookassa/webhook", yookassa_webhook)
 
 if __name__ == "__main__":
-    web.run_app(app, host="127.0.0.1", port=8083)
+    web.run_app(app, host="127.0.0.1", port=8084)
 

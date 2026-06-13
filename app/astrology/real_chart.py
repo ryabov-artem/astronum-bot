@@ -239,7 +239,14 @@ def calculate_top_planets(planets: list[dict], limit: int = 3) -> list[dict]:
         scored.append(item)
 
     scored.sort(key=lambda x: x.get("score", 0), reverse=True)
-    return scored[:limit]
+
+    top = scored[:limit]
+    max_score = max((item.get("score", 0) for item in top), default=1) or 1
+
+    for item in top:
+        item["percent"] = round(item.get("score", 0) * 100 / max_score)
+
+    return top
 
 
 def find_dominant_planet(planets: list[dict]) -> dict:
