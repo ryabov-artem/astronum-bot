@@ -9,7 +9,7 @@ def build_natal_card_image(chart_data, wheel_png_path, output_final_png):
         wheel_base64 = base64.b64encode(img_f.read()).decode("utf-8")
 
     # 2. Путь к шаблону natal_card.html
-    template_path = "/opt/bots/astrology_bot/app/natal_card.html" # Проверь этот путь!
+    template_path = "/opt/bots/astrology_bot/app/templates/natal_card.html" # Проверь этот путь!
     
     with open(template_path, "r", encoding="utf-8") as f:
         template_html = f.read()
