@@ -1,4 +1,5 @@
 import aiosqlite
+import json
 from datetime import datetime
 
 DB_FILE = "/opt/bots/astrology_bot/data/database.db"
@@ -28,9 +29,27 @@ async def init_db():
             birth_date TEXT NOT NULL,
             birth_time TEXT NOT NULL,
             birth_place TEXT NOT NULL,
+            chart_json TEXT,
+            natal_interpretation TEXT,
+            natal_interpreted_at TEXT,
             created_at TEXT
         )
         """)
+
+        try:
+            await db.execute("ALTER TABLE birth_profiles ADD COLUMN chart_json TEXT")
+        except Exception:
+            pass
+
+        try:
+            await db.execute("ALTER TABLE birth_profiles ADD COLUMN natal_interpretation TEXT")
+        except Exception:
+            pass
+
+        try:
+            await db.execute("ALTER TABLE birth_profiles ADD COLUMN natal_interpreted_at TEXT")
+        except Exception:
+            pass
 
         await db.execute("""
         CREATE TABLE IF NOT EXISTS user_balance (
@@ -490,18 +509,21 @@ async def get_payments_stats():
     }
 
 
-async def save_birth_profile(user_id: int, birth_date: str, birth_time: str, birth_place: str):
+async def save_birth_profile(user_id: int, birth_date: str, birth_time: str, birth_place: str, chart: dict | None = None):
+    chart_json = json.dumps(chart, ensure_ascii=False) if chart else None
+
     async with get_connection() as db:
         db.row_factory = aiosqlite.Row
         await db.execute("""
-        INSERT INTO birth_profiles (user_id, birth_date, birth_time, birth_place, created_at)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO birth_profiles (user_id, birth_date, birth_time, birth_place, chart_json, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT(user_id) DO UPDATE SET
             birth_date=excluded.birth_date,
             birth_time=excluded.birth_time,
             birth_place=excluded.birth_place,
+            chart_json=excluded.chart_json,
             created_at=excluded.created_at
-        """, (user_id, birth_date, birth_time, birth_place, datetime.now().isoformat()))
+        """, (user_id, birth_date, birth_time, birth_place, chart_json, datetime.now().isoformat()))
         await db.commit()
 
 
@@ -509,7 +531,7 @@ async def get_birth_profile(user_id: int):
     async with get_connection() as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute("""
-        SELECT birth_date, birth_time, birth_place, created_at
+        SELECT birth_date, birth_time, birth_place, chart_json, natal_interpretation, natal_interpreted_at, created_at
         FROM birth_profiles
         WHERE user_id = ?
         """, (user_id,))
@@ -521,4 +543,15 @@ async def delete_birth_profile(user_id: int):
     async with get_connection() as db:
         db.row_factory = aiosqlite.Row
         await db.execute("DELETE FROM birth_profiles WHERE user_id = ?", (user_id,))
+        await db.commit()
+
+
+async def save_birth_interpretation(user_id: int, interpretation: str):
+    async with get_connection() as db:
+        db.row_factory = aiosqlite.Row
+        await db.execute("""
+        UPDATE birth_profiles
+        SET natal_interpretation = ?, natal_interpreted_at = ?
+        WHERE user_id = ?
+        """, (interpretation, datetime.now().isoformat(), user_id))
         await db.commit()

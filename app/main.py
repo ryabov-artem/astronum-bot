@@ -3,6 +3,7 @@ import os
 import uuid
 import re
 import html
+import time
 
 from ai import (
     interpret_natal_chart,
@@ -35,6 +36,7 @@ from database import (
     spend_balance,
     add_balance,
     save_birth_profile,
+    save_birth_interpretation,
     get_birth_profile,
     delete_birth_profile
 )
@@ -106,7 +108,7 @@ def get_main_keyboard(user_id):
         [KeyboardButton(text="🌙 Лунный знак"), KeyboardButton(text="⬆️ Асцендент")],
         [KeyboardButton(text="❤️ Совместимость"), KeyboardButton(text="💼 Карьера и деньги")],
         [KeyboardButton(text="🔮 Прогноз на месяц")],
-        [KeyboardButton(text="🗂 Моя карта")],
+        [KeyboardButton(text="🗂 Мои данные")],
         [KeyboardButton(text="💎 Баланс"), KeyboardButton(text="📜 История")],
         [KeyboardButton(text="ℹ️ О боте")]
     ]
@@ -120,7 +122,7 @@ def get_main_keyboard(user_id):
 admin_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="👥 Пользователи"), KeyboardButton(text="📈 Статистика")],
-        [KeyboardButton(text="📜 Последние разборы"), KeyboardButton(text="📊 Популярность")],
+        [KeyboardButton(text="📜 Последние операции"), KeyboardButton(text="📊 Популярность")],
         [KeyboardButton(text="📣 Рассылка"), KeyboardButton(text="🎁 Акции")],
         [KeyboardButton(text="💰 Платежи")],
         [KeyboardButton(text="📈 Воронка"), KeyboardButton(text="🏆 Топ")],
@@ -135,10 +137,10 @@ admin_keyboard = ReplyKeyboardMarkup(
 
 shop_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="🪙 Купить 1 разбор — 99 ₽")],
-        [KeyboardButton(text="💎 Купить 5 разборов — 299 ₽")],
-        [KeyboardButton(text="✨ Купить 10 разборов — 499 ₽")],
-        [KeyboardButton(text="👑 Купить 20 разборов — 799 ₽")],
+        [KeyboardButton(text="🪙 Купить 1 кредит — 99 ₽")],
+        [KeyboardButton(text="💎 Купить 5 кредитов — 299 ₽")],
+        [KeyboardButton(text="✨ Купить 10 кредитов — 499 ₽")],
+        [KeyboardButton(text="👑 Купить 20 кредитов — 799 ₽")],
         [KeyboardButton(text="⬅️ Назад")]
     ],
     resize_keyboard=True
@@ -155,7 +157,7 @@ broadcast_confirm_keyboard = ReplyKeyboardMarkup(
 
 promo_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="🎁 Акция: 5 разборов")],
+        [KeyboardButton(text="🎁 Акция: 5 кредитов")],
         [KeyboardButton(text="✨ Напомнить про лунный знак")],
         [KeyboardButton(text="❤️ Напомнить про совместимость")],
         [KeyboardButton(text="⬅️ Назад")]
@@ -190,6 +192,29 @@ natal_decode_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+natal_decode_paid_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="📖 Открыть расшифровку")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
+natal_data_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
+my_data_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="⭐ Открыть мою карту")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
 
 async def user_has_spread_access(user_id):
     if user_id == ADMIN_ID:
@@ -215,13 +240,13 @@ async def charge_user_for_spread(user_id):
 
 async def no_access_message(message: Message):
     await message.answer(
-        "💎 Бесплатный разбор уже использован.\n\n"
+        "💎 Бесплатный кредит уже использован.\n\n"
         "Доступные тарифы:\n"
-        "• 1 разбор — 99 ₽\n"
-        "• 5 разборов — 299 ₽\n"
-        "• 10 разборов — 499 ₽\n"
-        "• 20 разборов — 799 ₽\n\n"
-        "Пополните баланс и возвращайтесь за новым разбором ✨"
+        "• 1 кредит — 99 ₽\n"
+        "• 5 кредитов — 299 ₽\n"
+        "• 10 кредитов — 499 ₽\n"
+        "• 20 кредитов — 799 ₽\n\n"
+        "Пополните баланс и возвращайтесь за новым кредитом ✨"
     )
 
 
@@ -232,14 +257,14 @@ async def start(message: Message):
     await message.answer(
         "✨ Астронум\n\n"
         "Добро пожаловать!\n\n"
-        "AI-разборы по западной астрологии на основе даты рождения, времени и места рождения.\n\n"
+        "AI-кредиты по западной астрологии на основе даты рождения, времени и места рождения.\n\n"
         "Доступно:\n\n"
         "⭐ Натальная карта\n"
         "☀️ Солнечный знак\n"
         "❤️ Совместимость\n"
         "🌙 Лунный знак\n"
         "⬆️ Асцендент\n\n"
-        "💎 Для новых пользователей доступен бесплатный разбор.\n\n"
+        "💎 Для новых пользователей доступен бесплатный кредит.\n\n"
         "Выберите интересующий раздел ниже 👇",
         reply_markup=get_main_keyboard(message.from_user.id)
     )
@@ -276,7 +301,7 @@ async def admin_give_balance(message: Message):
     await add_balance(target_user_id, amount)
 
     await message.answer(
-        f"✅ Начислено {amount} разбор(ов).\n"
+        f"✅ Начислено {amount} кредит(ов).\n"
         f"Пользователь: {target_user_id}"
     )
 
@@ -285,7 +310,7 @@ async def admin_give_balance(message: Message):
             chat_id=target_user_id,
             text=(
                 f"💎 Оплата успешно получена!\n\n"
-                f"На баланс зачислено: {amount} разбор(ов).\n\n"
+                f"На баланс зачислено: {amount} кредит(ов).\n\n"
                 f"✨ Выберите интересующий раздел в меню."
             )
         )
@@ -294,8 +319,9 @@ async def admin_give_balance(message: Message):
 
 
 
-@dp.message(F.text == "🗂 Моя карта")
+@dp.message(F.text == "🗂 Мои данные")
 async def my_birth_profile(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
     await save_user(message.from_user)
 
     profile = await get_birth_profile(message.from_user.id)
@@ -316,15 +342,45 @@ async def my_birth_profile(message: Message, state: FSMContext):
         f"📅 Дата: <b>{profile['birth_date']}</b>\n"
         f"🕒 Время: <b>{profile['birth_time']}</b>\n"
         f"📍 Место: <b>{profile['birth_place']}</b>\n\n"
-        "Чтобы обновить данные, просто снова нажмите «🗂 Моя карта» после удаления старой записи.\n\n"
+        "Чтобы обновить данные, просто снова нажмите «🗂 Мои данные» после удаления старой записи.\n\n"
         "Команда для удаления:\n"
-        "<b>/delete_my_chart</b>",
-        parse_mode="HTML"
+        "<b>/delete_my_data</b>",
+        parse_mode="HTML",
+        reply_markup=my_data_keyboard
     )
 
 
-@dp.message(Command("delete_my_chart"))
-async def delete_my_chart(message: Message):
+
+@dp.message(F.text == "⭐ Открыть мою карту")
+async def open_my_saved_chart(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
+    await save_user(message.from_user)
+
+    profile = await get_birth_profile(message.from_user.id)
+
+    if not profile:
+        await message.answer(
+            "🗂 Сохранённых данных пока нет. Нажмите «🗂 Мои данные» и введите дату, время и место рождения.",
+            reply_markup=get_main_keyboard(message.from_user.id)
+        )
+        return
+
+    data = {
+        "birth_date": profile["birth_date"],
+        "birth_time": profile["birth_time"],
+        "birth_place": profile["birth_place"],
+    }
+
+    if profile["chart_json"]:
+        import json
+        data["chart"] = json.loads(profile["chart_json"])
+
+    input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
+    await send_natal_chart_result(message, state, data, input_text, save_profile=False)
+
+
+@dp.message(Command("delete_my_data"))
+async def delete_my_data(message: Message):
     await delete_birth_profile(message.from_user.id)
     await message.answer("🗑 Сохранённая карта удалена.")
 
@@ -337,12 +393,27 @@ async def process_my_birth_profile(message: Message, state: FSMContext):
         await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ, город")
         return
 
-    await save_birth_profile(
-        user_id=message.from_user.id,
-        birth_date=parts[0],
-        birth_time=parts[1],
-        birth_place=parts[2]
-    )
+    from astrology.real_chart import calculate_real_chart
+
+    progress_msg = await message.answer("⭐ Рассчитываю и сохраняю вашу карту...")
+
+    try:
+        chart = calculate_real_chart(parts[0], parts[1], parts[2])
+        await save_birth_profile(
+            user_id=message.from_user.id,
+            birth_date=parts[0],
+            birth_time=parts[1],
+            birth_place=parts[2],
+            chart=chart
+        )
+    except Exception as e:
+        await message.answer(f"Не удалось сохранить карту. Ошибка: {e}")
+        return
+    finally:
+        try:
+            await progress_msg.delete()
+        except Exception:
+            pass
 
     await state.clear()
 
@@ -351,27 +422,29 @@ async def process_my_birth_profile(message: Message, state: FSMContext):
         f"📅 Дата: <b>{parts[0]}</b>\n"
         f"🕒 Время: <b>{parts[1]}</b>\n"
         f"📍 Место: <b>{parts[2]}</b>\n\n"
-        "Теперь в следующих разделах мы сможем использовать эти данные.",
-        parse_mode="HTML"
+        "Теперь вы можете открыть сохранённую карту без повторного расчёта.",
+        parse_mode="HTML",
+        reply_markup=my_data_keyboard
     )
 
 
 @dp.message(F.text == "💎 Баланс")
 async def balance(message: Message):
+    await safe_delete_current_message(message)
     await save_user(message.from_user)
 
     balance_count = await get_balance(message.from_user.id)
 
     await message.answer(
-        f"💎 <b>Баланс разборов</b>\n\n"
-        f"На счету: <b>{balance_count}</b> разбор(ов)\n\n"
-        f"Один разбор открывает один AI-анализ по западной астрологии:\n\n"
+        f"💎 <b>Баланс кредитов</b>\n\n"
+        f"На счету: <b>{balance_count}</b> кредит(ов)\n\n"
+        f"Один кредит открывает один AI-кредит по западной астрологии:\n\n"
         f"⭐ Натальная карта\n"
         f"☀️ Солнечный знак\n"
         f"❤️ Совместимость\n"
         f"🌙 Лунный знак\n"
         f"⬆️ Асцендент\n\n"
-        f"Первый разбор доступен бесплатно. После этого можно пополнить баланс.",
+        f"Первый кредит доступен бесплатно. После этого можно пополнить баланс.",
         reply_markup=shop_keyboard,
         parse_mode="HTML"
     )
@@ -390,7 +463,7 @@ def create_yookassa_payment(user_id: int, count: int, amount_rub: int):
             "type": "redirect",
             "return_url": YOOKASSA_RETURN_URL
         },
-        "description": f"Астронум: {count} разбор(ов)",
+        "description": f"Астронум: {count} кредит(ов)",
         "metadata": {
             "user_id": str(user_id),
             "count": str(count)
@@ -400,8 +473,9 @@ def create_yookassa_payment(user_id: int, count: int, amount_rub: int):
     return payment
 
 
-@dp.message(F.text.contains("Купить 1 разбор"))
+@dp.message(F.text.contains("Купить 1 кредит"))
 async def buy_one_spread(message: Message):
+    await safe_delete_current_message(message)
     if not YOOKASSA_SHOP_ID or not YOOKASSA_SECRET_KEY:
         await message.answer("Оплата временно недоступна. Не найдены данные ЮKassa.")
         return
@@ -420,15 +494,16 @@ async def buy_one_spread(message: Message):
     )
 
     await message.answer(
-        "🪙 1 разбор\n\n"
+        "🪙 1 кредит\n\n"
         "Стоимость: 99 ₽\n\n"
         "Нажмите кнопку ниже и выберите удобный способ оплаты: карта, СБП, SberPay или другой доступный способ.",
         reply_markup=keyboard
     )
 
 
-@dp.message(F.text.contains("Купить 5 разборов"))
+@dp.message(F.text.contains("Купить 5 кредитов"))
 async def buy_five_spreads(message: Message):
+    await safe_delete_current_message(message)
     if not YOOKASSA_SHOP_ID or not YOOKASSA_SECRET_KEY:
         await message.answer("Оплата временно недоступна. Не найдены данные ЮKassa.")
         return
@@ -447,7 +522,7 @@ async def buy_five_spreads(message: Message):
     )
 
     await message.answer(
-        "💎 5 разборов\n\n"
+        "💎 5 кредитов\n\n"
         "Стоимость: 299 ₽\n\n"
         "Нажмите кнопку ниже и выберите удобный способ оплаты: карта, СБП, SberPay или другой доступный способ.",
         reply_markup=keyboard
@@ -456,8 +531,9 @@ async def buy_five_spreads(message: Message):
 
 
 
-@dp.message(F.text.contains("Купить 10 разборов"))
+@dp.message(F.text.contains("Купить 10 кредитов"))
 async def buy_ten_spreads(message: Message):
+    await safe_delete_current_message(message)
     if not YOOKASSA_SHOP_ID or not YOOKASSA_SECRET_KEY:
         await message.answer("Оплата временно недоступна. Не найдены данные ЮKassa.")
         return
@@ -476,7 +552,7 @@ async def buy_ten_spreads(message: Message):
     )
 
     await message.answer(
-        "✨ 10 разборов\n\n"
+        "✨ 10 кредитов\n\n"
         "Стоимость: 499 ₽\n\n"
         "Выгодный пакет для нескольких вопросов: отношения, работа, деньги и личные ситуации.\n\n"
         "Нажмите кнопку ниже и выберите удобный способ оплаты.",
@@ -484,8 +560,9 @@ async def buy_ten_spreads(message: Message):
     )
 
 
-@dp.message(F.text.contains("Купить 20 разборов"))
+@dp.message(F.text.contains("Купить 20 кредитов"))
 async def buy_twenty_spreads(message: Message):
+    await safe_delete_current_message(message)
     if not YOOKASSA_SHOP_ID or not YOOKASSA_SECRET_KEY:
         await message.answer("Оплата временно недоступна. Не найдены данные ЮKassa.")
         return
@@ -504,9 +581,9 @@ async def buy_twenty_spreads(message: Message):
     )
 
     await message.answer(
-        "👑 20 разборов\n\n"
+        "👑 20 кредитов\n\n"
         "Стоимость: 799 ₽\n\n"
-        "Самый выгодный пакет для тех, кто планирует несколько разборов.\n\n"
+        "Самый выгодный пакет для тех, кто планирует несколько кредитов.\n\n"
         "Нажмите кнопку ниже и выберите удобный способ оплаты.",
         reply_markup=keyboard
     )
@@ -514,25 +591,72 @@ async def buy_twenty_spreads(message: Message):
 
 
 
+
+
+async def safe_delete_current_message(message: Message):
+    try:
+        await message.delete()
+    except Exception:
+        pass
+
+async def cleanup_natal_messages(message: Message, state: FSMContext, delete_current: bool = True):
+    data = await state.get_data()
+    ids = data.get("natal_cleanup_message_ids", [])
+
+    for message_id in ids:
+        try:
+            await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
+        except Exception:
+            pass
+
+    if delete_current:
+        try:
+            await message.delete()
+        except Exception:
+            pass
+
+    await state.update_data(natal_cleanup_message_ids=[])
+
+
+async def remember_natal_message(state: FSMContext, sent_message: Message):
+    data = await state.get_data()
+    ids = data.get("natal_cleanup_message_ids", [])
+    ids.append(sent_message.message_id)
+    await state.update_data(natal_cleanup_message_ids=ids)
+
+
 async def send_natal_chart_result(message: Message, state: FSMContext, data: dict, input_text: str, save_profile: bool = False):
     user_id = message.from_user.id
 
-    if save_profile:
-        await save_birth_profile(
-            user_id=user_id,
-            birth_date=data["birth_date"],
-            birth_time=data["birth_time"],
-            birth_place=data["birth_place"]
+    existing_chart = data.get("chart")
+
+    progress_msg = None
+    if existing_chart:
+        progress_msg = await message.answer(
+            "⭐ Открываю сохранённую карту...",
+            reply_markup=get_main_keyboard(user_id)
+        )
+    else:
+        progress_msg = await message.answer(
+            "⭐ Рассчитываю реальные положения планет...",
+            reply_markup=get_main_keyboard(user_id)
         )
 
-    progress_msg = await message.answer(
-        "⭐ Рассчитываю реальные положения планет...",
-        reply_markup=get_main_keyboard(user_id)
-    )
-
     try:
-        from astrology.real_chart import calculate_real_chart
-        chart = calculate_real_chart(data["birth_date"], data["birth_time"], data["birth_place"])
+        from astrology.real_chart import calculate_real_chart, generate_chart_png
+
+        chart = existing_chart
+        if not chart:
+            chart = calculate_real_chart(data["birth_date"], data["birth_time"], data["birth_place"])
+
+        if save_profile:
+            await save_birth_profile(
+                user_id=user_id,
+                birth_date=data["birth_date"],
+                birth_time=data["birth_time"],
+                birth_place=data["birth_place"],
+                chart=chart
+            )
 
         try:
             await progress_msg.delete()
@@ -551,14 +675,40 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
 
         aspects_count = len(chart.get("aspects", []))
 
+        house_lines = ""
+        for h in chart.get("houses", []):
+            house_lines += f"• {h['house']} дом: <b>{h['degree']}° {h['sign']}</b>\n"
+
+        profile = await get_birth_profile(user_id)
+        saved_interpretation = None
+
+        is_own_saved_chart = (
+            profile
+            and profile["birth_date"] == data["birth_date"]
+            and profile["birth_time"] == data["birth_time"]
+            and profile["birth_place"] == data["birth_place"]
+        )
+
+        if is_own_saved_chart and profile["natal_interpretation"]:
+            saved_interpretation = profile["natal_interpretation"]
+
         await state.update_data(
             natal_decode_data=data,
             natal_decode_chart=chart,
-            natal_decode_input=input_text
+            natal_decode_input=input_text,
+            natal_saved_interpretation=saved_interpretation
         )
         await state.set_state(AstrologyStates.awaiting_natal_chart_decode_choice)
 
-        saved_text = "✅ Данные сохранены в «🗂 Моя карта».\n\n" if save_profile else ""
+        saved_text = "✅ Данные сохранены в «🗂 Мои данные».\n\n" if save_profile else ""
+        decode_text = (
+            "✅ <b>Полная расшифровка уже куплена</b>\n\n"
+            "Нажмите кнопку ниже, чтобы открыть её снова."
+            if saved_interpretation else
+            "🔓 <b>Полная расшифровка карты — 3 кредита</b>\n\n"
+            "В неё входят личность, отношения, карьера, сильные стороны, внутренние конфликты, аспекты и рекомендации."
+        )
+        decode_markup = natal_decode_paid_keyboard if saved_interpretation else natal_decode_keyboard
 
         await message.answer(
             "⭐ <b>Натальная карта построена</b>\n\n"
@@ -569,12 +719,12 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
             f"{planet_lines}\n"
             f"⬆ ASC: <b>{asc['degree']}° {asc['sign']}</b>\n"
             f"MC: <b>{mc['degree']}° {mc['sign']}</b>\n\n"
-            f"🔥 Найдено значимых аспектов: <b>{aspects_count}</b>\n"
-            "🏠 Дома натальной карты будут использованы в полной версии.\n\n"
-            "🔓 <b>Полная расшифровка карты — 3 анализа</b>\n\n"
-            "В неё входят личность, отношения, карьера, сильные стороны, внутренние конфликты, аспекты и рекомендации.",
+            f"🔥 Найдено значимых аспектов: <b>{aspects_count}</b>\n\n"
+            f"🏠 <b>Дома натальной карты</b>\n"
+            f"{house_lines}\n"
+            f"{decode_text}",
             parse_mode="HTML",
-            reply_markup=natal_decode_keyboard
+            reply_markup=decode_markup
         )
 
     except Exception as e:
@@ -587,92 +737,115 @@ async def send_natal_chart_result(message: Message, state: FSMContext, data: dic
 async def astrology_natal_chart(message: Message, state: FSMContext):
     await save_user(message.from_user)
 
-    if not await user_has_spread_access(message.from_user.id):
-        await no_access_message(message)
-        return
-
     await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
 
-    await message.answer(
+    sent = await message.answer(
         "⭐ <b>Натальная карта</b>\n\n"
         "Для кого построить карту?",
         parse_mode="HTML",
         reply_markup=natal_owner_keyboard
     )
+    await remember_natal_message(state, sent)
 
 
 @dp.message(AstrologyStates.awaiting_natal_chart_owner, F.text == "👤 Для меня")
 async def natal_chart_for_me(message: Message, state: FSMContext):
+    await cleanup_natal_messages(message, state)
     profile = await get_birth_profile(message.from_user.id)
 
     if profile:
-        await state.set_state(AstrologyStates.awaiting_natal_chart_saved_choice)
-        await message.answer(
-            "🗂 <b>Найдена сохранённая карта</b>\n\n"
-            f"📅 Дата: <b>{profile['birth_date']}</b>\n"
-            f"🕒 Время: <b>{profile['birth_time']}</b>\n"
-            f"📍 Место: <b>{profile['birth_place']}</b>\n\n"
-            "Использовать эти данные?",
-            parse_mode="HTML",
-            reply_markup=natal_saved_keyboard
-        )
+        data = {
+            "birth_date": profile["birth_date"],
+            "birth_time": profile["birth_time"],
+            "birth_place": profile["birth_place"],
+        }
+
+        if profile["chart_json"]:
+            import json
+            data["chart"] = json.loads(profile["chart_json"])
+
+        input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
+
+        if data.get("chart"):
+            await message.answer(
+                "✅ <b>У вас уже есть готовая натальная карта</b>\n\n"
+                f"📅 Дата: <b>{data['birth_date']}</b>\n"
+                f"🕒 Время: <b>{data['birth_time']}</b>\n"
+                f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+                "Открываю сохранённую карту без повторного расчёта.",
+                parse_mode="HTML",
+                reply_markup=get_main_keyboard(message.from_user.id)
+            )
+        else:
+            await message.answer(
+                "🗂 <b>Использую сохранённые данные</b>\n\n"
+                f"📅 Дата: <b>{data['birth_date']}</b>\n"
+                f"🕒 Время: <b>{data['birth_time']}</b>\n"
+                f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+                "Рассчитываю карту впервые.",
+                parse_mode="HTML",
+                reply_markup=get_main_keyboard(message.from_user.id)
+            )
+
+        await send_natal_chart_result(message, state, data, input_text, save_profile=not bool(data.get("chart")))
         return
 
     await state.update_data(natal_save_profile=True)
     await state.set_state(AstrologyStates.awaiting_natal_chart_data)
 
-    await message.answer(
+    sent = await message.answer(
         "👤 <b>Натальная карта для меня</b>\n\n"
         "Введите данные в формате:\n\n"
         "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=natal_data_keyboard
     )
+    await remember_natal_message(state, sent)
 
 
 @dp.message(AstrologyStates.awaiting_natal_chart_owner, F.text == "👥 Для другого человека")
 async def natal_chart_for_other(message: Message, state: FSMContext):
+    await cleanup_natal_messages(message, state)
     await state.update_data(natal_save_profile=False)
     await state.set_state(AstrologyStates.awaiting_natal_chart_data)
 
-    await message.answer(
+    sent = await message.answer(
         "👥 <b>Натальная карта для другого человека</b>\n\n"
         "Введите данные в формате:\n\n"
         "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=natal_data_keyboard
     )
+    await remember_natal_message(state, sent)
 
 
-@dp.message(AstrologyStates.awaiting_natal_chart_saved_choice, F.text == "✅ Использовать сохранённую карту")
-async def natal_chart_use_saved(message: Message, state: FSMContext):
-    profile = await get_birth_profile(message.from_user.id)
 
-    if not profile:
-        await message.answer("⚠️ Сохранённая карта не найдена. Введите данные заново.")
-        await state.update_data(natal_save_profile=True)
-        await state.set_state(AstrologyStates.awaiting_natal_chart_data)
-        return
-
-    data = {
-        "birth_date": profile["birth_date"],
-        "birth_time": profile["birth_time"],
-        "birth_place": profile["birth_place"],
-    }
-
-    input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
-    await send_natal_chart_result(message, state, data, input_text, save_profile=False)
-
-
-@dp.message(AstrologyStates.awaiting_natal_chart_saved_choice, F.text == "✏️ Изменить данные")
-async def natal_chart_change_saved(message: Message, state: FSMContext):
-    await state.update_data(natal_save_profile=True)
-    await state.set_state(AstrologyStates.awaiting_natal_chart_data)
+@dp.message(AstrologyStates.awaiting_natal_chart_owner, F.text == "⬅️ Назад")
+@dp.message(AstrologyStates.awaiting_natal_chart_saved_choice, F.text == "⬅️ Назад")
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "⬅️ Назад")
+async def natal_chart_back_to_main(message: Message, state: FSMContext):
+    await cleanup_natal_messages(message, state)
+    await state.clear()
 
     await message.answer(
-        "✏️ <b>Новые данные для моей карты</b>\n\n"
-        "Введите данные в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
-        parse_mode="HTML"
+        "Главное меню",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_data, F.text == "⬅️ Назад")
+async def natal_chart_data_back_to_choice(message: Message, state: FSMContext):
+    await cleanup_natal_messages(message, state)
+
+    await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
+
+    sent = await message.answer(
+        "⭐ <b>Натальная карта</b>\n\n"
+        "Для кого построить карту?",
+        parse_mode="HTML",
+        reply_markup=natal_owner_keyboard
+    )
+    await remember_natal_message(state, sent)
 
 
 @dp.message(AstrologyStates.awaiting_natal_chart_owner)
@@ -694,7 +867,7 @@ async def astrology_sun_sign(message: Message, state: FSMContext):
         try:
             data = zodiac_sign(profile["birth_date"])
         except Exception:
-            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Моя карта».")
+            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
             return
 
         await message.answer("☀️ Использую сохранённую карту и готовлю солнечный знак...")
@@ -703,7 +876,7 @@ async def astrology_sun_sign(message: Message, state: FSMContext):
             await bot.send_chat_action(chat_id=message.chat.id, action="typing")
             interpretation = await interpret_sun_sign(data)
         except Exception as e:
-            await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
             return
 
         await save_spread(message.from_user.id, "Солнечный знак", profile["birth_date"], profile["birth_date"], interpretation)
@@ -749,7 +922,7 @@ async def astrology_moon_sign(message: Message, state: FSMContext):
             await bot.send_chat_action(chat_id=message.chat.id, action="typing")
             interpretation = await interpret_moon_sign(data)
         except Exception as e:
-            await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
             return
 
         await save_spread(message.from_user.id, "Лунный знак", f"{data['birth_date']}, {data['birth_time']}", f"{data['birth_date']}, {data['birth_time']}", interpretation)
@@ -795,7 +968,7 @@ async def astrology_ascendant(message: Message, state: FSMContext):
             await bot.send_chat_action(chat_id=message.chat.id, action="typing")
             interpretation = await interpret_ascendant(data)
         except Exception as e:
-            await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
             return
 
         input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
@@ -856,16 +1029,16 @@ async def astrology_career_money(message: Message, state: FSMContext):
         try:
             data = zodiac_sign(profile["birth_date"])
         except Exception:
-            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Моя карта».")
+            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
             return
 
-        await message.answer("💼 Использую сохранённую карту и готовлю разбор карьеры и денег...")
+        await message.answer("💼 Использую сохранённую карту и готовлю кредит карьеры и денег...")
 
         try:
             await bot.send_chat_action(chat_id=message.chat.id, action="typing")
             interpretation = await interpret_career_money(data)
         except Exception as e:
-            await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
             return
 
         await save_spread(message.from_user.id, "Карьера и деньги", data["birth_date"], data["birth_date"], interpretation)
@@ -906,7 +1079,7 @@ async def astrology_month_forecast(message: Message, state: FSMContext):
         try:
             data = zodiac_sign(profile["birth_date"])
         except Exception:
-            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Моя карта».")
+            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
             return
 
         await message.answer("🔮 Использую сохранённую карту и готовлю прогноз на месяц...")
@@ -943,6 +1116,7 @@ async def astrology_month_forecast(message: Message, state: FSMContext):
 
 @dp.message(F.text == "📜 История")
 async def history(message: Message):
+    await safe_delete_current_message(message)
     await save_user(message.from_user)
 
     spreads = await get_user_spreads(message.from_user.id, limit=5)
@@ -950,11 +1124,11 @@ async def history(message: Message):
     if not spreads:
         await message.answer(
             "📜 История пока пустая.\n\n"
-            "Сделайте разбор, и он появится здесь."
+            "Сделайте кредит, и он появится здесь."
         )
         return
 
-    text = "📜 <b>История разборов</b>\n\n"
+    text = "📜 <b>История операций</b>\n\n"
 
     emoji_map = {
         "Натальная карта": "🔢",
@@ -979,18 +1153,20 @@ async def history(message: Message):
 
 @dp.message(F.text == "ℹ️ О боте")
 async def about(message: Message):
+    await safe_delete_current_message(message)
     await message.answer(
         "ℹ️ <b>О боте</b>\n\n"
-        "Астронум делает AI-разборы по <b>западной астрологии</b>.\n\n"
+        "Астронум делает AI-кредиты по <b>западной астрологии</b>.\n\n"
         "Доступны натальная карта, солнечный знак, лунный знак, асцендент, совместимость, карьера и прогнозы.\n\n"
         "Бот создан для самопознания, рефлексии и развлекательных астрологических интерпретаций.\n\n"
-        "Бот предназначен для самоанализа, рефлексии и развлекательных интерпретаций. Он не предсказывает будущее наверняка и не заменяет профессиональные консультации.",
+        "Бот предназначен для самокредита, рефлексии и развлекательных интерпретаций. Он не предсказывает будущее наверняка и не заменяет профессиональные консультации.",
         parse_mode="HTML"
     )
 
 
 @dp.message(F.text == "⚙️ Админка")
 async def admin_panel(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -998,17 +1174,41 @@ async def admin_panel(message: Message):
     await message.answer("⚙️ Админка", reply_markup=admin_keyboard)
 
 
+
+@dp.message(AstrologyStates.awaiting_natal_chart_data, F.text == "⬅️ Назад")
+async def natal_chart_data_back_to_choice(message: Message, state: FSMContext):
+    await cleanup_natal_messages(message, state)
+
+    await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
+
+    sent = await message.answer(
+        "⭐ <b>Натальная карта</b>\n\n"
+        "Для кого построить карту?",
+        parse_mode="HTML",
+        reply_markup=natal_owner_keyboard
+    )
+    await remember_natal_message(state, sent)
+
+
 @dp.message(F.text == "⬅️ Назад")
 async def back_to_main(message: Message):
+    await safe_delete_current_message(message)
 
     await message.answer(
-        "Главное меню",
+        "👇",
         reply_markup=get_main_keyboard(message.from_user.id)
     )
+
+    try:
+        await asyncio.sleep(1)
+        await message.bot.delete_message(message.chat.id, message.message_id + 1)
+    except Exception:
+        pass
 
 
 @dp.message(F.text == "📈 Статистика")
 async def admin_stats(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1017,12 +1217,13 @@ async def admin_stats(message: Message):
         "📈 Статистика Astronum\n\n"
         f"👥 Пользователей: {await get_users_count()}\n"
         f"📜 Разборов: {await get_spreads_count()}\n"
-        f"💎 Формат: платные разборы по балансу"
+        f"💎 Формат: платные функции по балансу"
     )
 
 
 @dp.message(F.text == "👥 Пользователи")
 async def admin_users(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1049,8 +1250,9 @@ async def admin_users(message: Message):
     await message.answer(text)
 
 
-@dp.message(F.text == "📜 Последние разборы")
+@dp.message(F.text == "📜 Последние операции")
 async def admin_recent_spreads(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1061,7 +1263,7 @@ async def admin_recent_spreads(message: Message):
         await message.answer("Разборов пока нет.")
         return
 
-    text = "📜 Последние разборы:\n\n"
+    text = "📜 Последние операции:\n\n"
 
     for spread in spreads:
         username = spread["username"] or "без username"
@@ -1080,6 +1282,7 @@ async def admin_recent_spreads(message: Message):
 
 @dp.message(F.text == "📊 Популярность")
 async def admin_popularity(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1087,10 +1290,10 @@ async def admin_popularity(message: Message):
     stats = await get_spread_type_stats()
 
     if not stats:
-        await message.answer("📊 Пока нет данных по разборам.")
+        await message.answer("📊 Пока нет данных по функциям.")
         return
 
-    text = "📊 Популярность разборов:\n\n"
+    text = "📊 Популярность функций:\n\n"
 
     for item in stats:
         text += f"{item['spread_type']}: {item['count']}\n"
@@ -1103,6 +1306,7 @@ async def admin_popularity(message: Message):
 
 @dp.message(F.text == "💰 Платежи")
 async def admin_payments(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1144,6 +1348,7 @@ async def admin_payments(message: Message):
 
 @dp.message(F.text == "🎁 Акции")
 async def admin_promos(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1154,14 +1359,15 @@ async def admin_promos(message: Message):
     )
 
 
-@dp.message(F.text == "🎁 Акция: 5 разборов")
+@dp.message(F.text == "🎁 Акция: 5 кредитов")
 async def promo_five_spreads(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         return
 
     broadcast_text = (
         "🎁 <b>Специальное предложение</b>\n\n"
-        "Получите пакет из <b>5 астрологических разборов</b> по выгодной цене.\n\n"
+        "Получите пакет из <b>5 астрологических кредитов</b> по выгодной цене.\n\n"
         "Подходит для тех, кто хочет изучить разные стороны своей личности или проверить совместимость с близкими людьми.\n\n"
         "✨ Больше возможностей для самопознания в одном пакете."
     )
@@ -1207,12 +1413,12 @@ async def promo_personal_qualities(message: Message, state: FSMContext):
 
     broadcast_text = (
         "✨ <b>А вы уже смотрели раздел «Лунный знак»?</b>\n\n"
-        "Этот анализ помогает лучше понять:\n\n"
+        "Этот кредит помогает лучше понять:\n\n"
         "• сильные стороны характера;\n"
         "• особенности общения;\n"
         "• внутренние ресурсы;\n"
         "• направления для развития.\n\n"
-        "Введите дату рождения и получите персональный AI-разбор."
+        "Введите дату рождения и получите персональный AI-кредит."
     )
 
 
@@ -1251,12 +1457,13 @@ async def promo_personal_qualities(message: Message, state: FSMContext):
 
 @dp.message(F.text == "❤️ Напомнить про совместимость")
 async def promo_compatibility(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         return
 
     broadcast_text = (
         "❤️ <b>Проверьте совместимость</b>\n\n"
-        "Введите данные двух людей и получите астрологический анализ совместимости.\n\n"
+        "Введите данные двух людей и получите астрологический кредит совместимости.\n\n"
         "Раздел поможет взглянуть на отношения с новой стороны и лучше понять особенности взаимодействия друг с другом.\n\n"
         "✨ Интересно как для романтических отношений, так и для дружбы."
     )
@@ -1298,6 +1505,7 @@ async def promo_compatibility(message: Message, state: FSMContext):
 
 @dp.message(F.text == "📈 Воронка")
 async def admin_sales_funnel(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1308,11 +1516,11 @@ async def admin_sales_funnel(message: Message):
         "📈 Воронка продаж\n\n"
         f"👥 Пользователей всего: {funnel['users_count']}\n"
         
-        f"📜 Пользователей с разборами: {funnel['analysis_users']}\n"
-        f"📊 Всего разборов: {funnel['analyses_count']}\n"
+        f"📜 Пользователей с использованием: {funnel['analysis_users']}\n"
+        f"📊 Всего использований: {funnel['analyses_count']}\n"
         f"💰 Совершили покупку: {funnel['paying_users']}\n"
         f"🧾 Всего платежей: {funnel['payments_count']}\n\n"
-        f"📜 Конверсия в разбор: {funnel['conversion_to_analysis']}%\n"
+        f"📜 Конверсия в использование: {funnel['conversion_to_analysis']}%\n"
         f"💰 Конверсия в покупку: {funnel['conversion_to_payment']}%"
     )
 
@@ -1320,6 +1528,7 @@ async def admin_sales_funnel(message: Message):
 
 @dp.message(F.text == "🏆 Топ")
 async def admin_top_users(message: Message):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1334,24 +1543,25 @@ async def admin_top_users(message: Message):
             name = user["username"] or user["first_name"] or str(user["user_id"])
             text += (
                 f"{i}. {name} — {user['total_amount']} ₽ "
-                f"({user['payments_count']} платежей, {user['total_spreads']} разборов)\n"
+                f"({user['payments_count']} платежей, {user['total_spreads']} кредитов)\n"
             )
     else:
         text += "Пока нет покупок.\n"
 
-    text += "\n📜 По разборам:\n"
+    text += "\n📜 По использованиям:\n"
     if data["top_spreads"]:
         for i, user in enumerate(data["top_spreads"], start=1):
             name = user["username"] or user["first_name"] or str(user["user_id"])
-            text += f"{i}. {name} — {user['spreads_count']} разборов\n"
+            text += f"{i}. {name} — {user['spreads_count']} кредитов\n"
     else:
-        text += "Пока нет разборов.\n"
+        text += "Пока нет кредитов.\n"
 
     await message.answer(text)
 
 
 @dp.message(F.text == "📣 Рассылка")
 async def admin_broadcast_start(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
@@ -1370,24 +1580,26 @@ async def admin_broadcast_start(message: Message, state: FSMContext):
 
 @dp.message(F.text == "➕ Начислить баланс")
 async def admin_balance_grant_start(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
 
     await state.clear()
     await state.set_state(AdminStates.awaiting_balance_grant)
-    await message.answer("Введите USER_ID и количество разборов:\n\nПример:\n185955220 5")
+    await message.answer("Введите USER_ID и количество кредитов:\n\nПример:\n185955220 5")
 
 
 @dp.message(F.text == "➖ Списать баланс")
 async def admin_balance_writeoff_start(message: Message, state: FSMContext):
+    await safe_delete_current_message(message)
     if message.from_user.id != ADMIN_ID:
         await message.answer("Нет доступа.")
         return
 
     await state.clear()
     await state.set_state(AdminStates.awaiting_balance_writeoff)
-    await message.answer("Введите USER_ID и количество разборов для списания:\n\nПример:\n185955220 5")
+    await message.answer("Введите USER_ID и количество кредитов для списания:\n\nПример:\n185955220 5")
 
 
 @dp.message(AdminStates.awaiting_balance_grant)
@@ -1406,7 +1618,7 @@ async def admin_balance_grant_process(message: Message, state: FSMContext):
     await add_balance(target_user_id, amount)
 
     await message.answer(
-        f"✅ Начислено {amount} разбор(ов).\nПользователь: {target_user_id}",
+        f"✅ Начислено {amount} кредит(ов).\nПользователь: {target_user_id}",
         reply_markup=admin_keyboard
     )
     await state.clear()
@@ -1415,7 +1627,7 @@ async def admin_balance_grant_process(message: Message, state: FSMContext):
         await bot.send_message(
             chat_id=target_user_id,
             text=(
-                f"💎 Вам начислено: {amount} разбор(ов).\n\n"
+                f"💎 Вам начислено: {amount} кредит(ов).\n\n"
                 f"✨ Выберите интересующий раздел в меню."
             )
         )
@@ -1440,7 +1652,7 @@ async def admin_balance_writeoff_process(message: Message, state: FSMContext):
 
     if current_balance < amount:
         await message.answer(
-            f"Недостаточно разборов на балансе. Сейчас: {current_balance}",
+            f"Недостаточно кредитов на балансе. Сейчас: {current_balance}",
             reply_markup=admin_keyboard
         )
         return
@@ -1449,7 +1661,7 @@ async def admin_balance_writeoff_process(message: Message, state: FSMContext):
         await spend_balance(target_user_id)
 
     await message.answer(
-        f"✅ Списано {amount} разбор(ов).\nПользователь: {target_user_id}",
+        f"✅ Списано {amount} кредит(ов).\nПользователь: {target_user_id}",
         reply_markup=admin_keyboard
     )
     await state.clear()
@@ -1532,6 +1744,70 @@ async def cancel_broadcast(message: Message, state: FSMContext):
 
 
 
+
+@dp.message(AstrologyStates.awaiting_natal_chart_data, F.text == "⬅️ Назад")
+async def natal_chart_data_back(message: Message, state: FSMContext):
+    await cleanup_natal_messages(message, state)
+
+    await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
+
+    sent = await message.answer(
+        "⭐ <b>Натальная карта</b>\n\n"
+        "Для кого построить карту?",
+        parse_mode="HTML",
+        reply_markup=natal_owner_keyboard
+    )
+    await remember_natal_message(state, sent)
+
+
+
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "📖 Открыть расшифровку")
+async def natal_chart_open_saved_decode(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    await cleanup_natal_messages(message, state, delete_current=True)
+
+    state_data = await state.get_data()
+    data = state_data.get("natal_decode_data")
+    interpretation = state_data.get("natal_saved_interpretation")
+
+    if not data or not interpretation:
+        await message.answer("⚠️ Сохранённая расшифровка не найдена.", reply_markup=get_main_keyboard(user_id))
+        await state.clear()
+        return
+
+    chart = state_data.get("natal_decode_chart")
+
+    if chart:
+        try:
+            from astrology.real_chart import generate_chart_png
+            chart_path = f"/opt/bots/astrology_bot/data/charts/chart_{user_id}_{int(time.time())}.png"
+            generate_chart_png(chart, chart_path)
+            try:
+                await message.answer_photo(
+                    photo=FSInputFile(chart_path),
+                    caption="⭐ Натальная карта / ASTRONUM\n@astronum_aibot"
+                )
+            finally:
+                try:
+                    os.remove(chart_path)
+                except Exception:
+                    pass
+        except Exception as e:
+            await message.answer(f"Карта сохранена, но изображение не удалось создать: {e}")
+
+    await message.answer(
+        f"⭐ <b>Полная расшифровка натальной карты</b>\n\n"
+        f"📅 Дата: <b>{data['birth_date']}</b>\n"
+        f"🕒 Время: <b>{data['birth_time']}</b>\n"
+        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+        f"{markdown_bold_to_html(interpretation)}",
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(user_id)
+    )
+
+    await state.clear()
+
+
 @dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "🔓 Расшифровать карту (3)")
 async def natal_chart_paid_decode(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -1540,7 +1816,7 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
         balance = await get_balance(user_id)
         if balance < 3:
             await message.answer(
-                "💎 Для полной расшифровки натальной карты нужно <b>3 анализа</b>.\n\n"
+                "💎 Для полной расшифровки натальной карты нужно <b>3 кредита</b>.\n\n"
                 f"Ваш баланс: <b>{balance}</b>\n\n"
                 "Пополните баланс и возвращайтесь к расшифровке.",
                 parse_mode="HTML",
@@ -1550,6 +1826,8 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
 
         for _ in range(3):
             await spend_balance(user_id)
+
+    await cleanup_natal_messages(message, state, delete_current=True)
 
     state_data = await state.get_data()
     data = state_data.get("natal_decode_data")
@@ -1563,7 +1841,24 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
 
     data["chart"] = chart
 
-    await message.answer("🔓 Готовлю полную расшифровку натальной карты...")
+    try:
+        from astrology.real_chart import generate_chart_png
+        chart_path = f"/opt/bots/astrology_bot/data/charts/chart_{user_id}_{int(time.time())}.png"
+        generate_chart_png(chart, chart_path)
+        try:
+            await message.answer_photo(
+                photo=FSInputFile(chart_path),
+                caption="⭐ Натальная карта / ASTRONUM\n@astronum_aibot"
+            )
+        finally:
+            try:
+                os.remove(chart_path)
+            except Exception:
+                pass
+    except Exception as e:
+        await message.answer(f"Карта рассчитана, но изображение не удалось создать: {e}")
+
+    decode_progress_msg = await message.answer("🔓 Готовлю полную расшифровку натальной карты...")
 
     try:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -1573,6 +1868,20 @@ async def natal_chart_paid_decode(message: Message, state: FSMContext):
         return
 
     await save_spread(user_id, "Полная натальная карта", input_text, input_text, interpretation)
+
+    profile = await get_birth_profile(user_id)
+    if (
+        profile
+        and profile["birth_date"] == data["birth_date"]
+        and profile["birth_time"] == data["birth_time"]
+        and profile["birth_place"] == data["birth_place"]
+    ):
+        await save_birth_interpretation(user_id, interpretation)
+
+    try:
+        await decode_progress_msg.delete()
+    except Exception:
+        pass
 
     await message.answer(
         f"⭐ <b>Полная расшифровка натальной карты</b>\n\n"
@@ -1609,6 +1918,8 @@ async def process_natal_chart_data(message: Message, state: FSMContext):
     state_data = await state.get_data()
     save_profile = bool(state_data.get("natal_save_profile", False))
 
+    await cleanup_natal_messages(message, state)
+
     await send_natal_chart_result(
         message=message,
         state=state,
@@ -1634,7 +1945,7 @@ async def process_sun_sign_date(message: Message, state: FSMContext):
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         interpretation = await interpret_sun_sign(data)
     except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
         return
 
     await save_spread(user_id, "Солнечный знак", data["birth_date"], data["birth_date"], interpretation)
@@ -1661,13 +1972,13 @@ async def process_moon_sign_data(message: Message, state: FSMContext):
 
     data = {"birth_date": parts[0], "birth_time": parts[1]}
 
-    await message.answer("🌙 Готовлю разбор лунного знака...")
+    await message.answer("🌙 Готовлю кредит лунного знака...")
 
     try:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         interpretation = await interpret_moon_sign(data)
     except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
         return
 
     await save_spread(user_id, "Лунный знак", message.text, message.text, interpretation)
@@ -1694,13 +2005,13 @@ async def process_ascendant_data(message: Message, state: FSMContext):
 
     data = {"birth_date": parts[0], "birth_time": parts[1], "birth_place": parts[2]}
 
-    await message.answer("⬆️ Готовлю разбор асцендента...")
+    await message.answer("⬆️ Готовлю кредит асцендента...")
 
     try:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         interpretation = await interpret_ascendant(data)
     except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
         return
 
     await save_spread(user_id, "Асцендент", message.text, message.text, interpretation)
@@ -1734,7 +2045,7 @@ async def process_compatibility_data(message: Message, state: FSMContext):
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         interpretation = await interpret_compatibility(data)
     except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
         return
 
     await save_spread(user_id, "Совместимость", message.text, message.text, interpretation)
@@ -1760,13 +2071,13 @@ async def process_career_money_date(message: Message, state: FSMContext):
         await message.answer("⚠️ Введите дату в формате ДД.ММ.ГГГГ")
         return
 
-    await message.answer("💼 Готовлю разбор карьеры и денег...")
+    await message.answer("💼 Готовлю кредит карьеры и денег...")
 
     try:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         interpretation = await interpret_career_money(data)
     except Exception as e:
-        await message.answer(f"Не удалось подготовить разбор. Ошибка: {e}")
+        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
         return
 
     await save_spread(user_id, "Карьера и деньги", data["birth_date"], data["birth_date"], interpretation)
