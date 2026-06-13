@@ -102,12 +102,10 @@ body {
   padding: 18px 18px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Равномерно распределяет 3 блока по высоте */
+  justify-content: space-between;
 }
 
-.widget-block {
-  width: 100%;
-}
+.widget-block { width: 100%; }
 
 .widget-title {
   font-family: 'Cinzel', serif;
@@ -153,7 +151,7 @@ body {
 .mini-card { background: #ffffff; border: 1px solid rgba(185, 122, 43, 0.12); padding: 6px; border-radius: 8px; text-align: center; }
 .mini-card.wide { grid-column: span 2; }
 .mini-card-lbl { font-size: 8px; color: #8c96a3; font-weight: 600; text-transform: uppercase; margin-bottom: 3px; }
-.mini-card-val { font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.mini-card-val { font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
 /* ТОЧЕЧНЫЙ ПРОГРЕСС-БАР ПЛАНЕТ */
 .dotted-bar-list { display: flex; flex-direction: column; gap: 4px; }
@@ -232,9 +230,9 @@ body {
 .three-column { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .three-column:not(:last-child) { border-right: 1px solid rgba(185, 122, 43, 0.12); }
 .three-title-lbl { font-size: 9px; font-weight: 600; color: #8c96a3; letter-spacing: 0.5px; }
-.three-value-text { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #111622; }
-.three-value-text span.degree-mark { font-size: 12px; color: #b97a2b; font-weight: 500; margin-left: 2px; }
-.three-art { width: 42px; height: 42px; object-fit: contain; margin: 4px 0; filter: sepia(40%) saturate(120%) hue-rotate(340deg); }
+.three-value-text { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #111622; }
+.three-value-text span.degree-mark { font-size: 11px; color: #b97a2b; font-weight: 500; margin-left: 2px; }
+.three-art { width: 40px; height: 40px; object-fit: contain; margin: 4px 0; }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; }
 
 /* ЦИТАТА */
@@ -343,30 +341,30 @@ body {
         <div class="astro-bar-item">
           <div class="astro-bar-header">
             <span class="bar-name"><span class="bar-name-icon">🔥</span> Огонь</span>
-            <span class="bar-percentage">{{ chart.elements.fire if chart.elements else 14 }}%</span>
+            <span class="bar-percentage">{{ chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 }}%</span>
           </div>
-          <div class="bar-track"><span class="bar-fill fill-fire" style="width: {{ chart.elements.fire if chart.elements else 14 }}%;"></span></div>
+          <div class="bar-track"><span class="bar-fill fill-fire" style="width: {{ chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
           <div class="astro-bar-header">
             <span class="bar-name"><span class="bar-name-icon">🪵</span> Земля</span>
-            <span class="bar-percentage">{{ chart.elements.earth if chart.elements else 29 }}%</span>
+            <span class="bar-percentage">{{ chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 }}%</span>
           </div>
-          <div class="bar-track"><span class="bar-fill fill-earth" style="width: {{ chart.elements.earth if chart.elements else 29 }}%;"></span></div>
+          <div class="bar-track"><span class="bar-fill fill-earth" style="width: {{ chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
           <div class="astro-bar-header">
             <span class="bar-name"><span class="bar-name-icon">💨</span> Воздух</span>
-            <span class="bar-percentage">{{ chart.elements.air if chart.elements else 43 }}%</span>
+            <span class="bar-percentage">{{ chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 }}%</span>
           </div>
-          <div class="bar-track"><span class="bar-fill fill-air" style="width: {{ chart.elements.air if chart.elements else 43 }}%;"></span></div>
+          <div class="bar-track"><span class="bar-fill fill-air" style="width: {{ chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
           <div class="astro-bar-header">
             <span class="bar-name"><span class="bar-name-icon">💧</span> Вода</span>
-            <span class="bar-percentage">{{ chart.elements.water if chart.elements else 14 }}%</span>
+            <span class="bar-percentage">{{ chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 }}%</span>
           </div>
-          <div class="bar-track"><span class="bar-fill fill-water" style="width: {{ chart.elements.water if chart.elements else 14 }}%;"></span></div>
+          <div class="bar-track"><span class="bar-fill fill-water" style="width: {{ chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 }}%;"></span></div>
         </div>
       </div>
       
@@ -375,10 +373,10 @@ body {
           <img src="https://img.icons8.com/material-outlined/48/b97a2b/compass.png" style="width:18px; height:18px; object-fit:contain;">
         </span>
         <div class="desc-txt-group">
-          {% set f = chart.elements.fire if chart.elements else 14 %}
-          {% set e = chart.elements.earth if chart.elements else 29 %}
-          {% set a = chart.elements.air if chart.elements else 43 %}
-          {% set w = chart.elements.water if chart.elements else 14 %}
+          {% set f = chart.elements.fire if (chart.elements and chart.elements.fire is defined) else 14 %}
+          {% set e = chart.elements.earth if (chart.elements and chart.elements.earth is defined) else 29 %}
+          {% set a = chart.elements.air if (chart.elements and chart.elements.air is defined) else 43 %}
+          {% set w = chart.elements.water if (chart.elements and chart.elements.water is defined) else 14 %}
           
           {% if a >= f and a >= e and a >= w %}
             <div class="desc-title">Доминирует стихия Воздуха</div>
@@ -401,16 +399,16 @@ body {
       <h2 class="widget-title">Кресты качеств</h2>
       <div class="astro-bar-list">
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Кардинальный</span><span class="bar-percentage">{{ chart.modality.cardinal if chart.modality else 0 }}%</span></div>
-          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.cardinal if chart.modality else 0 }}%;"></span></div>
+          <div class="astro-bar-header"><span class="bar-name">Кардинальный</span><span class="bar-percentage">{{ chart.modality.cardinal if chart.modality else 20 }}%</span></div>
+          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.cardinal if chart.modality else 20 }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Фиксированный</span><span class="bar-percentage">{{ chart.modality.fixed if chart.modality else 14 }}%</span></div>
-          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.fixed if chart.modality else 14 }}%;"></span></div>
+          <div class="astro-bar-header"><span class="bar-name">Фиксированный</span><span class="bar-percentage">{{ chart.modality.fixed if chart.modality else 40 }}%</span></div>
+          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.fixed if chart.modality else 40 }}%;"></span></div>
         </div>
         <div class="astro-bar-item">
-          <div class="astro-bar-header"><span class="bar-name">Мутабельный</span><span class="bar-percentage">{{ chart.modality.mutable if chart.modality else 86 }}%</span></div>
-          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.mutable if chart.modality else 86 }}%;"></span></div>
+          <div class="astro-bar-header"><span class="bar-name">Мутабельный</span><span class="bar-percentage">{{ chart.modality.mutable if chart.modality else 40 }}%</span></div>
+          <div class="bar-track"><span class="bar-fill fill-gold" style="width: {{ chart.modality.mutable if chart.modality else 40 }}%;"></span></div>
         </div>
       </div>
       <div class="desc-box">
@@ -418,9 +416,9 @@ body {
           <img src="https://img.icons8.com/material-outlined/48/b97a2b/star--v1.png" style="width:16px; height:16px; object-fit:contain;">
         </span>
         <div class="desc-txt-group">
-          {% set mc_card = chart.modality.cardinal if chart.modality else 0 %}
-          {% set mc_fix = chart.modality.fixed if chart.modality else 14 %}
-          {% set mc_mut = chart.modality.mutable if chart.modality else 86 %}
+          {% set mc_card = chart.modality.cardinal if chart.modality else 20 %}
+          {% set mc_fix = chart.modality.fixed if chart.modality else 40 %}
+          {% set mc_mut = chart.modality.mutable if chart.modality else 40 %}
           
           {% if mc_mut >= mc_card and mc_mut >= mc_fix %}
             <div class="desc-title">Преобладает мутабельный крест</div>
@@ -441,15 +439,26 @@ body {
       <div class="mini-cards-grid">
         <div class="mini-card">
           <div class="mini-card-lbl">Управитель ASC</div>
-          <div class="mini-card-val">☿ Меркурий</div>
+          <div class="mini-card-val">
+            {% if chart.ascendant.sign in ['Овен', 'Скорпион'] %}♂ Марс
+            {% elif chart.ascendant.sign in ['Телец', 'Весы'] %}♀ Венера
+            {% elif chart.ascendant.sign in ['Близнецы', 'Дева'] %}☿ Меркурий
+            {% elif chart.ascendant.sign == 'Рак' %}☽ Луна
+            {% elif chart.ascendant.sign == 'Лев' %}☉ Солнце
+            {% elif chart.ascendant.sign in ['Стрелец', 'Рыбы'] %}♃ Юпитер
+            {% else %}♄ Сатурн
+            {% endif %}
+          </div>
         </div>
         <div class="mini-card">
           <div class="mini-card-lbl">Дом. знак</div>
-          <div class="mini-card-val">♍ Дева</div>
+          <div class="mini-card-val">
+            {% if chart.planets and chart.planets|length > 0 %}{{ chart.planets[0].sign }}{% else %}Лев{% endif %}
+          </div>
         </div>
         <div class="mini-card wide">
           <div class="mini-card-lbl">Кармические Узлы</div>
-          <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 11px; gap: 6px;">
+          <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 10px; gap: 4px;">
             ☊ Скорпион 3.91° — ☋ Телец 3.91°
           </div>
         </div>
@@ -459,30 +468,24 @@ body {
     <div>
       <h2 class="widget-title">Преобладающие планеты</h2>
       <div class="dotted-bar-list">
-        <div class="dotted-row">
-          <span class="dotted-name">☿ Меркурий</span>
-          <div class="dotted-container">
-            <div class="dotted-track-bg"></div>
-            <div class="dotted-fill-bar" style="width: 65%;"></div>
+        {% if chart.planets and chart.planets|length >= 3 %}
+          {% for p in chart.planets[:3] %}
+          <div class="dotted-row">
+            <span class="dotted-name">
+              {% if p.name == 'Солнце' %}☉ {% elif p.name == 'Луна' %}☽ {% elif p.name == 'Меркурий' %}☿ {% elif p.name == 'Венера' %}♀ {% elif p.name == 'Марс' %}♂ {% elif p.name == 'Юпитер' %}♃ {% else %}♄ {% endif %}{{ p.name }}
+            </span>
+            <div class="dotted-container">
+              <div class="dotted-track-bg"></div>
+              <div class="dotted-fill-bar" style="width: {{ 65 if loop.index0 == 0 else (50 if loop.index0 == 1 else 45) }}%;"></div>
+            </div>
+            <span class="dotted-val">{{ 17 if loop.index0 == 0 else 14 }}%</span>
           </div>
-          <span class="dotted-val">17%</span>
-        </div>
-        <div class="dotted-row">
-          <span class="dotted-name">♄ Сатурн</span>
-          <div class="dotted-container">
-            <div class="dotted-track-bg"></div>
-            <div class="dotted-fill-bar" style="width: 50%;"></div>
-          </div>
-          <span class="dotted-val">14%</span>
-        </div>
-        <div class="dotted-row">
-          <span class="dotted-name">♀ Венера</span>
-          <div class="dotted-container">
-            <div class="dotted-track-bg"></div>
-            <div class="dotted-fill-bar" style="width: 45%;"></div>
-          </div>
-          <span class="dotted-val">14%</span>
-        </div>
+          {% endfor %}
+        {% else %}
+          <div class="dotted-row"><span class="dotted-name">☿ Меркурий</span><div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 65%;"></div></div><span class="dotted-val">17%</span></div>
+          <div class="dotted-row"><span class="dotted-name">♄ Сатурн</span><div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 50%;"></div></div><span class="dotted-val">14%</span></div>
+          <div class="dotted-row"><span class="dotted-name">♀ Венера</span><div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 45%;"></div></div><span class="dotted-val">14%</span></div>
+        {% endif %}
       </div>
     </div>
   </section>
@@ -503,23 +506,32 @@ body {
   <div class="premium-three">
     <div class="premium-three-title">✦ ВАША БОЛЬШАЯ ТРОЙКА ✦</div>
     <div class="premium-three-grid">
+      
       <div class="three-column">
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
-        <div class="three-value-text">Близнецы<span class="degree-mark">7.52°</span></div>
+        {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
+        <div class="three-value-text">
+          {{ sun_p.sign if sun_p else 'Близнецы' }}<span class="degree-mark">{{ sun_p.degree if sun_p else '7.52' }}°</span>
+        </div>
         <img class="three-art" src="https://www.svgrepo.com/show/489874/sun.svg">
         <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
       </div>
       
       <div class="three-column">
         <span class="three-title-lbl">☽ ЛУНА</span>
-        <div class="three-value-text">Близнецы<span class="degree-mark">7.09°</span></div>
+        {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
+        <div class="three-value-text">
+          {{ moon_p.sign if moon_p else 'Близнецы' }}<span class="degree-mark">{{ moon_p.degree if moon_p else '7.09' }}°</span>
+        </div>
         <img class="three-art" src="https://www.svgrepo.com/show/506260/moon.svg">
         <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
       </div>
       
       <div class="three-column">
         <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
-        <div class="three-value-text">Дева<span class="degree-mark">4.41°</span></div>
+        <div class="three-value-text">
+          {{ chart.ascendant.sign if chart.ascendant else 'Дева' }}<span class="degree-mark">{{ chart.ascendant.degree if chart.ascendant else '4.41' }}°</span>
+        </div>
         <img class="three-art" src="https://www.svgrepo.com/show/362140/female.svg">
         <span class="three-desc">Ваш образ, character<br>и путь в мире</span>
       </div>
@@ -537,13 +549,18 @@ body {
     <div class="widget-block">
       <h2 class="widget-title">Координаты тел</h2>
       <table class="premium-table">
-        <tr><td class="cell-planet">Солнце</td><td class="cell-degree">7.52°</td><td class="cell-sign">Близнецы</td></tr>
-        <tr><td class="cell-planet">Луна</td><td class="cell-degree">7.09°</td><td class="cell-sign">Близнецы</td></tr>
-        <tr><td class="cell-planet">Меркурий</td><td class="cell-degree">17.46°</td><td class="cell-sign">Близнецы</td></tr>
-        <tr><td class="cell-planet">Венера</td><td class="cell-degree">15.02°</td><td class="cell-sign">Телец</td></tr>
-        <tr><td class="cell-planet">Марс</td><td class="cell-degree">1.68°</td><td class="cell-sign">Дева</td></tr>
-        <tr><td class="cell-planet">Юпитер</td><td class="cell-degree">10.91°</td><td class="cell-sign">Стрелец</td></tr>
-        <tr><td class="cell-planet">Сатурн</td><td class="cell-degree">23.57°</td><td class="cell-sign">Рыбы</td></tr>
+        {% if chart.planets %}
+          {% for p in chart.planets %}
+            <tr>
+              <td class="cell-planet">{{ p.name }}</td>
+              <td class="cell-degree">{{ p.degree }}°</td>
+              <td class="cell-sign">{{ p.sign }}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr><td class="cell-planet">Солнце</td><td class="cell-degree">7.52°</td><td class="cell-sign">Близнецы</td></tr>
+          <tr><td class="cell-planet">Луна</td><td class="cell-degree">7.09°</td><td class="cell-sign">Близнецы</td></tr>
+        {% endif %}
         <tr><td class="cell-planet">Северный узел</td><td class="cell-degree">3.91°</td><td class="cell-sign">Скорпион</td></tr>
         <tr><td class="cell-planet">Южный узел</td><td class="cell-degree">3.91°</td><td class="cell-sign">Телец</td></tr>
       </table>
@@ -552,34 +569,33 @@ body {
     <div class="widget-block">
       <h2 class="widget-title">Система Домов</h2>
       <div class="houses-grid-dense">
-        <div class="house-row-mini"><span class="house-lbl">1 дом</span><span class="house-val">Дева</span></div>
-        <div class="house-row-mini"><span class="house-lbl">7 дом</span><span class="house-val">Рыбы</span></div>
-        
-        <div class="house-row-mini"><span class="house-lbl">2 дом</span><span class="house-val">Дева</span></div>
-        <div class="house-row-mini"><span class="house-lbl">8 дом</span><span class="house-val">Рыбы</span></div>
-        
-        <div class="house-row-mini"><span class="house-lbl">3 дом</span><span class="house-val">Весы</span></div>
-        <div class="house-row-mini"><span class="house-lbl">9 дом</span><span class="house-val">Овен</span></div>
-        
-        <div class="house-row-mini"><span class="house-lbl">4 дом</span><span class="house-val">Скорпион</span></div>
-        <div class="house-row-mini"><span class="house-lbl">10 дом</span><span class="house-val">Телец</span></div>
-        
-        <div class="house-row-mini"><span class="house-lbl">5 дом</span><span class="house-val">Козерог</span></div>
-        <div class="house-row-mini"><span class="house-lbl">11 дом</span><span class="house-val">Рак</span></div>
-        
-        <div class="house-row-mini"><span class="house-lbl">6 дом</span><span class="house-val">Водолей</span></div>
-        <div class="house-row-mini"><span class="house-lbl">12 дом</span><span class="house-val">Лев</span></div>
+        {% if chart.houses and chart.houses|length >= 12 %}
+          {% for i in range(6) %}
+            {% set h1 = chart.houses[i] %}
+            {% set h2 = chart.houses[i + 6] %}
+            <div class="house-row-mini"><span class="house-lbl">{{ h1.house }} дом</span><span class="house-val">{{ h1.sign }}</span></div>
+            <div class="house-row-mini"><span class="house-lbl">{{ h2.house }} дом</span><span class="house-val">{{ h2.sign }}</span></div>
+          {% endfor %}
+        {% else %}
+          <div class="house-row-mini"><span class="house-lbl">1 дом</span><span class="house-val">Дева</span></div>
+          <div class="house-row-mini"><span class="house-lbl">7 дом</span><span class="house-val">Рыбы</span></div>
+        {% endif %}
       </div>
     </div>
 
     <div class="widget-block">
       <h2 class="widget-title">Ключевые аспекты</h2>
       <div class="premium-aspects-list">
-        <div class="premium-aspect-item"><span class="aspect-core">Солнце соединение Луна</span><span class="aspect-orb-badge">орб 0.43°</span></div>
-        <div class="premium-aspect-item"><span class="aspect-core">Солнце оппозиция Юпитер</span><span class="aspect-orb-badge">орб 3.39°</span></div>
-        <div class="premium-aspect-item"><span class="aspect-core">Луна оппозиция Юпитер</span><span class="aspect-orb-badge">орб 3.82°</span></div>
-        <div class="premium-aspect-item"><span class="aspect-core">Луна квадрат Марс</span><span class="aspect-orb-badge">орб 5.41°</span></div>
-        <div class="premium-aspect-item"><span class="aspect-core">Солнце квадрат Марс</span><span class="aspect-orb-badge">орб 5.84°</span></div>
+        {% if chart.aspects %}
+          {% for a in chart.aspects[:5] %}
+            <div class="premium-aspect-item">
+              <span class="aspect-core">{{ a.planet1 }} {{ a.aspect }} {{ a.planet2 }}</span>
+              <span class="aspect-orb-badge">орб {{ a.orb }}°</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="premium-aspect-item"><span class="aspect-core">Солнце соединение Луна</span><span class="aspect-orb-badge">орб 0.43°</span></div>
+        {% endif %}
       </div>
     </div>
   </section>
