@@ -73,20 +73,21 @@ body {
 .meta-label { font-size: 9px; font-weight: 600; color: #8c96a3; text-transform: uppercase; }
 .meta-value { font-size: 13px; font-weight: 600; }
 
-/* ТРИ ОСНОВНЫЕ ПАНЕЛИ (АБСОЛЮТНАЯ СИММЕТРИЯ СНИЗУ) */
+/* ТРИ ОСНОВНЫЕ ПАНЕЛИ — ВЫРАВНЕНЫ ПО ОДНОЙ НИЖНЕЙ ОСИ bottom: 104px */
 .left-panel {
   position: absolute;
   top: 135px;
   left: 50px;
   width: 350px; 
-  height: 725px;
+  bottom: 104px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
   padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  justify-content: space-between;
+  gap: 15px;
 }
 
 .right-panel {
@@ -94,23 +95,24 @@ body {
   top: 135px;
   right: 50px;
   width: 350px; 
-  height: 725px;
+  bottom: 104px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 12px;
   padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  justify-content: space-between;
+  gap: 15px;
 }
 
-/* ЦЕНТРАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ (ПОДНЯТА ЧУТЬ ВЫШЕ, ЧТОБЫ СЖАТЬ ОТСТУП) */
+/* ЦЕНТРАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ ОПУЩЕНА И ВЫРАВНЕНА С БОКОВЫМИ */
 .center-sub-panel {
   position: absolute;
-  top: 620px; /* Сдвинули вверх на 20px для минимизации пустоты */
   left: 420px;
   width: 696px;
-  height: 240px; /* Высота увеличена, чтобы низ железно остался на отметке 860px */
+  bottom: 104px;
+  height: 225px; 
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -196,27 +198,29 @@ body {
 }
 .dotted-val { font-weight: 600; text-align: right; }
 
-/* МАКСИМАЛЬНО УВЕЛИЧЕННОЕ КОЛЕСО КАРТЫ */
+/* МАКСИМАЛЬНО УВЕЛИЧЕННЫЙ КРУГ КАРТЫ И КОМПАКТНОЕ ПУСТОЕ ПРОСТРАНСТВО */
 .wheel-area {
   position: absolute;
-  top: 95px; 
+  top: 120px; 
   left: 420px; 
   width: 696px;
-  height: 490px; /* Увеличено, чтобы занять всё свободное пространство */
+  bottom: 365px; /* Высчитано, чтобы дать кругу максимум высоты */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .wheel-area img {
-  max-width: 480px; /* Круг стал еще больше и внушительнее */
-  max-height: 480px;
+  max-width: 510px; /* КРУГ УВЕЛИЧЕН С 480px ДО 510px */
+  max-height: 510px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
-/* ЛЕГЕНДА АСПЕКТОВ (ПРИЖАТА БЛИЖЕ К НИЖНЕМУ БЛОКУ) */
+/* ЛЕГЕНДА АСПЕКТОВ МАКСИМАЛЬНО ПРИЖАТА К КРУГУ И К НИЖНЕМУ БЛОКУ */
 .aspects-legend {
   position: absolute;
-  top: 585px; /* Зазор уменьшен, убирая пустоту со скриншота */
+  bottom: 340px; /* Плотно стоит прямо над блоком "Ваша большая тройка" */
   left: 420px; 
   width: 696px;
   display: flex;
