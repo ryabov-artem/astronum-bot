@@ -73,7 +73,7 @@ body {
 .meta-label { font-size: 9px; font-weight: 600; color: #8c96a3; text-transform: uppercase; }
 .meta-value { font-size: 13px; font-weight: 600; }
 
-/* ЛЕВАЯ ПАНЕЛЬ (ФЛЕКС С ДИНАМИЧЕСКИМИ ОТСТУПАМИ) */
+/* ЛЕВАЯ ПАНЕЛЬ */
 .left-panel {
   position: absolute;
   top: 135px;
@@ -86,10 +86,10 @@ body {
   padding: 24px 18px 20px 18px;
   display: flex;
   flex-direction: column;
-  gap: 22px; /* Идеальный одинаковый отступ между всеми блоками */
+  gap: 22px;
 }
 
-/* ПРАВАЯ ПАНЕЛЬ (ФЛЕКС С ДИНАМИЧЕСКИМИ ОТСТУПАМИ) */
+/* ПРАВАЯ ПАНЕЛЬ */
 .right-panel {
   position: absolute;
   top: 135px;
@@ -102,7 +102,7 @@ body {
   padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px; /* Ровный отступ между таблицами координат, домов и аспектов */
+  gap: 24px;
 }
 
 .widget-block { width: 100%; }
@@ -183,8 +183,8 @@ body {
 .wheel-area {
   position: absolute;
   top: 105px;
-  left: 390px;
-  width: 716px;
+  left: 360px;
+  width: 786px;
   height: 460px;
   display: flex;
   align-items: center;
@@ -200,8 +200,8 @@ body {
 .aspects-legend {
   position: absolute;
   top: 575px;
-  left: 390px;
-  width: 716px;
+  left: 360px;
+  width: 786px;
   display: flex;
   justify-content: center;
   gap: 15px;
@@ -213,12 +213,12 @@ body {
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .legend-line { width: 14px; height: 2px; }
 
-/* БОЛЬШАЯ ТРОЙКА */
+/* БОЛЬШАЯ ТРОЙКА (СИММЕТРИЧНО ОТЦЕНТРОВАНА МЕЖДУ ПАНЕЛЯМИ) */
 .premium-three {
   position: absolute;
   top: 605px;
-  left: 390px;
-  width: 716px;
+  left: 385px; /* Идеальный отступ слева для центровки */
+  width: 736px; /* Рассчитанная ширина под пиксельную точность */
   height: 165px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.15);
@@ -233,14 +233,14 @@ body {
 .three-value-text { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #111622; }
 .three-value-text span.degree-mark { font-size: 11px; color: #b97a2b; font-weight: 500; margin-left: 2px; }
 .three-art-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; font-size: 28px; font-weight: 500; }
-.three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; }
+.three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; padding: 0 10px; }
 
-/* ЦИТАТА И ЗВЕЗДЫ */
+/* ЦИТАТА И ЗВЕЗДЫ (СИММЕТРИЧНО ОТЦЕНТРОВАНЫ) */
 .quote-container {
   position: absolute;
-  top: 785px; /* Выровнено идеально вровень с низом левой и правой панелей */
-  left: 390px;
-  width: 716px;
+  top: 785px; 
+  left: 385px;
+  width: 736px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -458,7 +458,8 @@ body {
             {% if sun_s and sun_s.sign == 'Близнецы' %}♊ Близнецы
             {% elif sun_s and sun_s.sign == 'Козерог' %}♑ Козерог
             {% elif sun_s and sun_s.sign == 'Лев' %}♌ Лев
-            {% elif sun_s and sun_s.sign == 'Дева' %}♍ Дева
+            {% elif sun_s collector and sun_s.sign == 'Дева' %}⁹ Дева
+            {% elif sun_s and sun_s.sign == 'Стрелец' %}♐ Стрелец
             {% else %}♊ Близнецы{% endif %}
           </div>
         </div>
@@ -513,27 +514,31 @@ body {
       <div class="three-column">
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
         {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
+        {% set s_sign = sun_p.sign if sun_p else 'Близнецы' %}
         <div class="three-value-text">
-          {{ sun_p.sign if sun_p else 'Близнецы' }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '7.52' }}°</span>
+          {{ s_sign }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '7.52' }}°</span>
         </div>
         <div class="three-art-wrap">
-          {% set s_sign = sun_p.sign if sun_p else 'Близнецы' %}
-          {% if s_sign == 'Козерог' %}♑{% elif s_sign == 'Близнецы' %}♊{% elif s_sign == 'Лев' %}♌{% elif s_sign == 'Дева' %}♍{% elif s_sign == 'Стрелец' %}♐{% else %}☉{% endif %}
+          {% if s_sign == 'Козерог' %}9 ♑{% elif s_sign == 'Близнецы' %}♊{% elif s_sign == 'Лев' %}♌{% elif s_sign == 'Дева' %}♍{% elif s_sign == 'Стрелец' %}♐{% else %}☉{% endif %}
         </div>
-        <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
+        <span class="three-desc">
+          {% if s_sign == 'Стрелец' %}Оптимизм, поиск истины и стремление к расширению горизонтов{% else %}Самовыражение, воля и ключевая жизненная энергия{% endif %}
+        </span>
       </div>
       
       <div class="three-column">
         <span class="three-title-lbl">☽ ЛУНА</span>
         {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
+        {% set m_sign = moon_p.sign if moon_p else 'Близнецы' %}
         <div class="three-value-text">
-          {{ moon_p.sign if moon_p else 'Близнецы' }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '7.09' }}°</span>
+          {{ m_sign }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '7.09' }}°</span>
         </div>
         <div class="three-art-wrap">
-          {% set m_sign = moon_p.sign if moon_p else 'Близнецы' %}
           {% if m_sign == 'Близнецы' %}♊{% elif m_sign == 'Рыбы' %}♓{% elif m_sign == 'Овен' %}♈{% elif m_sign == 'Дева' %}♍{% else %}☽{% endif %}
         </div>
-        <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
+        <span class="three-desc">
+          {% if m_sign == 'Близнецы' %}Гибкие эмоции, живой ум и потребность в постоянном обмене информацией{% else %}Внутренний мир, подсознательные реакции и интуиция{% endif %}
+        </span>
       </div>
       
       <div class="three-column">
@@ -545,7 +550,9 @@ body {
           {% set a_sign = chart.ascendant.sign if chart.ascendant else 'Дева' %}
           {% if a_sign == 'Рак' %}♋{% elif a_sign == 'Козерог' %}♑{% elif a_sign == 'Стрелец' %}♐{% elif a_sign == 'Дева' %}♍{% elif a_sign == 'Весы' %}♎{% else %}↑{% endif %}
         </div>
-        <span class="three-desc">Ваш образ, характер<br>и путь в мире</span>
+        <span class="three-desc">
+          {% if a_sign == 'Весы' %}Дипломатичный образ, стремление к гармонии и партнерству во всем{% else %}Ваш внешний имидж, характер и путь проявления в мире{% endif %}
+        </span>
       </div>
     </div>
   </div>
