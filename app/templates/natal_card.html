@@ -73,12 +73,12 @@ body {
 .meta-label { font-size: 9px; font-weight: 600; color: #8c96a3; text-transform: uppercase; }
 .meta-value { font-size: 13px; font-weight: 600; }
 
-/* ТРИ ОСНОВНЫЕ ПАНЕЛИ (ВЫРАВНЕНЫ ПО ОДНОЙ ОСИ И СИММЕТРИЧНЫ ПО ШИРИНЕ) */
+/* ТРИ ОСНОВНЫЕ ПАНЕЛИ (СИММЕТРИЧНЫЕ И ВЫРАВНЕННЫЕ) */
 .left-panel {
   position: absolute;
   top: 135px;
   left: 50px;
-  width: 350px; /* Уравняли ширину */
+  width: 350px; 
   height: 725px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
@@ -93,7 +93,7 @@ body {
   position: absolute;
   top: 135px;
   right: 50px;
-  width: 350px; /* Уравняли ширину */
+  width: 350px; 
   height: 725px;
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
@@ -104,13 +104,13 @@ body {
   gap: 24px;
 }
 
-/* ЦЕНТРАЛЬНАЯ СУБ-ПАНЕЛЬ С ТРОЙКОЙ И ЦИТАТОЙ */
+/* ЦЕНТРАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ (ВСТАЕТ СТРОГО НА ОДНУ ОСЬ С БОКОВЫМИ ПАНЕЛЯМИ) */
 .center-sub-panel {
   position: absolute;
-  top: 515px; 
-  left: 420px; /* Сдвинута с учетом новой ширины левой панели */
-  width: 696px; /* Пересчитано под пиксельную точность: 1536 - 100(отступы) - 700(бока) - 40(гэпы) */
-  height: 345px; 
+  top: 605px; /* Смещена вниз, освобождая место увеличенному кругу */
+  left: 420px;
+  width: 696px;
+  height: 255px; /* Идеально доводит нижний край до 860px вместе с боковыми панелями */
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -196,28 +196,28 @@ body {
 }
 .dotted-val { font-weight: 600; text-align: right; }
 
-/* ЦЕНТРАЛЬНОЕ КОЛЕСО КАРТЫ */
+/* УВЕЛИЧЕННОЕ ЦЕНТРАЛЬНОЕ КОЛЕСО КАРТЫ */
 .wheel-area {
   position: absolute;
-  top: 95px; 
-  left: 420px; /* Отцентрировано относительно новой сетки */
+  top: 105px; 
+  left: 420px; 
   width: 696px;
-  height: 385px;
+  height: 460px; /* Увеличено для масштаба */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .wheel-area img {
-  max-width: 380px;
-  max-height: 380px;
+  max-width: 450px; /* Круг стал значительно больше и заметнее */
+  max-height: 450px;
   object-fit: contain;
 }
 
 /* ЛЕГЕНДА АСПЕКТОВ */
 .aspects-legend {
   position: absolute;
-  top: 485px; 
-  left: 420px; /* Отцентрировано */
+  top: 575px; /* Сдвинута ниже под увеличенный круг */
+  left: 420px; 
   width: 696px;
   display: flex;
   justify-content: center;
@@ -249,37 +249,28 @@ body {
 .three-art-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; font-size: 28px; font-weight: 500; }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; padding: 0 10px; }
 
-/* ЦИТАТА */
+/* ЦИТАТА (ВОЗВРАЩЕНА К ОРИГИНАЛЬНОМУ ГАРМОНИЧНОМУ РАЗМЕРУ) */
 .quote-container {
-  flex-grow: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 .quote-banner {
   width: 100%;
-  height: 100%; 
+  height: 38px; /* Возвращен строгий фиксированный размер */
   background: #ffffff;
   border: 1px solid rgba(185, 122, 43, 0.12);
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 15px 0;
-}
-.quote-text-wrap {
   font-family: 'Playfair Display', serif;
-  font-size: 14px;
+  font-size: 13px;
   color: #111622;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-.quote-banner span.quote-marks { color: #b97a2b; font-weight: 700; font-size: 18px; margin: 0 6px; }
+.quote-banner span.quote-marks { color: #b97a2b; font-weight: 700; font-size: 16px; margin: 0 6px; }
 .quote-stars { font-size: 8px; color: #b97a2b; letter-spacing: 4px; }
 
 /* ТАБЛИЦЫ СПРАВА */
@@ -291,7 +282,7 @@ body {
 .cell-degree { font-weight: 600; color: #b97a2b; text-align: center; width: 65px; }
 .cell-sign { color: #8c96a3; text-align: right; }
 
-.houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; } /* Чуть уменьшен гэп под новую ширину */
+.houses-grid-dense { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
 .house-row-mini { display: flex; justify-content: space-between; padding: 4.5px 0; border-bottom: 1px solid #FAF6EE; font-size: 11px; }
 .house-row-mini:nth-child(11), .house-row-mini:nth-child(12) { border-bottom: none; }
 .house-lbl { color: #8c96a3; }
