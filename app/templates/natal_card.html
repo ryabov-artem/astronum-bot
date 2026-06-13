@@ -104,16 +104,16 @@ body {
   gap: 24px;
 }
 
-/* ЦЕНТРАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ (ОПУЩЕНА СТРОГО В ПЛОСКОСТЬ К БОКОВЫМ) */
+/* ЦЕНТРАЛЬНАЯ НИЖНЯЯ ПАНЕЛЬ (ПОДНЯТА ЧУТЬ ВЫШЕ, ЧТОБЫ СЖАТЬ ОТСТУП) */
 .center-sub-panel {
   position: absolute;
-  top: 640px; /* Опустили на 35px вниз, теперь низ идеально совпадает с боковыми панелями */
+  top: 620px; /* Сдвинули вверх на 20px для минимизации пустоты */
   left: 420px;
   width: 696px;
-  height: 220px; 
+  height: 240px; /* Высота увеличена, чтобы низ железно остался на отметке 860px */
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 14px;
 }
 
 .widget-block { width: 100%; }
@@ -196,27 +196,27 @@ body {
 }
 .dotted-val { font-weight: 600; text-align: right; }
 
-/* КРУПНОЕ КОЛЕСО КАРТЫ */
+/* МАКСИМАЛЬНО УВЕЛИЧЕННОЕ КОЛЕСО КАРТЫ */
 .wheel-area {
   position: absolute;
-  top: 110px; 
+  top: 95px; 
   left: 420px; 
   width: 696px;
-  height: 480px; 
+  height: 490px; /* Увеличено, чтобы занять всё свободное пространство */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .wheel-area img {
-  max-width: 460px; 
-  max-height: 460px;
+  max-width: 480px; /* Круг стал еще больше и внушительнее */
+  max-height: 480px;
   object-fit: contain;
 }
 
-/* ЛЕГЕНДА АСПЕКТОВ */
+/* ЛЕГЕНДА АСПЕКТОВ (ПРИЖАТА БЛИЖЕ К НИЖНЕМУ БЛОКУ) */
 .aspects-legend {
   position: absolute;
-  top: 600px; /* Аккуратно встает над опустившейся панелью тройки */
+  top: 585px; /* Зазор уменьшен, убирая пустоту со скриншота */
   left: 420px; 
   width: 696px;
   display: flex;
