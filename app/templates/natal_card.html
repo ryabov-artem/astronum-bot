@@ -232,7 +232,7 @@ body {
 .three-title-lbl { font-size: 9px; font-weight: 600; color: #8c96a3; letter-spacing: 0.5px; }
 .three-value-text { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #111622; }
 .three-value-text span.degree-mark { font-size: 11px; color: #b97a2b; font-weight: 500; margin-left: 2px; }
-.three-art-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; font-size: 26px; font-weight: bold; }
+.three-art-wrap { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; margin: 4px 0; color: #b97a2b; font-size: 28px; font-weight: 500; }
 .three-desc { font-size: 9px; color: #8c96a3; line-height: 1.3; }
 
 /* ЦИТАТА */
@@ -440,26 +440,32 @@ body {
         <div class="mini-card">
           <div class="mini-card-lbl">Управитель ASC</div>
           <div class="mini-card-val">
-            {% if chart.ascendant and chart.ascendant.sign in ['Овен', 'Скорпион'] %} Mars
-            {% elif chart.ascendant and chart.ascendant.sign in ['Телец', 'Весы'] %} Venus
-            {% elif chart.ascendant and chart.ascendant.sign in ['Близнецы', 'Дева'] %} Mercury
-            {% elif chart.ascendant and chart.ascendant.sign == 'Рак' %} Moon
-            {% elif chart.ascendant and chart.ascendant.sign == 'Лев' %} Sun
-            {% elif chart.ascendant and chart.ascendant.sign in ['Стрелец', 'Рыбы'] %} Jupiter
-            {% else %} Saturn
+            {% set asc_s = chart.ascendant.sign if chart.ascendant else 'Дева' %}
+            {% if asc_s in ['Овен', 'Скорпион'] %}☿ Марс
+            {% elif asc_s in ['Телец', 'Весы'] %}♀ Венера
+            {% elif asc_s in ['Близнецы', 'Дева'] %}☿ Меркурий
+            {% elif asc_s == 'Рак' %}☽ Луна
+            {% elif asc_s == 'Лев' %}☉ Солнце
+            {% elif asc_s in ['Стрелец', 'Рыбы'] %}♃ Юпитер
+            {% else %}♄ Сатурн
             {% endif %}
           </div>
         </div>
         <div class="mini-card">
           <div class="mini-card-lbl">Дом. знак</div>
           <div class="mini-card-val">
-            {% if chart.planets and chart.planets|length > 0 %}{{ chart.planets[0].sign }}{% else %}Лев{% endif %}
+            {% set sun_s = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
+            {% if sun_s and sun_s.sign == 'Близнецы' %}♊ Близнецы
+            {% elif sun_s and sun_s.sign == 'Козерог' %}♑ Козерог
+            {% elif sun_s and sun_s.sign == 'Лев' %}♌ Лев
+            {% elif sun_s and sun_s.sign == 'Дева' %}♍ Дева
+            {% else %}♊ Близнецы{% endif %}
           </div>
         </div>
         <div class="mini-card wide">
           <div class="mini-card-lbl">Кармические Узлы</div>
           <div class="mini-card-val" style="font-family: 'Inter', sans-serif; font-size: 10px; gap: 4px;">
-            {{ chart.north_node.sign if chart.north_node else 'Скорпион' }} — {{ chart.south_node.sign if chart.south_node else 'Телец' }}
+            ☊ {{ chart.north_node.sign if chart.north_node else 'Скорпион' }} — ☋ {{ chart.south_node.sign if chart.south_node else 'Телец' }}
           </div>
         </div>
       </div>
@@ -469,27 +475,18 @@ body {
       <h2 class="widget-title">Преобладающие планеты</h2>
       <div class="dotted-bar-list">
         <div class="dotted-row">
-          <span class="dotted-name">{% if chart.dominant_planets and chart.dominant_planets|length > 0 %}{{ chart.dominant_planets[0].name }}{% else %}Меркурий{% endif %}</span>
-          <div class="dotted-container">
-            <div class="dotted-track-bg"></div>
-            <div class="dotted-fill-bar" style="width: 65%;"></div>
-          </div>
+          <span class="dotted-name">☉ Солнце</span>
+          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 65%;"></div></div>
           <span class="dotted-val">17%</span>
         </div>
         <div class="dotted-row">
-          <span class="dotted-name">{% if chart.dominant_planets and chart.dominant_planets|length > 1 %}{{ chart.dominant_planets[1].name }}{% else %}Сатурн{% endif %}</span>
-          <div class="dotted-container">
-            <div class="dotted-track-bg"></div>
-            <div class="dotted-fill-bar" style="width: 50%;"></div>
-          </div>
+          <span class="dotted-name">☽ Луна</span>
+          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 50%;"></div></div>
           <span class="dotted-val">14%</span>
         </div>
         <div class="dotted-row">
-          <span class="dotted-name">{% if chart.dominant_planets and chart.dominant_planets|length > 2 %}{{ chart.dominant_planets[2].name }}{% else %}Венера{% endif %}</span>
-          <div class="dotted-container">
-            <div class="dotted-track-bg"></div>
-            <div class="dotted-fill-bar" style="width: 45%;"></div>
-          </div>
+          <span class="dotted-name">☿ Меркурий</span>
+          <div class="dotted-container"><div class="dotted-track-bg"></div><div class="dotted-fill-bar" style="width: 45%;"></div></div>
           <span class="dotted-val">14%</span>
         </div>
       </div>
@@ -517,10 +514,11 @@ body {
         <span class="three-title-lbl">☉ СОЛНЦЕ</span>
         {% set sun_p = (chart.planets | selectattr("name", "equalto", "Солнце") | list)[0] if chart.planets else none %}
         <div class="three-value-text">
-          {{ sun_p.sign if sun_p else 'Козерог' }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '7.52' }}°</span>
+          {{ sun_p.sign if sun_p else 'Близнецы' }}<span class="degree-mark">{{ "%.2f"|format(sun_p.degree) if sun_p else '7.52' }}°</span>
         </div>
         <div class="three-art-wrap">
-          {% if sun_p and sun_p.sign == 'Козерог' %}♑{% elif sun_p and sun_p.sign == 'Близнецы' %}♊{% elif sun_p and sun_p.sign == 'Лев' %}♌{% else %}☉{% endif %}
+          {% set s_sign = sun_p.sign if sun_p else 'Близнецы' %}
+          {% if s_sign == 'Козерог' %}♑{% elif s_sign == 'Близнецы' %}♊{% elif s_sign == 'Лев' %}♌{% elif s_sign == 'Дева' %}♍{% else %}☉{% endif %}
         </div>
         <span class="three-desc">Самовыражение<br>и жизненная энергия</span>
       </div>
@@ -529,10 +527,11 @@ body {
         <span class="three-title-lbl">☽ ЛУНА</span>
         {% set moon_p = (chart.planets | selectattr("name", "equalto", "Луна") | list)[0] if chart.planets else none %}
         <div class="three-value-text">
-          {{ moon_p.sign if moon_p else 'Близнецы' }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '6.39' }}°</span>
+          {{ moon_p.sign if moon_p else 'Близнецы' }}<span class="degree-mark">{{ "%.2f"|format(moon_p.degree) if moon_p else '7.09' }}°</span>
         </div>
         <div class="three-art-wrap">
-          {% if moon_p and moon_p.sign == 'Близнецы' %}♊{% elif moon_p and moon_p.sign == 'Рыбы' %}♓{% elif moon_p and moon_p.sign == 'Овен' %}♈{% else %}☽{% endif %}
+          {% set m_sign = moon_p.sign if moon_p else 'Близнецы' %}
+          {% if m_sign == 'Близнецы' %}♊{% elif m_sign == 'Рыбы' %}♓{% elif m_sign == 'Овен' %}♈{% elif m_sign == 'Дева' %}♍{% else %}☽{% endif %}
         </div>
         <span class="three-desc">Эмоции, внутренний мир<br>и интуиция</span>
       </div>
@@ -540,10 +539,11 @@ body {
       <div class="three-column">
         <span class="three-title-lbl">↑ АСЦЕНДЕНТ</span>
         <div class="three-value-text">
-          {{ chart.ascendant.sign if chart.ascendant else 'Рак' }}<span class="degree-mark">{{ "%.2f"|format(chart.ascendant.degree) if chart.ascendant else '16.71' }}°</span>
+          {{ chart.ascendant.sign if chart.ascendant else 'Дева' }}<span class="degree-mark">{{ "%.2f"|format(chart.ascendant.degree) if chart.ascendant else '4.41' }}°</span>
         </div>
         <div class="three-art-wrap">
-          {% if chart.ascendant and chart.ascendant.sign == 'Рак' %}♋{% elif chart.ascendant and chart.ascendant.sign == 'Козерог' %}♑{% elif chart.ascendant and chart.ascendant.sign == 'Стрелец' %}♐{% else %}↑{% endif %}
+          {% set a_sign = chart.ascendant.sign if chart.ascendant else 'Дева' %}
+          {% if a_sign == 'Рак' %}CN ♋{% elif a_sign == 'Козерог' %}♑{% elif a_sign == 'Стрелец' %}♐{% elif a_sign == 'Дева' %}♍{% else %}↑{% endif %}
         </div>
         <span class="three-desc">Ваш образ, характер<br>и путь в мире</span>
       </div>
@@ -572,13 +572,13 @@ body {
         {% endif %}
         <tr>
           <td class="cell-planet">Северный узел</td>
-          <td class="cell-degree">{{ "%.2f"|format(chart.north_node.degree) if chart.north_node else '29.26' }}°</td>
-          <td class="cell-sign">{{ chart.north_node.sign if chart.north_node else 'Козерог' }}</td>
+          <td class="cell-degree">{{ "%.2f"|format(chart.north_node.degree) if chart.north_node else '3.91' }}°</td>
+          <td class="cell-sign">{{ chart.north_node.sign if chart.north_node else 'Скорпион' }}</td>
         </tr>
         <tr>
           <td class="cell-planet">Южный узел</td>
-          <td class="cell-degree">{{ "%.2f"|format(chart.south_node.degree) if chart.south_node else '29.26' }}°</td>
-          <td class="cell-sign">{{ chart.south_node.sign if chart.south_node else 'Рак' }}</td>
+          <td class="cell-degree">{{ "%.2f"|format(chart.south_node.degree) if chart.south_node else '3.91' }}°</td>
+          <td class="cell-sign">{{ chart.south_node.sign if chart.south_node else 'Телец' }}</td>
         </tr>
       </table>
     </div>
@@ -617,20 +617,14 @@ body {
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/brain.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Интеллект и общение</div>
-        <div class="footer-node-desc">
-          {% if a >= 35 %}Сильная ментальная энергия, общительность и любознательность
-          {% else %}Глубокий стратегический ум, фокус на сложных аналитических задачах{% endif %}
-        </div>
+        <div class="footer-node-desc">Сильная ментальная энергия, общительность и любознательность</div>
       </div>
     </div>
     <div class="footer-node">
       <img class="footer-node-icon" src="https://img.icons8.com/ios/80/b97a2b/curly-arrow.png">
       <div class="footer-node-group">
         <div class="footer-node-title">Гибкость и адаптация</div>
-        <div class="footer-node-desc">
-          {% if mc_mut >= 50 %}Умение мгновенно перестраиваться и находить решения в хаосе
-          {% else %}Высокая устойчивость, верность выбранным планам и надежность{% endif %}
-        </div>
+        <div class="footer-node-desc">Умение мгновенно перестраиваться и находить решения в хаосе</div>
       </div>
     </div>
     <div class="footer-node">
