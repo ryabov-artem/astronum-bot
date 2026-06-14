@@ -83,11 +83,21 @@ class AstrologyStates(StatesGroup):
     awaiting_natal_chart_saved_choice = State()
     awaiting_natal_chart_data = State()
     awaiting_natal_chart_decode_choice = State()
+    awaiting_sun_sign_preview = State()
+    awaiting_sun_sign_confirm = State()
     awaiting_sun_sign_date = State()
+    awaiting_moon_sign_preview = State()
+    awaiting_moon_sign_confirm = State()
     awaiting_moon_sign_data = State()
+    awaiting_ascendant_preview = State()
+    awaiting_ascendant_confirm = State()
     awaiting_ascendant_data = State()
+    awaiting_compatibility_preview = State()
+    awaiting_compatibility_confirm = State()
     awaiting_compatibility_data = State()
     awaiting_career_money_date = State()
+    awaiting_month_forecast_preview = State()
+    awaiting_month_forecast_confirm = State()
     awaiting_month_forecast_date = State()
     awaiting_my_birth_profile = State()
 
@@ -104,13 +114,11 @@ def markdown_bold_to_html(text):
 
 def get_main_keyboard(user_id):
     keyboard = [
-        [KeyboardButton(text="⭐ Натальная карта"), KeyboardButton(text="☀️ Солнечный знак")],
-        [KeyboardButton(text="🌙 Лунный знак"), KeyboardButton(text="⬆️ Асцендент")],
-        [KeyboardButton(text="❤️ Совместимость"), KeyboardButton(text="💼 Карьера и деньги")],
-        [KeyboardButton(text="🔮 Прогноз на месяц")],
-        [KeyboardButton(text="🗂 Мои данные")],
-        [KeyboardButton(text="💎 Баланс"), KeyboardButton(text="📜 История")],
-        [KeyboardButton(text="ℹ️ О боте")]
+        [KeyboardButton(text="⭐ Натальная карта")],
+        [KeyboardButton(text="❤️ Совместимость"), KeyboardButton(text="🔮 Прогноз на месяц")],
+        [KeyboardButton(text="☀️ Солнечный знак"), KeyboardButton(text="🌙 Лунный знак")],
+        [KeyboardButton(text="⬆️ Асцендент"), KeyboardButton(text="🗂 Мои данные")],
+        [KeyboardButton(text="💎 Баланс"), KeyboardButton(text="ℹ️ О боте")]
     ]
 
     if user_id == ADMIN_ID:
@@ -216,6 +224,47 @@ my_data_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+sun_preview_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="✨ Получить разбор")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ],
+    resize_keyboard=True
+)
+
+product_confirm_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="✅ Да")],
+        [KeyboardButton(text="⬅️ Отмена")]
+    ],
+    resize_keyboard=True
+)
+
+
+
+
+
+async def ask_product_confirm(message: Message, state: FSMContext, confirm_state, title: str, cost: int):
+    balance = await get_balance(message.from_user.id)
+
+    if message.from_user.id != ADMIN_ID and balance < cost:
+        await state.clear()
+        await no_access_message(message)
+        await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+        return
+
+    await state.set_state(confirm_state)
+
+    balance_text = "админ-доступ ∞" if message.from_user.id == ADMIN_ID else f"{balance} кредит(ов)"
+
+    await message.answer(
+        f"{title}\n\n"
+        f"Стоимость разбора: <b>{cost}</b> кредит(а)\n"
+        f"Ваш баланс: <b>{balance_text}</b>\n\n"
+        f"Списать кредиты и продолжить?",
+        parse_mode="HTML",
+        reply_markup=product_confirm_keyboard
+    )
 
 
 def parse_birth_datetime_place_strict(text: str) -> dict:
@@ -262,6 +311,9 @@ async def user_has_spread_access(user_id):
     if user_id == ADMIN_ID:
         return True
 
+    if user_id == ADMIN_ID:
+        return True
+
     if await can_use_free_spread(user_id):
         return True
 
@@ -272,6 +324,9 @@ async def user_has_spread_access(user_id):
 
 
 async def charge_user_for_spread(user_id):
+    if user_id == ADMIN_ID:
+        return
+
     if await can_use_free_spread(user_id):
         await mark_free_spread_used(user_id)
     elif await get_balance(user_id) > 0:
@@ -297,17 +352,18 @@ async def start(message: Message):
     await save_user(message.from_user)
 
     await message.answer(
-        "✨ Астронум\n\n"
-        "Добро пожаловать!\n\n"
-        "AI-кредиты по западной астрологии на основе даты рождения, времени и места рождения.\n\n"
-        "Доступно:\n\n"
-        "⭐ Натальная карта\n"
-        "☀️ Солнечный знак\n"
+        "✨ <b>Астронум</b>\n\n"
+        "AI-астрологический бот для самопознания, отношений и персональных прогнозов.\n\n"
+        "⭐ <b>Натальная карта</b> — главный продукт Астронума: подробная карта личности по дате, времени и месту рождения.\n\n"
+        "<b>Также доступны:</b>\n"
         "❤️ Совместимость\n"
+        "🔮 Прогноз на месяц\n"
+        "☀️ Солнечный знак\n"
         "🌙 Лунный знак\n"
         "⬆️ Асцендент\n\n"
-        "💎 Для новых пользователей доступен бесплатный кредит.\n\n"
+        "💎 Новым пользователям доступен 1 бесплатный кредит.\n\n"
         "Выберите интересующий раздел ниже 👇",
+        parse_mode="HTML",
         reply_markup=get_main_keyboard(message.from_user.id)
     )
 
@@ -359,6 +415,17 @@ async def admin_give_balance(message: Message):
     except Exception:
         pass
 
+
+
+@dp.message(F.text == "⬅️ Назад")
+@dp.message(F.text == "↩️ Назад")
+@dp.message(F.text == "⬅ Назад")
+async def global_back_to_main(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        "Главное меню",
+        reply_markup=get_main_keyboard(message.from_user.id)
+    )
 
 
 @dp.message(F.text == "🗂 Мои данные")
@@ -428,6 +495,20 @@ async def delete_my_data(message: Message):
     await message.answer("🗑 Сохранённая карта удалена.")
 
 
+@dp.message(F.text == "⬅️ Назад")
+async def universal_back_from_my_data(message: Message, state: FSMContext):
+    current_state = await state.get_state()
+
+    if current_state is not None:
+        return
+
+    await message.answer(
+        "Главное меню",
+        reply_markup=get_main_keyboard(message.from_user.id)
+    )
+
+
+
 
 
 @dp.message(AstrologyStates.awaiting_my_birth_profile, F.text == "⬅️ Назад")
@@ -493,13 +574,15 @@ async def balance(message: Message):
     await message.answer(
         f"💎 <b>Баланс кредитов</b>\n\n"
         f"На счету: <b>{balance_count}</b> кредит(ов)\n\n"
-        f"Один кредит открывает один AI-кредит по западной астрологии:\n\n"
-        f"⭐ Натальная карта\n"
-        f"☀️ Солнечный знак\n"
-        f"❤️ Совместимость\n"
-        f"🌙 Лунный знак\n"
-        f"⬆️ Асцендент\n\n"
-        f"Первый кредит доступен бесплатно. После этого можно пополнить баланс.",
+        f"<b>Стоимость разборов:</b>\n"
+        f"⭐ Натальная карта — <b>3 кредита</b>\n"
+        f"❤️ Совместимость — <b>2 кредита</b>\n"
+        f"🔮 Прогноз на месяц — <b>2 кредита</b>\n"
+        f"☀️ Солнечный знак — <b>1 кредит</b>\n"
+        f"🌙 Лунный знак — <b>1 кредит</b>\n"
+        f"⬆️ Асцендент — <b>1 кредит</b>\n\n"
+        f"Кредиты можно использовать в любом разделе.\n"
+        f"Для новых пользователей доступен 1 бесплатный кредит.",
         reply_markup=shop_keyboard,
         parse_mode="HTML"
     )
@@ -975,10 +1058,44 @@ async def natal_chart_choice_fallback(message: Message):
 @dp.message(F.text == "☀️ Солнечный знак")
 async def astrology_sun_sign(message: Message, state: FSMContext):
     await save_user(message.from_user)
+    balance = await get_balance(message.from_user.id)
 
+    await state.set_state(AstrologyStates.awaiting_sun_sign_preview)
+
+    await message.answer(
+        "☀️ <b>Солнечный знак</b>\n\n"
+        "Ваш базовый архетип личности.\n\n"
+        "<b>Что входит:</b>\n"
+        "• Главные черты характера\n"
+        "• Сильные стороны\n"
+        "• Возможные слабости\n"
+        "• Поведение в отношениях\n"
+        "• Рекомендации\n\n"
+        "💰 <b>Стоимость:</b> 1 кредит\n"
+        f"💎 <b>Ваш баланс:</b> {balance} кредит(ов)",
+        parse_mode="HTML",
+        reply_markup=sun_preview_keyboard
+    )
+
+
+@dp.message(AstrologyStates.awaiting_sun_sign_preview, F.text == "⬅️ Назад")
+async def sun_preview_back(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
+@dp.message(AstrologyStates.awaiting_sun_sign_preview, F.text == "✨ Получить разбор")
+async def sun_preview_get_ask_confirm(message: Message, state: FSMContext):
+    await ask_product_confirm(message, state, AstrologyStates.awaiting_sun_sign_confirm, "☀️ <b>Солнечный знак</b>", 1)
+
+
+@dp.message(AstrologyStates.awaiting_sun_sign_confirm, F.text == "✅ Да")
+async def sun_preview_get(message: Message, state: FSMContext):
     if not await user_has_spread_access(message.from_user.id):
+        await state.clear()
         await no_access_message(message)
         return
+
 
     profile = await get_birth_profile(message.from_user.id)
 
@@ -1006,7 +1123,8 @@ async def astrology_sun_sign(message: Message, state: FSMContext):
             f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
             f"♈ Знак: <b>{data['sign']}</b>\n\n"
             f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
         )
         await state.clear()
         return
@@ -1025,10 +1143,44 @@ async def astrology_sun_sign(message: Message, state: FSMContext):
 @dp.message(F.text == "🌙 Лунный знак")
 async def astrology_moon_sign(message: Message, state: FSMContext):
     await save_user(message.from_user)
+    balance = await get_balance(message.from_user.id)
 
+    await state.set_state(AstrologyStates.awaiting_moon_sign_preview)
+
+    await message.answer(
+        "🌙 <b>Лунный знак</b>\n\n"
+        "Ваш внутренний эмоциональный мир.\n\n"
+        "<b>Что входит:</b>\n"
+        "• Эмоции и чувства\n"
+        "• Реакции на стресс\n"
+        "• Потребности в отношениях\n"
+        "• Скрытые стороны личности\n"
+        "• Рекомендации\n\n"
+        "💰 <b>Стоимость:</b> 1 кредит\n"
+        f"💎 <b>Ваш баланс:</b> {balance} кредит(ов)",
+        parse_mode="HTML",
+        reply_markup=sun_preview_keyboard
+    )
+
+
+@dp.message(AstrologyStates.awaiting_moon_sign_preview, F.text == "⬅️ Назад")
+async def moon_preview_back(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
+@dp.message(AstrologyStates.awaiting_moon_sign_preview, F.text == "✨ Получить разбор")
+async def moon_preview_get_ask_confirm(message: Message, state: FSMContext):
+    await ask_product_confirm(message, state, AstrologyStates.awaiting_moon_sign_confirm, "🌙 <b>Лунный знак</b>", 1)
+
+
+@dp.message(AstrologyStates.awaiting_moon_sign_confirm, F.text == "✅ Да")
+async def moon_preview_get(message: Message, state: FSMContext):
     if not await user_has_spread_access(message.from_user.id):
+        await state.clear()
         await no_access_message(message)
         return
+
 
     profile = await get_birth_profile(message.from_user.id)
 
@@ -1052,7 +1204,8 @@ async def astrology_moon_sign(message: Message, state: FSMContext):
             f"📅 Дата: <b>{data['birth_date']}</b>\n"
             f"🕒 Время: <b>{data['birth_time']}</b>\n\n"
             f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
         )
         await state.clear()
         return
@@ -1071,10 +1224,44 @@ async def astrology_moon_sign(message: Message, state: FSMContext):
 @dp.message(F.text == "⬆️ Асцендент")
 async def astrology_ascendant(message: Message, state: FSMContext):
     await save_user(message.from_user)
+    balance = await get_balance(message.from_user.id)
 
+    await state.set_state(AstrologyStates.awaiting_ascendant_preview)
+
+    await message.answer(
+        "⬆️ <b>Асцендент</b>\n\n"
+        "Первое впечатление, которое вы производите на людей.\n\n"
+        "<b>Что входит:</b>\n"
+        "• Ваш внешний образ\n"
+        "• Манера общения\n"
+        "• Как вас воспринимают окружающие\n"
+        "• Сильные стороны проявления\n"
+        "• Рекомендации\n\n"
+        "💰 <b>Стоимость:</b> 1 кредит\n"
+        f"💎 <b>Ваш баланс:</b> {balance} кредит(ов)",
+        parse_mode="HTML",
+        reply_markup=sun_preview_keyboard
+    )
+
+
+@dp.message(AstrologyStates.awaiting_ascendant_preview, F.text == "⬅️ Назад")
+async def asc_preview_back(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
+@dp.message(AstrologyStates.awaiting_ascendant_preview, F.text == "✨ Получить разбор")
+async def asc_preview_get_ask_confirm(message: Message, state: FSMContext):
+    await ask_product_confirm(message, state, AstrologyStates.awaiting_ascendant_confirm, "⬆️ <b>Асцендент</b>", 1)
+
+
+@dp.message(AstrologyStates.awaiting_ascendant_confirm, F.text == "✅ Да")
+async def asc_preview_get(message: Message, state: FSMContext):
     if not await user_has_spread_access(message.from_user.id):
+        await state.clear()
         await no_access_message(message)
         return
+
 
     profile = await get_birth_profile(message.from_user.id)
 
@@ -1100,7 +1287,8 @@ async def astrology_ascendant(message: Message, state: FSMContext):
             f"🕒 Время: <b>{data['birth_time']}</b>\n"
             f"📍 Место: <b>{data['birth_place']}</b>\n\n"
             f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
         )
         await state.clear()
         return
@@ -1115,20 +1303,64 @@ async def astrology_ascendant(message: Message, state: FSMContext):
     )
 
 
+@dp.message(AstrologyStates.awaiting_sun_sign_confirm, F.text == "⬅️ Отмена")
+@dp.message(AstrologyStates.awaiting_moon_sign_confirm, F.text == "⬅️ Отмена")
+@dp.message(AstrologyStates.awaiting_ascendant_confirm, F.text == "⬅️ Отмена")
+async def small_product_confirm_cancel(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
 @dp.message(F.text == "❤️ Совместимость")
 async def astrology_compatibility(message: Message, state: FSMContext):
     await save_user(message.from_user)
+    balance = await get_balance(message.from_user.id)
 
-    if not await user_has_spread_access(message.from_user.id):
+    await state.set_state(AstrologyStates.awaiting_compatibility_preview)
+
+    await message.answer(
+        "❤️ <b>Совместимость</b>\n\n"
+        "Астрологический анализ отношений двух людей.\n\n"
+        "<b>Что входит:</b>\n"
+        "• Эмоциональная совместимость\n"
+        "• Сильные стороны союза\n"
+        "• Возможные конфликты\n"
+        "• Потенциал отношений\n"
+        "• Рекомендации\n\n"
+        "💰 <b>Стоимость:</b> 2 кредита\n"
+        f"💎 <b>Ваш баланс:</b> {balance} кредит(ов)",
+        parse_mode="HTML",
+        reply_markup=sun_preview_keyboard
+    )
+
+
+@dp.message(AstrologyStates.awaiting_compatibility_preview, F.text == "⬅️ Назад")
+async def compatibility_preview_back(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
+@dp.message(AstrologyStates.awaiting_compatibility_preview, F.text == "✨ Получить разбор")
+async def compatibility_preview_get_ask_confirm(message: Message, state: FSMContext):
+    await ask_product_confirm(message, state, AstrologyStates.awaiting_compatibility_confirm, "❤️ <b>Совместимость</b>", 2)
+
+
+@dp.message(AstrologyStates.awaiting_compatibility_confirm, F.text == "✅ Да")
+async def compatibility_preview_get(message: Message, state: FSMContext):
+    balance = await get_balance(message.from_user.id)
+    if message.from_user.id != ADMIN_ID and balance < 2:
+        await state.clear()
         await no_access_message(message)
         return
+
 
     await state.set_state(AstrologyStates.awaiting_compatibility_data)
 
     await message.answer(
         "❤️ <b>Совместимость</b>\n\n"
         "Введите данные двух людей в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, город / ДД.ММ.ГГГГ, город</b>",
+        "<b>ДД.ММ.ГГГГ, город</b>\n"
+        "<b>ДД.ММ.ГГГГ, город</b>",
         parse_mode="HTML"
     )
 
@@ -1168,7 +1400,8 @@ async def astrology_career_money(message: Message, state: FSMContext):
             f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
             f"♈ Знак: <b>{data['sign']}</b>\n\n"
             f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
         )
         await state.clear()
         return
@@ -1187,10 +1420,45 @@ async def astrology_career_money(message: Message, state: FSMContext):
 @dp.message(F.text == "🔮 Прогноз на месяц")
 async def astrology_month_forecast(message: Message, state: FSMContext):
     await save_user(message.from_user)
+    balance = await get_balance(message.from_user.id)
 
-    if not await user_has_spread_access(message.from_user.id):
+    await state.set_state(AstrologyStates.awaiting_month_forecast_preview)
+
+    await message.answer(
+        "🔮 <b>Прогноз на месяц</b>\n\n"
+        "Персональный астрологический прогноз на ближайшие 30 дней.\n\n"
+        "<b>Что входит:</b>\n"
+        "• Общий фон месяца\n"
+        "• Любовь и отношения\n"
+        "• Работа и финансы\n"
+        "• Благоприятные периоды\n"
+        "• Рекомендации\n\n"
+        "💰 <b>Стоимость:</b> 2 кредита\n"
+        f"💎 <b>Ваш баланс:</b> {balance} кредит(ов)",
+        parse_mode="HTML",
+        reply_markup=sun_preview_keyboard
+    )
+
+
+@dp.message(AstrologyStates.awaiting_month_forecast_preview, F.text == "⬅️ Назад")
+async def month_forecast_preview_back(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
+@dp.message(AstrologyStates.awaiting_month_forecast_preview, F.text == "✨ Получить разбор")
+async def month_forecast_preview_get_ask_confirm(message: Message, state: FSMContext):
+    await ask_product_confirm(message, state, AstrologyStates.awaiting_month_forecast_confirm, "🔮 <b>Прогноз на месяц</b>", 2)
+
+
+@dp.message(AstrologyStates.awaiting_month_forecast_confirm, F.text == "✅ Да")
+async def month_forecast_preview_get(message: Message, state: FSMContext):
+    balance = await get_balance(message.from_user.id)
+    if message.from_user.id != ADMIN_ID and balance < 2:
+        await state.clear()
         await no_access_message(message)
         return
+
 
     profile = await get_birth_profile(message.from_user.id)
 
@@ -1212,13 +1480,15 @@ async def astrology_month_forecast(message: Message, state: FSMContext):
 
         await save_spread(message.from_user.id, "Прогноз на месяц", data["birth_date"], data["birth_date"], interpretation)
         await charge_user_for_spread(message.from_user.id)
+        await charge_user_for_spread(message.from_user.id)
 
         await message.answer(
             f"🔮 <b>Прогноз на месяц</b>\n\n"
             f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
             f"♈ Знак: <b>{data['sign']}</b>\n\n"
             f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
         )
         await state.clear()
         return
@@ -1270,16 +1540,34 @@ async def history(message: Message):
     await message.answer(text, parse_mode="HTML")
 
 
+@dp.message(AstrologyStates.awaiting_sun_sign_confirm, F.text == "⬅️ Отмена")
+@dp.message(AstrologyStates.awaiting_moon_sign_confirm, F.text == "⬅️ Отмена")
+@dp.message(AstrologyStates.awaiting_ascendant_confirm, F.text == "⬅️ Отмена")
+@dp.message(AstrologyStates.awaiting_compatibility_confirm, F.text == "⬅️ Отмена")
+@dp.message(AstrologyStates.awaiting_month_forecast_confirm, F.text == "⬅️ Отмена")
+async def product_confirm_cancel(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
+
+
 @dp.message(F.text == "ℹ️ О боте")
 async def about(message: Message):
     await safe_delete_current_message(message)
     await message.answer(
         "ℹ️ <b>О боте</b>\n\n"
-        "Астронум делает AI-кредиты по <b>западной астрологии</b>.\n\n"
-        "Доступны натальная карта, солнечный знак, лунный знак, асцендент, совместимость, карьера и прогнозы.\n\n"
-        "Бот создан для самопознания, рефлексии и развлекательных астрологических интерпретаций.\n\n"
-        "Бот предназначен для самокредита, рефлексии и развлекательных интерпретаций. Он не предсказывает будущее наверняка и не заменяет профессиональные консультации.",
-        parse_mode="HTML"
+        "✨ <b>Астронум</b> — AI-астрологический бот по западной астрологии.\n\n"
+        "Он помогает посмотреть на себя, отношения и ближайший период через символический язык астрологии.\n\n"
+        "<b>Главный продукт:</b>\n"
+        "⭐ Натальная карта — персональная карта личности по дате, времени и месту рождения.\n\n"
+        "<b>Быстрые разборы:</b>\n"
+        "❤️ Совместимость\n"
+        "🔮 Прогноз на месяц\n"
+        "☀️ Солнечный знак\n"
+        "🌙 Лунный знак\n"
+        "⬆️ Асцендент\n\n"
+        "Разборы предназначены для самопознания, рефлексии и развлечения. Они не являются медицинской, юридической, финансовой или психологической консультацией.",
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
 
 
@@ -1906,6 +2194,33 @@ async def natal_chart_decode_example(message: Message):
     )
 
 
+@dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "📖 Открыть расшифровку")
+async def natal_chart_open_saved_decode(message: Message, state: FSMContext):
+    state_data = await state.get_data()
+
+    data = state_data.get("natal_decode_data")
+    interpretation = state_data.get("natal_saved_interpretation")
+
+    if not data or not interpretation:
+        await message.answer(
+            "⚠️ Сохранённая расшифровка не найдена. Постройте натальную карту заново.",
+            reply_markup=get_main_keyboard(message.from_user.id)
+        )
+        return
+
+    await message.answer(
+        f"⭐ <b>Полная расшифровка натальной карты</b>\n\n"
+        f"📅 Дата: <b>{data['birth_date']}</b>\n"
+        f"🕒 Время: <b>{data['birth_time']}</b>\n"
+        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+        f"{markdown_bold_to_html(interpretation)}",
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
+    )
+
+    await state.clear()
+
+
 @dp.message(AstrologyStates.awaiting_natal_chart_decode_choice, F.text == "✨ Открыть расшифровку (3 кредита)")
 async def natal_chart_paid_decode(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -2045,7 +2360,8 @@ async def process_sun_sign_date(message: Message, state: FSMContext):
         f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
         f"♈ Знак: <b>{data['sign']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
     await state.clear()
 
@@ -2078,7 +2394,8 @@ async def process_moon_sign_data(message: Message, state: FSMContext):
         f"📅 Дата: <b>{data['birth_date']}</b>\n"
         f"🕒 Время: <b>{data['birth_time']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
     await state.clear()
 
@@ -2111,7 +2428,8 @@ async def process_ascendant_data(message: Message, state: FSMContext):
         f"🕒 Время: <b>{data['birth_time']}</b>\n"
         f"📍 Место: <b>{data['birth_place']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
     await state.clear()
 
@@ -2120,9 +2438,13 @@ async def process_ascendant_data(message: Message, state: FSMContext):
 async def process_compatibility_data(message: Message, state: FSMContext):
     user_id = message.from_user.id
 
-    parts = [x.strip() for x in message.text.split("/", 1)]
+    parts = [x.strip() for x in message.text.splitlines() if x.strip()]
     if len(parts) != 2:
-        await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, город / ДД.ММ.ГГГГ, город")
+        await message.answer(
+            "⚠️ Введите данные в формате:\n\n"
+            "ДД.ММ.ГГГГ, город\n"
+            "ДД.ММ.ГГГГ, город"
+        )
         return
 
     data = {"person_1": parts[0], "person_2": parts[1]}
@@ -2138,13 +2460,15 @@ async def process_compatibility_data(message: Message, state: FSMContext):
 
     await save_spread(user_id, "Совместимость", message.text, message.text, interpretation)
     await charge_user_for_spread(user_id)
+    await charge_user_for_spread(user_id)
 
     await message.answer(
         f"❤️ <b>Совместимость</b>\n\n"
         f"👤 Первый человек: <b>{data['person_1']}</b>\n"
         f"👤 Второй человек: <b>{data['person_2']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
     await state.clear()
 
@@ -2176,7 +2500,8 @@ async def process_career_money_date(message: Message, state: FSMContext):
         f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
         f"♈ Знак: <b>{data['sign']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
     await state.clear()
 
@@ -2202,13 +2527,15 @@ async def process_month_forecast_date(message: Message, state: FSMContext):
 
     await save_spread(user_id, "Прогноз на месяц", data["birth_date"], data["birth_date"], interpretation)
     await charge_user_for_spread(user_id)
+    await charge_user_for_spread(user_id)
 
     await message.answer(
         f"🔮 <b>Прогноз на месяц</b>\n\n"
         f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
         f"♈ Знак: <b>{data['sign']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML"
+        parse_mode="HTML",
+        reply_markup=get_main_keyboard(message.from_user.id)
     )
     await state.clear()
 
