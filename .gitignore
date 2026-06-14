@@ -14,3 +14,6 @@ backups/
 app/*.bak*
 app/*.STABLE_*
 app/*.save
+*.bak*
+*.pillow_bak_*
+data/cache/
