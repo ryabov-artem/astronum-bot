@@ -1033,21 +1033,6 @@ async def natal_chart_back_to_main(message: Message, state: FSMContext):
     )
 
 
-@dp.message(AstrologyStates.awaiting_natal_chart_data, F.text == "⬅️ Назад")
-async def natal_chart_data_back_to_choice(message: Message, state: FSMContext):
-    await cleanup_natal_messages(message, state)
-
-    await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
-
-    sent = await message.answer(
-        "⭐ <b>Натальная карта</b>\n\n"
-        "Для кого построить карту?",
-        parse_mode="HTML",
-        reply_markup=natal_owner_keyboard
-    )
-    await remember_natal_message(state, sent)
-
-
 @dp.message(AstrologyStates.awaiting_natal_chart_owner)
 @dp.message(AstrologyStates.awaiting_natal_chart_saved_choice)
 async def natal_chart_choice_fallback(message: Message):
@@ -2093,25 +2078,6 @@ async def cancel_broadcast(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("❌ Рассылка отменена.", reply_markup=admin_keyboard)
 
-
-
-
-
-
-
-@dp.message(AstrologyStates.awaiting_natal_chart_data, F.text == "⬅️ Назад")
-async def natal_chart_data_back(message: Message, state: FSMContext):
-    await cleanup_natal_messages(message, state)
-
-    await state.set_state(AstrologyStates.awaiting_natal_chart_owner)
-
-    sent = await message.answer(
-        "⭐ <b>Натальная карта</b>\n\n"
-        "Для кого построить карту?",
-        parse_mode="HTML",
-        reply_markup=natal_owner_keyboard
-    )
-    await remember_natal_message(state, sent)
 
 
 
