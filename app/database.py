@@ -108,6 +108,14 @@ async def ensure_payments_table():
 async def save_user(user):
     async with get_connection() as db:
         db.row_factory = aiosqlite.Row
+
+        cursor = await db.execute(
+            "SELECT user_id FROM users WHERE user_id = ?",
+            (user.id,)
+        )
+        existing = await cursor.fetchone()
+        is_new_user = existing is None
+
         await db.execute("""
         INSERT OR IGNORE INTO users
         (user_id, username, first_name, created_at)
@@ -119,6 +127,8 @@ async def save_user(user):
             datetime.now().isoformat()
         ))
         await db.commit()
+
+    return is_new_user
 
 
 async def save_spread(user_id, spread_type, question, input_data, answer):

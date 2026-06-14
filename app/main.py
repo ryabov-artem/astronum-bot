@@ -248,7 +248,6 @@ async def ask_product_confirm(message: Message, state: FSMContext, confirm_state
     if message.from_user.id != ADMIN_ID and balance < cost:
         await state.clear()
         await no_access_message(message)
-        await message.answer("Главное меню", reply_markup=get_main_keyboard(message.from_user.id))
         return
 
     await state.set_state(confirm_state)
@@ -309,25 +308,14 @@ async def user_has_spread_access(user_id):
     if user_id == ADMIN_ID:
         return True
 
-    if user_id == ADMIN_ID:
-        return True
-
-    if await can_use_free_spread(user_id):
-        return True
-
-    if await get_balance(user_id) > 0:
-        return True
-
-    return False
+    return await get_balance(user_id) > 0
 
 
 async def charge_user_for_spread(user_id):
     if user_id == ADMIN_ID:
         return
 
-    if await can_use_free_spread(user_id):
-        await mark_free_spread_used(user_id)
-    elif await get_balance(user_id) > 0:
+    if await get_balance(user_id) > 0:
         await spend_balance(user_id)
 
 
@@ -335,19 +323,23 @@ async def charge_user_for_spread(user_id):
 
 async def no_access_message(message: Message):
     await message.answer(
-        "💎 Бесплатный кредит уже использован.\n\n"
+        "💎 На балансе недостаточно кредитов.\n\n"
         "Доступные тарифы:\n"
         "• 1 кредит — 99 ₽\n"
         "• 5 кредитов — 299 ₽\n"
         "• 10 кредитов — 499 ₽\n"
         "• 20 кредитов — 799 ₽\n\n"
-        "Пополните баланс и возвращайтесь за новым кредитом ✨"
+        "Пополните баланс и возвращайтесь за новым разбором ✨",
+        reply_markup=shop_keyboard
     )
 
 
 @dp.message(CommandStart())
 async def start(message: Message):
-    await save_user(message.from_user)
+    is_new_user = await save_user(message.from_user)
+
+    if is_new_user and message.from_user.id != ADMIN_ID:
+        await add_balance(message.from_user.id, 1)
 
     await message.answer(
         "✨ <b>Астронум</b>\n\n"
@@ -1802,7 +1794,7 @@ async def promo_compatibility(message: Message, state: FSMContext):
 
     broadcast_text = (
         "❤️ <b>Проверьте совместимость</b>\n\n"
-        "Введите данные двух людей и получите астрологический кредит совместимости.\n\n"
+        "Введите данные двух людей и получите астрологический разбор совместимости.\n\n"
         "Раздел поможет взглянуть на отношения с новой стороны и лучше понять особенности взаимодействия друг с другом.\n\n"
         "✨ Интересно как для романтических отношений, так и для дружбы."
     )
@@ -2290,7 +2282,7 @@ async def process_moon_sign_data(message: Message, state: FSMContext):
 
     data = {"birth_date": parts[0], "birth_time": parts[1]}
 
-    await message.answer("🌙 Готовлю кредит лунного знака...")
+    await message.answer("🌙 Готовлю разбор лунного знака...")
 
     try:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
@@ -2323,7 +2315,7 @@ async def process_ascendant_data(message: Message, state: FSMContext):
         await strict_birth_input_error(message)
         return
 
-    await message.answer("⬆️ Готовлю кредит асцендента...")
+    await message.answer("⬆️ Готовлю разбор асцендента...")
 
     try:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
