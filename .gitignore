@@ -17,3 +17,7 @@ app/*.save
 *.bak*
 *.pillow_bak_*
 data/cache/
+data/charts/
+data/generated_charts/
+data/*.db
+data/*.db.bak*
