@@ -11,7 +11,6 @@ from ai import (
     interpret_moon_sign,
     interpret_ascendant,
     interpret_compatibility,
-    interpret_career_money,
     interpret_month_forecast
 )
 
@@ -95,7 +94,6 @@ class AstrologyStates(StatesGroup):
     awaiting_compatibility_preview = State()
     awaiting_compatibility_confirm = State()
     awaiting_compatibility_data = State()
-    awaiting_career_money_date = State()
     awaiting_month_forecast_preview = State()
     awaiting_month_forecast_confirm = State()
     awaiting_month_forecast_date = State()
@@ -1366,57 +1364,6 @@ async def compatibility_preview_get(message: Message, state: FSMContext):
 
 
 
-@dp.message(F.text == "💼 Карьера и деньги")
-async def astrology_career_money(message: Message, state: FSMContext):
-    await save_user(message.from_user)
-
-    if not await user_has_spread_access(message.from_user.id):
-        await no_access_message(message)
-        return
-
-    profile = await get_birth_profile(message.from_user.id)
-
-    if profile:
-        try:
-            data = zodiac_sign(profile["birth_date"])
-        except Exception:
-            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
-            return
-
-        await message.answer("💼 Использую сохранённую карту и готовлю кредит карьеры и денег...")
-
-        try:
-            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-            interpretation = await interpret_career_money(data)
-        except Exception as e:
-            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
-            return
-
-        await save_spread(message.from_user.id, "Карьера и деньги", data["birth_date"], data["birth_date"], interpretation)
-        await charge_user_for_spread(message.from_user.id)
-
-        await message.answer(
-            f"💼 <b>Карьера и деньги</b>\n\n"
-            f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
-            f"♈ Знак: <b>{data['sign']}</b>\n\n"
-            f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML",
-            reply_markup=get_main_keyboard(message.from_user.id)
-        )
-        await state.clear()
-        return
-
-    await state.set_state(AstrologyStates.awaiting_career_money_date)
-
-    await message.answer(
-        "💼 <b>Карьера и деньги</b>\n\n"
-        "Введите дату рождения в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ</b>",
-        parse_mode="HTML"
-    )
-
-
-
 @dp.message(F.text == "🔮 Прогноз на месяц")
 async def astrology_month_forecast(message: Message, state: FSMContext):
     await save_user(message.from_user)
@@ -2466,39 +2413,6 @@ async def process_compatibility_data(message: Message, state: FSMContext):
         f"❤️ <b>Совместимость</b>\n\n"
         f"👤 Первый человек: <b>{data['person_1']}</b>\n"
         f"👤 Второй человек: <b>{data['person_2']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML",
-        reply_markup=get_main_keyboard(message.from_user.id)
-    )
-    await state.clear()
-
-
-@dp.message(AstrologyStates.awaiting_career_money_date)
-async def process_career_money_date(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-
-    try:
-        data = zodiac_sign(message.text)
-    except Exception:
-        await message.answer("⚠️ Введите дату в формате ДД.ММ.ГГГГ")
-        return
-
-    await message.answer("💼 Готовлю кредит карьеры и денег...")
-
-    try:
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        interpretation = await interpret_career_money(data)
-    except Exception as e:
-        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
-        return
-
-    await save_spread(user_id, "Карьера и деньги", data["birth_date"], data["birth_date"], interpretation)
-    await charge_user_for_spread(user_id)
-
-    await message.answer(
-        f"💼 <b>Карьера и деньги</b>\n\n"
-        f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
-        f"♈ Знак: <b>{data['sign']}</b>\n\n"
         f"{markdown_bold_to_html(interpretation)}",
         parse_mode="HTML",
         reply_markup=get_main_keyboard(message.from_user.id)
