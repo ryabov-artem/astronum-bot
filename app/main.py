@@ -70,6 +70,24 @@ session = AiohttpSession(proxy=PROXY_URL)
 bot = Bot(token=BOT_TOKEN, session=session)
 dp = Dispatcher()
 
+active_heavy_requests = set()
+
+
+async def acquire_heavy_request(message: Message) -> bool:
+    user_id = message.from_user.id
+
+    if user_id in active_heavy_requests:
+        await message.answer("⏳ Запрос уже обрабатывается. Дождитесь результата.")
+        return False
+
+    active_heavy_requests.add(user_id)
+    return True
+
+
+def release_heavy_request(user_id: int):
+    active_heavy_requests.discard(user_id)
+
+
 class AdminStates(StatesGroup):
     awaiting_broadcast_text = State()
     awaiting_broadcast_confirm = State()
@@ -1066,53 +1084,59 @@ async def sun_preview_get_ask_confirm(message: Message, state: FSMContext):
 
 @dp.message(AstrologyStates.awaiting_sun_sign_confirm, F.text == "✅ Да")
 async def sun_preview_get(message: Message, state: FSMContext):
-    if not await user_has_spread_access(message.from_user.id):
-        await state.clear()
-        await no_access_message(message)
+    if not await acquire_heavy_request(message):
         return
 
-
-    profile = await get_birth_profile(message.from_user.id)
-
-    if profile:
-        try:
-            data = zodiac_sign(profile["birth_date"])
-        except Exception:
-            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
+    try:
+        if not await user_has_spread_access(message.from_user.id):
+            await state.clear()
+            await no_access_message(message)
             return
 
-        await message.answer("☀️ Использую сохранённую карту и готовлю солнечный знак...")
 
-        try:
-            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-            interpretation = await interpret_sun_sign(data)
-        except Exception as e:
-            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+        profile = await get_birth_profile(message.from_user.id)
+
+        if profile:
+            try:
+                data = zodiac_sign(profile["birth_date"])
+            except Exception:
+                await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
+                return
+
+            await message.answer("☀️ Использую сохранённую карту и готовлю солнечный знак...")
+
+            try:
+                await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+                interpretation = await interpret_sun_sign(data)
+            except Exception as e:
+                await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+                return
+
+            await save_spread(message.from_user.id, "Солнечный знак", profile["birth_date"], profile["birth_date"], interpretation)
+            await charge_user_for_spread(message.from_user.id)
+
+            await message.answer(
+                f"☀️ <b>Солнечный знак</b>\n\n"
+                f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
+                f"♈ Знак: <b>{data['sign']}</b>\n\n"
+                f"{markdown_bold_to_html(interpretation)}",
+                parse_mode="HTML",
+                reply_markup=get_main_keyboard(message.from_user.id)
+            )
+            await state.clear()
             return
 
-        await save_spread(message.from_user.id, "Солнечный знак", profile["birth_date"], profile["birth_date"], interpretation)
-        await charge_user_for_spread(message.from_user.id)
+        await state.set_state(AstrologyStates.awaiting_sun_sign_date)
 
         await message.answer(
-            f"☀️ <b>Солнечный знак</b>\n\n"
-            f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
-            f"♈ Знак: <b>{data['sign']}</b>\n\n"
-            f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML",
-            reply_markup=get_main_keyboard(message.from_user.id)
+            "☀️ <b>Солнечный знак</b>\n\n"
+            "Введите дату рождения в формате:\n\n"
+            "<b>ДД.ММ.ГГГГ</b>",
+            parse_mode="HTML"
         )
-        await state.clear()
-        return
 
-    await state.set_state(AstrologyStates.awaiting_sun_sign_date)
-
-    await message.answer(
-        "☀️ <b>Солнечный знак</b>\n\n"
-        "Введите дату рождения в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ</b>",
-        parse_mode="HTML"
-    )
-
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(F.text == "🌙 Лунный знак")
@@ -1151,49 +1175,55 @@ async def moon_preview_get_ask_confirm(message: Message, state: FSMContext):
 
 @dp.message(AstrologyStates.awaiting_moon_sign_confirm, F.text == "✅ Да")
 async def moon_preview_get(message: Message, state: FSMContext):
-    if not await user_has_spread_access(message.from_user.id):
-        await state.clear()
-        await no_access_message(message)
+    if not await acquire_heavy_request(message):
         return
 
-
-    profile = await get_birth_profile(message.from_user.id)
-
-    if profile:
-        data = {"birth_date": profile["birth_date"], "birth_time": profile["birth_time"]}
-
-        await message.answer("🌙 Использую сохранённую карту и готовлю лунный знак...")
-
-        try:
-            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-            interpretation = await interpret_moon_sign(data)
-        except Exception as e:
-            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+    try:
+        if not await user_has_spread_access(message.from_user.id):
+            await state.clear()
+            await no_access_message(message)
             return
 
-        await save_spread(message.from_user.id, "Лунный знак", f"{data['birth_date']}, {data['birth_time']}", f"{data['birth_date']}, {data['birth_time']}", interpretation)
-        await charge_user_for_spread(message.from_user.id)
+
+        profile = await get_birth_profile(message.from_user.id)
+
+        if profile:
+            data = {"birth_date": profile["birth_date"], "birth_time": profile["birth_time"]}
+
+            await message.answer("🌙 Использую сохранённую карту и готовлю лунный знак...")
+
+            try:
+                await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+                interpretation = await interpret_moon_sign(data)
+            except Exception as e:
+                await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+                return
+
+            await save_spread(message.from_user.id, "Лунный знак", f"{data['birth_date']}, {data['birth_time']}", f"{data['birth_date']}, {data['birth_time']}", interpretation)
+            await charge_user_for_spread(message.from_user.id)
+
+            await message.answer(
+                f"🌙 <b>Лунный знак</b>\n\n"
+                f"📅 Дата: <b>{data['birth_date']}</b>\n"
+                f"🕒 Время: <b>{data['birth_time']}</b>\n\n"
+                f"{markdown_bold_to_html(interpretation)}",
+                parse_mode="HTML",
+                reply_markup=get_main_keyboard(message.from_user.id)
+            )
+            await state.clear()
+            return
+
+        await state.set_state(AstrologyStates.awaiting_moon_sign_data)
 
         await message.answer(
-            f"🌙 <b>Лунный знак</b>\n\n"
-            f"📅 Дата: <b>{data['birth_date']}</b>\n"
-            f"🕒 Время: <b>{data['birth_time']}</b>\n\n"
-            f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML",
-            reply_markup=get_main_keyboard(message.from_user.id)
+            "🌙 <b>Лунный знак</b>\n\n"
+            "Введите данные в формате:\n\n"
+            "<b>ДД.ММ.ГГГГ, ЧЧ:ММ</b>",
+            parse_mode="HTML"
         )
-        await state.clear()
-        return
 
-    await state.set_state(AstrologyStates.awaiting_moon_sign_data)
-
-    await message.answer(
-        "🌙 <b>Лунный знак</b>\n\n"
-        "Введите данные в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ</b>",
-        parse_mode="HTML"
-    )
-
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(F.text == "⬆️ Асцендент")
@@ -1232,50 +1262,56 @@ async def asc_preview_get_ask_confirm(message: Message, state: FSMContext):
 
 @dp.message(AstrologyStates.awaiting_ascendant_confirm, F.text == "✅ Да")
 async def asc_preview_get(message: Message, state: FSMContext):
-    if not await user_has_spread_access(message.from_user.id):
-        await state.clear()
-        await no_access_message(message)
+    if not await acquire_heavy_request(message):
         return
 
-
-    profile = await get_birth_profile(message.from_user.id)
-
-    if profile:
-        data = {"birth_date": profile["birth_date"], "birth_time": profile["birth_time"], "birth_place": profile["birth_place"]}
-
-        await message.answer("⬆️ Использую сохранённую карту и готовлю асцендент...")
-
-        try:
-            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-            interpretation = await interpret_ascendant(data)
-        except Exception as e:
-            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+    try:
+        if not await user_has_spread_access(message.from_user.id):
+            await state.clear()
+            await no_access_message(message)
             return
 
-        input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
-        await save_spread(message.from_user.id, "Асцендент", input_text, input_text, interpretation)
-        await charge_user_for_spread(message.from_user.id)
+
+        profile = await get_birth_profile(message.from_user.id)
+
+        if profile:
+            data = {"birth_date": profile["birth_date"], "birth_time": profile["birth_time"], "birth_place": profile["birth_place"]}
+
+            await message.answer("⬆️ Использую сохранённую карту и готовлю асцендент...")
+
+            try:
+                await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+                interpretation = await interpret_ascendant(data)
+            except Exception as e:
+                await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+                return
+
+            input_text = f"{data['birth_date']}, {data['birth_time']}, {data['birth_place']}"
+            await save_spread(message.from_user.id, "Асцендент", input_text, input_text, interpretation)
+            await charge_user_for_spread(message.from_user.id)
+
+            await message.answer(
+                f"⬆️ <b>Асцендент</b>\n\n"
+                f"📅 Дата: <b>{data['birth_date']}</b>\n"
+                f"🕒 Время: <b>{data['birth_time']}</b>\n"
+                f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+                f"{markdown_bold_to_html(interpretation)}",
+                parse_mode="HTML",
+                reply_markup=get_main_keyboard(message.from_user.id)
+            )
+            await state.clear()
+            return
+
+        await state.set_state(AstrologyStates.awaiting_ascendant_data)
 
         await message.answer(
-            f"⬆️ <b>Асцендент</b>\n\n"
-            f"📅 Дата: <b>{data['birth_date']}</b>\n"
-            f"🕒 Время: <b>{data['birth_time']}</b>\n"
-            f"📍 Место: <b>{data['birth_place']}</b>\n\n"
-            f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML",
-            reply_markup=get_main_keyboard(message.from_user.id)
+            "⬆️ <b>Асцендент</b>\n\n"
+            "Введите данные в формате:\n\n"
+            "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
+            parse_mode="HTML"
         )
-        await state.clear()
-        return
-
-    await state.set_state(AstrologyStates.awaiting_ascendant_data)
-
-    await message.answer(
-        "⬆️ <b>Асцендент</b>\n\n"
-        "Введите данные в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, ЧЧ:ММ, город</b>",
-        parse_mode="HTML"
-    )
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(AstrologyStates.awaiting_sun_sign_confirm, F.text == "⬅️ Отмена")
@@ -1322,23 +1358,29 @@ async def compatibility_preview_get_ask_confirm(message: Message, state: FSMCont
 
 @dp.message(AstrologyStates.awaiting_compatibility_confirm, F.text == "✅ Да")
 async def compatibility_preview_get(message: Message, state: FSMContext):
-    balance = await get_balance(message.from_user.id)
-    if message.from_user.id != ADMIN_ID and balance < 2:
-        await state.clear()
-        await no_access_message(message)
+    if not await acquire_heavy_request(message):
         return
 
+    try:
+        balance = await get_balance(message.from_user.id)
+        if message.from_user.id != ADMIN_ID and balance < 2:
+            await state.clear()
+            await no_access_message(message)
+            return
 
-    await state.set_state(AstrologyStates.awaiting_compatibility_data)
 
-    await message.answer(
-        "❤️ <b>Совместимость</b>\n\n"
-        "Введите данные двух людей в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ, город</b>\n"
-        "<b>ДД.ММ.ГГГГ, город</b>",
-        parse_mode="HTML"
-    )
+        await state.set_state(AstrologyStates.awaiting_compatibility_data)
 
+        await message.answer(
+            "❤️ <b>Совместимость</b>\n\n"
+            "Введите данные двух людей в формате:\n\n"
+            "<b>ДД.ММ.ГГГГ, город</b>\n"
+            "<b>ДД.ММ.ГГГГ, город</b>",
+            parse_mode="HTML"
+        )
+
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(F.text == "🔮 Прогноз на месяц")
@@ -1377,54 +1419,60 @@ async def month_forecast_preview_get_ask_confirm(message: Message, state: FSMCon
 
 @dp.message(AstrologyStates.awaiting_month_forecast_confirm, F.text == "✅ Да")
 async def month_forecast_preview_get(message: Message, state: FSMContext):
-    balance = await get_balance(message.from_user.id)
-    if message.from_user.id != ADMIN_ID and balance < 2:
-        await state.clear()
-        await no_access_message(message)
+    if not await acquire_heavy_request(message):
         return
 
-
-    profile = await get_birth_profile(message.from_user.id)
-
-    if profile:
-        try:
-            data = zodiac_sign(profile["birth_date"])
-        except Exception:
-            await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
+    try:
+        balance = await get_balance(message.from_user.id)
+        if message.from_user.id != ADMIN_ID and balance < 2:
+            await state.clear()
+            await no_access_message(message)
             return
 
-        await message.answer("🔮 Использую сохранённую карту и готовлю прогноз на месяц...")
 
-        try:
-            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-            interpretation = await interpret_month_forecast(data)
-        except Exception as e:
-            await message.answer(f"Не удалось подготовить прогноз. Ошибка: {e}")
+        profile = await get_birth_profile(message.from_user.id)
+
+        if profile:
+            try:
+                data = zodiac_sign(profile["birth_date"])
+            except Exception:
+                await message.answer("⚠️ В сохранённой карте некорректная дата. Обновите данные через «🗂 Мои данные».")
+                return
+
+            await message.answer("🔮 Использую сохранённую карту и готовлю прогноз на месяц...")
+
+            try:
+                await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+                interpretation = await interpret_month_forecast(data)
+            except Exception as e:
+                await message.answer(f"Не удалось подготовить прогноз. Ошибка: {e}")
+                return
+
+            await save_spread(message.from_user.id, "Прогноз на месяц", data["birth_date"], data["birth_date"], interpretation)
+            await charge_user_for_spread(message.from_user.id)
+            await charge_user_for_spread(message.from_user.id)
+
+            await message.answer(
+                f"🔮 <b>Прогноз на месяц</b>\n\n"
+                f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
+                f"♈ Знак: <b>{data['sign']}</b>\n\n"
+                f"{markdown_bold_to_html(interpretation)}",
+                parse_mode="HTML",
+                reply_markup=get_main_keyboard(message.from_user.id)
+            )
+            await state.clear()
             return
 
-        await save_spread(message.from_user.id, "Прогноз на месяц", data["birth_date"], data["birth_date"], interpretation)
-        await charge_user_for_spread(message.from_user.id)
-        await charge_user_for_spread(message.from_user.id)
+        await state.set_state(AstrologyStates.awaiting_month_forecast_date)
 
         await message.answer(
-            f"🔮 <b>Прогноз на месяц</b>\n\n"
-            f"📅 Дата рождения: <b>{data['birth_date']}</b>\n"
-            f"♈ Знак: <b>{data['sign']}</b>\n\n"
-            f"{markdown_bold_to_html(interpretation)}",
-            parse_mode="HTML",
-            reply_markup=get_main_keyboard(message.from_user.id)
+            "🔮 <b>Прогноз на месяц</b>\n\n"
+            "Введите дату рождения в формате:\n\n"
+            "<b>ДД.ММ.ГГГГ</b>",
+            parse_mode="HTML"
         )
-        await state.clear()
-        return
-
-    await state.set_state(AstrologyStates.awaiting_month_forecast_date)
-
-    await message.answer(
-        "🔮 <b>Прогноз на месяц</b>\n\n"
-        "Введите дату рождения в формате:\n\n"
-        "<b>ДД.ММ.ГГГГ</b>",
-        parse_mode="HTML"
-    )
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(F.text == "📜 История")
@@ -2218,24 +2266,30 @@ async def natal_chart_decode_choice_fallback(message: Message):
 
 @dp.message(AstrologyStates.awaiting_natal_chart_data)
 async def process_natal_chart_data(message: Message, state: FSMContext):
-    try:
-        data = parse_birth_datetime_place_strict(message.text)
-    except ValueError:
-        await strict_birth_input_error(message)
+    if not await acquire_heavy_request(message):
         return
 
-    state_data = await state.get_data()
-    save_profile = bool(state_data.get("natal_save_profile", False))
+    try:
+        try:
+            data = parse_birth_datetime_place_strict(message.text)
+        except ValueError:
+            await strict_birth_input_error(message)
+            return
 
-    await cleanup_natal_messages(message, state)
+        state_data = await state.get_data()
+        save_profile = bool(state_data.get("natal_save_profile", False))
 
-    await send_natal_chart_result(
-        message=message,
-        state=state,
-        data=data,
-        input_text=message.text,
-        save_profile=save_profile
-    )
+        await cleanup_natal_messages(message, state)
+
+        await send_natal_chart_result(
+            message=message,
+            state=state,
+            data=data,
+            input_text=message.text,
+            save_profile=save_profile
+        )
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(AstrologyStates.awaiting_sun_sign_date)
@@ -2273,109 +2327,127 @@ async def process_sun_sign_date(message: Message, state: FSMContext):
 
 @dp.message(AstrologyStates.awaiting_moon_sign_data)
 async def process_moon_sign_data(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-
-    parts = [x.strip() for x in message.text.split(",", 1)]
-    if len(parts) != 2:
-        await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ")
+    if not await acquire_heavy_request(message):
         return
-
-    data = {"birth_date": parts[0], "birth_time": parts[1]}
-
-    await message.answer("🌙 Готовлю разбор лунного знака...")
 
     try:
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        interpretation = await interpret_moon_sign(data)
-    except Exception as e:
-        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
-        return
+        user_id = message.from_user.id
 
-    await save_spread(user_id, "Лунный знак", message.text, message.text, interpretation)
-    await charge_user_for_spread(user_id)
+        parts = [x.strip() for x in message.text.split(",", 1)]
+        if len(parts) != 2:
+            await message.answer("⚠️ Введите данные в формате: ДД.ММ.ГГГГ, ЧЧ:ММ")
+            return
 
-    await message.answer(
-        f"🌙 <b>Лунный знак</b>\n\n"
-        f"📅 Дата: <b>{data['birth_date']}</b>\n"
-        f"🕒 Время: <b>{data['birth_time']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML",
-        reply_markup=get_main_keyboard(message.from_user.id)
-    )
-    await state.clear()
+        data = {"birth_date": parts[0], "birth_time": parts[1]}
+
+        await message.answer("🌙 Готовлю разбор лунного знака...")
+
+        try:
+            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+            interpretation = await interpret_moon_sign(data)
+        except Exception as e:
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+            return
+
+        await save_spread(user_id, "Лунный знак", message.text, message.text, interpretation)
+        await charge_user_for_spread(user_id)
+
+        await message.answer(
+            f"🌙 <b>Лунный знак</b>\n\n"
+            f"📅 Дата: <b>{data['birth_date']}</b>\n"
+            f"🕒 Время: <b>{data['birth_time']}</b>\n\n"
+            f"{markdown_bold_to_html(interpretation)}",
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
+        )
+        await state.clear()
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(AstrologyStates.awaiting_ascendant_data)
 async def process_ascendant_data(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-
-    try:
-        data = parse_birth_datetime_place_strict(message.text)
-    except ValueError:
-        await strict_birth_input_error(message)
+    if not await acquire_heavy_request(message):
         return
 
-    await message.answer("⬆️ Готовлю разбор асцендента...")
-
     try:
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        interpretation = await interpret_ascendant(data)
-    except Exception as e:
-        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
-        return
+        user_id = message.from_user.id
 
-    await save_spread(user_id, "Асцендент", message.text, message.text, interpretation)
-    await charge_user_for_spread(user_id)
+        try:
+            data = parse_birth_datetime_place_strict(message.text)
+        except ValueError:
+            await strict_birth_input_error(message)
+            return
 
-    await message.answer(
-        f"⬆️ <b>Асцендент</b>\n\n"
-        f"📅 Дата: <b>{data['birth_date']}</b>\n"
-        f"🕒 Время: <b>{data['birth_time']}</b>\n"
-        f"📍 Место: <b>{data['birth_place']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML",
-        reply_markup=get_main_keyboard(message.from_user.id)
-    )
-    await state.clear()
+        await message.answer("⬆️ Готовлю разбор асцендента...")
+
+        try:
+            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+            interpretation = await interpret_ascendant(data)
+        except Exception as e:
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+            return
+
+        await save_spread(user_id, "Асцендент", message.text, message.text, interpretation)
+        await charge_user_for_spread(user_id)
+
+        await message.answer(
+            f"⬆️ <b>Асцендент</b>\n\n"
+            f"📅 Дата: <b>{data['birth_date']}</b>\n"
+            f"🕒 Время: <b>{data['birth_time']}</b>\n"
+            f"📍 Место: <b>{data['birth_place']}</b>\n\n"
+            f"{markdown_bold_to_html(interpretation)}",
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
+        )
+        await state.clear()
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(AstrologyStates.awaiting_compatibility_data)
 async def process_compatibility_data(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-
-    parts = [x.strip() for x in message.text.splitlines() if x.strip()]
-    if len(parts) != 2:
-        await message.answer(
-            "⚠️ Введите данные в формате:\n\n"
-            "ДД.ММ.ГГГГ, город\n"
-            "ДД.ММ.ГГГГ, город"
-        )
+    if not await acquire_heavy_request(message):
         return
-
-    data = {"person_1": parts[0], "person_2": parts[1]}
-
-    await message.answer("❤️ Готовлю совместимость...")
 
     try:
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        interpretation = await interpret_compatibility(data)
-    except Exception as e:
-        await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
-        return
+        user_id = message.from_user.id
 
-    await save_spread(user_id, "Совместимость", message.text, message.text, interpretation)
-    await charge_user_for_spread(user_id)
-    await charge_user_for_spread(user_id)
+        parts = [x.strip() for x in message.text.splitlines() if x.strip()]
+        if len(parts) != 2:
+            await message.answer(
+                "⚠️ Введите данные в формате:\n\n"
+                "ДД.ММ.ГГГГ, город\n"
+                "ДД.ММ.ГГГГ, город"
+            )
+            return
 
-    await message.answer(
-        f"❤️ <b>Совместимость</b>\n\n"
-        f"👤 Первый человек: <b>{data['person_1']}</b>\n"
-        f"👤 Второй человек: <b>{data['person_2']}</b>\n\n"
-        f"{markdown_bold_to_html(interpretation)}",
-        parse_mode="HTML",
-        reply_markup=get_main_keyboard(message.from_user.id)
-    )
-    await state.clear()
+        data = {"person_1": parts[0], "person_2": parts[1]}
+
+        await message.answer("❤️ Готовлю совместимость...")
+
+        try:
+            await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+            interpretation = await interpret_compatibility(data)
+        except Exception as e:
+            await message.answer(f"Не удалось подготовить кредит. Ошибка: {e}")
+            return
+
+        await save_spread(user_id, "Совместимость", message.text, message.text, interpretation)
+        await charge_user_for_spread(user_id)
+        await charge_user_for_spread(user_id)
+
+        await message.answer(
+            f"❤️ <b>Совместимость</b>\n\n"
+            f"👤 Первый человек: <b>{data['person_1']}</b>\n"
+            f"👤 Второй человек: <b>{data['person_2']}</b>\n\n"
+            f"{markdown_bold_to_html(interpretation)}",
+            parse_mode="HTML",
+            reply_markup=get_main_keyboard(message.from_user.id)
+        )
+        await state.clear()
+    finally:
+        release_heavy_request(message.from_user.id)
 
 
 @dp.message(AstrologyStates.awaiting_month_forecast_date)
